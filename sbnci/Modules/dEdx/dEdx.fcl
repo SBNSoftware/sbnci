@@ -1,0 +1,44 @@
+## dEdx.fcl 
+## A. Scarff, Uni of Sheffield
+## To plot the dEdx
+
+#include "simulationservices_sbnd.fcl"                                                               
+#include "services_sbnd.fcl"  
+
+services:
+{
+  #No services required for this but look at anatree. and follow the sbnd services notice the geometry is in there and other things are in there.
+  TFileService: { fileName: "dEdxPlots.root" }
+  Geometry: {}
+  FileCatalogMetadata:  @local::sbnd_file_catalog_mc
+  			@table::sbnd_services              # from services_sbnd.fcl 
+}
+
+source:
+{
+  module_type: RootInput
+  maxEvents:  -1        # Number of events to create                                                                                                                                 
+}
+
+physics:
+{
+  analyzers:
+  {
+     ana:
+     {
+	module_type: "sbndcode/Modules/dEdx/PlotdEdx" 
+	PlotdEdxModuleLabel: "daq"
+	TrackModuleLabel: "pandoraTrack"
+  	CaloModuleLabel: "pandoraCalo"
+
+
+
+     }
+  }
+
+ a1: [ ana ]
+ end_paths: [ a1 ]
+
+}
+
+

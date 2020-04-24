@@ -1,0 +1,39 @@
+## noisetest.fcl 
+## A. Scarff, Uni of Sheffield
+## To run a test on the noise simulation
+
+#include "simulationservices_sbnd.fcl"                                                               
+#include "services_sbnd.fcl"  
+
+services:
+{
+  #No services required for this but look at anatree. and follow the sbnd services notice the geometry is in there and other things are in there.
+  TFileService: { fileName: "noisefft.root" }
+  Geometry: {}
+  FileCatalogMetadata:  @local::sbnd_file_catalog_mc
+  			@table::sbnd_services              # from services_sbnd.fcl 
+}
+
+source:
+{
+  module_type: RootInput
+  maxEvents:  -1        # Number of events to create                                                                                                                                 
+}
+
+physics:
+{
+  analyzers:
+  {
+     ana:
+     {
+	module_type: "sbndcode/DetectorSim/NoiseTest" 
+	NoiseModuleLabel: "daq"
+     }
+  }
+
+ a1: [ ana ]
+ end_paths: [ a1 ]
+
+}
+
+
