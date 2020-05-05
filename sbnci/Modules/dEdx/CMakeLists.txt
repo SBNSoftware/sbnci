@@ -18,7 +18,9 @@ simple_plugin(PlotdEdx "module"
                            ${CLHEP}
                            ${ROOT_BASIC_LIB_LIST}
 			   
-			   
+                           ${ART_ROOT_IO_TFILE_SUPPORT}
+                           ${ART_FRAMEWORK_SERVICES_REGISTRY}
+                           larcorealg_Geometry			   
 )
 
 install_headers()
