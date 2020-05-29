@@ -1,0 +1,822 @@
+#include "caldata_sbnd.fcl"
+#include "hitfindermodules_sbnd.fcl"
+#include "cluster_sbnd.fcl"
+#include "trackfindermodules_sbnd.fcl"
+#include "calorimetry_sbnd.fcl"
+##include "showerfindermodules_sbnd.fcl"
+#include "databaseutil_sbnd.fcl"
+#include "vertexfindermodules.fcl"
+#include "pandoramodules_sbnd.fcl"
+#include "particleid_sbnd.fcl"
+#include "rootoutput_sbnd.fcl"
+#include "showertools.fcl"
+
+#include "simulationservices_sbnd.fcl"                                                  
+#include "services_sbnd.fcl"                
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl" 
+#include "sam_sbnd.fcl"
+#include "showerfindermodules.fcl"  
+#include "pandoramodules_sbnd.fcl"
+
+#Legacy code in EMSHOWER uses the backtracker to be removed after the SBN Workshop March 2018
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+# include for shower validation
+##include "showerfindermodules.fcl"
+#include "simulationservices_sbnd.fcl"
+
+##include "showerfilters.fcl"
+
+process_name: Reco4
+
+ShowerStartPositionFinder:     @local::showerpfpvertexstartposition
+ShowerDirectionFinder:         @local::showerpcadirection
+ShowerDirectionFinder.BaseTools.EnableEventDisplay: false
+ShowerDirectionFinder.BaseTools.TRACSAlg.PFParticleModuleLabel: "pandora"
+
+ShowerEnergyFinder:            @local::showerlinearenergy
+ShowerdEdxFinder:              @local::showerstandardcalodedx
+ShowerTrackDirectionFinder:    @local::showertrackdirection
+ShowerTrackTrajectoryPointDirection: @local::showertracktrajectorypointdirection
+ShowerSmartTrackTrajectoryPointDirection: @local::showersmarttracktrajectorypointdirection
+Shower2DLinearRegressionTrackHitFinder:@local::shower2Dlinearregressiontrackhitfinder 
+ShowerPMATrackfinder: @local::showerpmatrackfinder
+ShowerPandoraSlidingFitTrackFinder: @local::showerpandoraslidingfittrackfinder
+Shower3DTrackHitFinder: @local::shower3Dtrackhitfinder
+Shower3DTrackHitFinder.MaxProjectionDist: 5
+ShowerTrackTrajToSpacePoint: @local::showertracktrajtospacepoint
+ShowerTrackHitDirection: @local::showertrackhitdirection
+ShowerTrackSpacePointDirection: @local::showertrackspacepointdirection 
+ShowerSlidingStandardCalodEdx: @local::showerslidingstandardcalodedx
+ShowerStartPositionCheater: @local::showerstartpositioncheater
+ShowerDirectionCheater: @local::showerdirectioncheater
+ShowerTrackFinderCheater: @local::showertrackfindercheater
+ShowerTrackFinderCheater.BaseTools.EnableEventDisplay: false
+ShowerTrackFinderCheater.BaseTools.TRACSAlg.PFParticleModuleLabel: "pandora"
+ShowerdEdxCutter: @local::showerbayeslikelihooddedxcutting
+ShowerdEdxCutter.PriorFname: "dEdx_plots.root"
+ShowerResidualTrackHitFinder: @local::showerresidualtrackhitfinder
+ShowerResidualTrackHitFinder.UseShowerDirection: false
+ShowerResidualTrackHitFinder.ForwardHitsOnly: true
+ShowerResidualTrackHitFinder.ChargeWeighted: false
+ShowerResidualTrackHitFinder.BaseTools.EnableEventDisplay: false
+ShowerResidualTrackHitFinder.BaseTools.TRACSAlg.PFParticleModuleLabel: "pandora"
+ShowerResidualTrackHitFinder.MaxResidualDiff: 0.6850960244078714 #0.2093582942693214 #1.116724882741545
+ShowerResidualTrackHitFinder.StartFitSize: 11
+ShowerResidualTrackHitFinder.NMissPoints: 10
+ShowerResidualTrackHitFinder.TrackMaxAdjacentSPDistance:  3.8160404930371678# 3.9968998116481407#0.861581138048361
+ShowerResidualTrackHitFinder.MaxAverageResidual: 0.2 #0.1591573354483655# 0.7504742677343477
+ShowerResidualTrackHitFinder.MakeTrackSeed: true
+ShowerResidualTrackHitFinder.StartDistanceCut: 0
+ShowerResidualTrackHitFinder.DistanceCut: 999
+
+ShowerdEdxFinder.CalorimetryAlg:  @local::sbnd_calorimetryalgmc
+ShowerSlidingStandardCalodEdx.CalorimetryAlg:  @local::sbnd_calorimetryalgmc
+
+ShowerSlidingStandardCalodEdx.ScaleWithEnergy: false
+ShowerdEdxFinder.ScaleWithEnergy: false
+
+ShowerResidualTrackHitFinder.ScaleWithEnergy: false
+ShowerResidualTrackHitFinder.EnergyResidualConst: -0.09 
+ShowerResidualTrackHitFinder.EnergyLengthConst: 0.09
+
+Shower3DTrackHitFinder.ScaleWithEnergy: false
+Shower3DTrackHitFinder.EnergyResidualConst: -0.09
+Shower3DTrackHitFinder.EnergyLengthConst: 0.09
+
+ShowerSlidingStandardCalodEdx.ScaleWithEnergy: false
+ShowerSlidingStandardCalodEdx.EnergyResidualConst: -0.09 
+ShowerSlidingStandardCalodEdx.EnergyLengthConst: 0.09
+
+ShowerdEdxFinder.ScaleWithEnergy: false
+ShowerdEdxFinder.EnergyLengthConst: 0.09   
+
+ShowerLengthTool: @local::showerlength90percentile
+ShowerEigenTool: @local::showerpcaeigenvaluelength
+
+
+ShowerSlidingStandardCalodEdx.dEdxTrackLength: 5 #4.69389297132952
+ShowerSlidingStandardCalodEdx.MinAngleToWire: 0.1745
+ShowerSlidingStandardCalodEdx.CutStartPosition: true
+ShowerSlidingStandardCalodEdx.MinDistCutOff: 1.28#1.284081269185615
+ShowerSlidingStandardCalodEdx.dEdxCut: 999
+ShowerSlidingStandardCalodEdx.BaseTools.EnableEventDisplay: false
+ShowerSlidingStandardCalodEdx.BaseTools.TRACSAlg.PFParticleModuleLabel: "pandora"
+ShowerSlidingStandardCalodEdx.MaxDist: 2
+
+ShowerPCAPropergationStartPosition: @local::showerpcapropergationstartposition
+ShowerPCAPropergationStartPosition.BaseTools.EnableEventDisplay: false
+ShowerPCAPropergationStartPosition.BaseTools.TRACSAlg.PFParticleModuleLabel: "pandora"
+
+ShowerEnergyFinder.Gradients: [0.00155644,0.00173915,0.00153631]
+ShowerEnergyFinder.Intercepts: [5.92931, -2.13307, 5.19711]
+
+ShowerDirectionEnergyDecision: @local::showerdirectionenergydecision
+ShowerDirectionTopologyDecision: @local::showerdirectiontopologydecision
+
+sbnd_emshower:   @local::standard_emshower
+
+sbnd_emshoweralg:     @local::standard_emshoweralg
+
+sbnd_showerenergyalg: @local::standard_showerenergyalg
+sbnd_showerenergyalg.UGradient:   0.00155644
+sbnd_showerenergyalg.UIntercept:  5.92931
+sbnd_showerenergyalg.VGradient:   0.00173915
+sbnd_showerenergyalg.VIntercept:  -2.13307
+sbnd_showerenergyalg.ZGradient:   0.00153631
+sbnd_showerenergyalg.ZIntercept:  5.19711
+
+sbnd_emshower.EMShowerAlg:                 @local::sbnd_emshoweralg
+sbnd_emshower.EMShowerAlg.CalorimetryAlg:  @local::sbnd_calorimetryalgmc
+sbnd_emshower.EMShowerAlg.showerEnergyAlg: @local::sbnd_showerenergyalg
+
+sbnd_emshower.ClusterModuleLabel:                  "pandora"
+sbnd_emshower.HitsModuleLabel:                     "linecluster"
+sbnd_emshower.PFParticleModuleLabel:                "pandora"
+sbnd_emshower.TrackModuleLabel:                "pmalgtrackmaker"
+
+
+standard_tracs_shower_stan: @local::standard_tracs_shower
+standard_tracs_shower_stan.ShowerFinderTools: [ @local::ShowerStartPositionFinder
+                                              ,@local::ShowerDirectionFinder
+                                              ,@local::ShowerEnergyFinder
+                                              ,@local::Shower3DTrackHitFinder
+                                              ,@local::ShowerPandoraSlidingFitTrackFinder
+                                              ,@local::ShowerSlidingStandardCalodEdx
+                                              ]
+standard_tracs_shower_stan.Verbose: false
+
+standard_tracs_shower_stancheat.ShowerFinderTools: [ @local::ShowerStartPositionCheater
+                                              ,@local::ShowerDirectionCheater
+                                              ,@local::ShowerEnergyFinder
+                                              ,@local::ShowerTrackFinderCheater
+                                              ,@local::ShowerPandoraSlidingFitTrackFinder
+                                              ,@local::ShowerdEdxFinder
+                                              ]
+
+
+
+services:
+{
+  TFileService: { fileName: "showervalidationGraphs_Photons.root" }
+  @table::sbnd_services
+  FileCatalogMetadata:  @local::sbnd_file_catalog_mc
+  ParticleInventoryService: @local::standard_particleinventoryservice
+  BackTrackerService:  @local::standard_backtrackerservice
+
+  #Legacy code in EMSHOWER uses the backtracker to be removed after the SBN Workshop March 2018
+  BackTrackerService:  @local::standard_backtrackerservice
+  ParticleInventoryService: @local::standard_particleinventoryservice
+}
+
+source:
+{
+  module_type: RootInput
+  maxEvents:  -1        # Number of events to create                                   
+}
+
+
+physics:
+{
+
+ filters:
+ {
+ ## PhotonFilter:   @local::photonfilter
+ # ElectronFilter: @local::electronfilter
+}
+
+ producers:
+ {
+
+  ### pandora
+  TRACSStandard:           @local::standard_tracs_shower_stan  
+  TRACSOne:  @local::standard_tracs_shower_stan
+  TRACSTwo: @local::standard_tracs_shower_stan
+  TRACSThree: @local::standard_tracs_shower_stan
+  TRACSFour:  @local::standard_tracs_shower_stan
+
+  TRACSScaleStandard:           @local::standard_tracs_shower_stan  
+  TRACSScaleOne:  @local::standard_tracs_shower_stan
+  TRACSScaleTwo: @local::standard_tracs_shower_stan
+  TRACSScaleThree: @local::standard_tracs_shower_stan
+  TRACSScaleFour:  @local::standard_tracs_shower_stan
+
+  emshowerNEW: @local::sbnd_emshower
+
+
+  }	
+
+ fpath: [
+ #       ElectronFilter
+#        PhotonFilter
+        ]
+ 
+ 
+ reco: [
+#        ,ElectronFilter
+        ,TRACSStandard
+#         ,TRACSScaleStandard
+#       ,TRACSOne
+#        ,TRACSTwo
+#       ,TRACSThree
+#        ,TRACSFour
+#        ,TRACSScaleStandard
+#        ,TRACSScaleOne
+#        ,TRACSScaleTwo
+#        ,TRACSScaleThree
+#        ,TRACSScaleFour
+#         ,emshowerNEW
+
+
+]
+
+  analyzers:     
+ {
+  ana: @local::standard_showervalidation
+
+  eff: {
+        module_type: RecoEfficencyFinder
+        ShowerModuleLabel: "TRACSOne"
+        PFParticleLabel: "pandora"
+        GenieGenModuleLabel: "generator" 
+        MinRecoEnergyCut: 0
+        CalorimetryModuleLabel: "pandoraCalo"
+        TrackModuleLabel: "pandoraTrack"
+        LArGeantModuleLabel: "largeant"
+
+        ActiveVolume: [
+                {
+                    xmin: -199.15
+                    ymin: -200.
+                    zmin: 0.0
+                    xmax: 199.15
+                    ymax: 200.
+                    zmax: 500.
+                    }
+                ]
+        
+        }
+
+
+ }
+
+
+  trigger_paths: [fpath,reco]
+  a1: [ ana ]
+  end_paths: [ a1]
+
+stream1: [ out1 ] 
+ 
+
+}
+
+
+# outputs:
+# {
+# out1:
+# {
+#                @table::sbnd_rootoutput
+#   dataTier:    "reconstructed"
+# }
+#}
+services.DetectorClocksService.InheritClockConfig: false
+
+#physics.analyzers.eff.SelectEvents: [fpath]
+#physics.analyzers.ana.SelectEvents: [fpath]
+
+physics.analyzers.ana.PFParticleLabel:               "pandora"
+physics.analyzers.ana.ShowerModuleLabels:           [
+#    ,"tracs"
+                                                    #"TRACSOne"
+                                                    #,"TRACSTwo"
+                                                    #,"TRACSThree"
+                                                    # ,"TRACSFour"
+                                                    ,"TRACSStandard"
+                                 #                    ,"TRACSScaleOne"
+                                                    # ,"TRACSScaleStandard"
+                                                    #,"emshowerNEW"
+                                                    # ,"emshowerBLUR"
+                                                    #  ,"pandoraShower"
+                                                      #  ,"TRACSScaleTwo"
+                                                    #  ,"TRACSScaleThree"
+                                                   #   ,"TRACSScaleFour"
+                                                   #,"TRACSScaleStandard"
+                                                    #  ,"emshower"
+                                                     
+                                                      ]
+
+physics.analyzers.ana.UseNeutrinoShowers: true
+physics.analyzers.ana.UseBiggestShower:               true
+physics.analyzers.ana.RemoveNonContainedParticles:    true
+physics.analyzers.ana.PFPValidation:                  true #false
+physics.analyzers.ana.PFParticleLabel:                "pandora" 
+physics.analyzers.ana.Verbose:                        0#2 #0
+physics.analyzers.ana.MaxSimEnergy:                   1500
+physics.analyzers.ana.DrawCanvases:                   false
+physics.analyzers.ana.FillOnlyClosestShower:          false
+physics.analyzers.ana.MinHitSize:                     0
+physics.analyzers.ana.SimEnergyCut:                   0.06 #in GeV!!!
+physics.analyzers.ana.DensityCut:                     1.1
+physics.analyzers.ana.MinRecoEnergy:                  0 #in MeV
+physics.analyzers.ana.MatchedCut:                     2
+physics.analyzers.ana.MatchShowersInTruth:            true
+physics.analyzers.ana.ClusterValidation:              true
+physics.analyzers.ana.HitValidation:                  false
+
+
+physics.producers.TRACSOne.AllowPartialShowers: false
+physics.producers.TRACSOne.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSOne.Verbose: false
+physics.producers.TRACSOne.ShowerFinderTools: [ 
+                                                       @local::ShowerStartPositionFinder
+                                                      ,@local::ShowerDirectionFinder
+                                                      ,@local::ShowerEnergyFinder
+                                                      ,@local::ShowerResidualTrackHitFinder
+                                                      ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                      #,@local::ShowerPandoraSlidingFitTrackFinder
+                                                      #   ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                      ,@local::ShowerSlidingStandardCalodEdx 
+                                                      ,@local::ShowerdEdxCutter
+                                                      ,@local::ShowerLengthTool
+                                                      ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                      ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                      ,@local::ShowerDirectionTopologyDecision
+                                                      ,@local::ShowerDirectionEnergyDecision
+                                                  ]
+
+physics.producers.TRACSOne.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSOne.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSOne.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSOne.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSOne.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSOne.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSOne.ShowerFinderTools[5].dEdxTrackLength: 3
+physics.producers.TRACSOne.ShowerFinderTools[5].MinAngleToWire: 0
+physics.producers.TRACSOne.ShowerFinderTools[5].MaxDist: 2.7277
+physics.producers.TRACSOne.ShowerFinderTools[5].CutStartPosition: true
+physics.producers.TRACSOne.ShowerFinderTools[5].MinDistCutOff: 0.7625
+physics.producers.TRACSOne.ShowerFinderTools[3].MaxResidualDiff: 0.446
+physics.producers.TRACSOne.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSOne.ShowerFinderTools[3].NMissPoints: 9
+physics.producers.TRACSOne.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 4.776
+physics.producers.TRACSOne.ShowerFinderTools[3].MaxAverageResidual: 0.38695
+physics.producers.TRACSOne.ShowerFinderTools[4].SlidingFitHalfWindow: 7
+physics.producers.TRACSOne.ShowerFinderTools[6].ProbDiff: 0.06539923532130056
+physics.producers.TRACSOne.ShowerFinderTools[6].ProbDiffSeed: 0.0038889347741837
+physics.producers.TRACSOne.ShowerFinderTools[6].nSkipHits: 3
+physics.producers.TRACSOne.ShowerFinderTools[6].NumSeedHits: 0
+physics.producers.TRACSOne.ShowerFinderTools[6].DefineBestPlane: true
+physics.producers.TRACSOne.ShowerFinderTools[7].Percentile: 0.67
+physics.producers.TRACSOne.ShowerFinderTools[8].SlidingFitHalfWindow:19
+physics.producers.TRACSOne.ShowerFinderTools[8].InitialTrackOutputLabel: "SmartDirectionTrack"
+physics.producers.TRACSOne.ShowerFinderTools[9].InitialTrackInputLabel: "SmartDirectionTrack"
+physics.producers.TRACSOne.ShowerFinderTools[9].ShowerDirectionOutputLabel: "ShowerDirectionSmart"
+physics.producers.TRACSOne.ShowerFinderTools[10].FirstDirectionInputLabel: "ShowerDirectionSmart"
+physics.producers.TRACSOne.ShowerFinderTools[10].SecondDirectionInputLabel: "ShowerDirection"
+physics.producers.TRACSOne.ShowerFinderTools[10].ShowerDirectionOutputLabel: "ShowerDirectionTopDec"
+physics.producers.TRACSOne.ShowerFinderTools[11].FirstDirectionInputLabel: "ShowerDirectionTopDec"
+physics.producers.TRACSOne.ShowerFinderTools[11].SecondDirectionInputLabel: "ShowerDirection"
+physics.producers.TRACSOne.ShowerFinderTools[11].ShowerDirectionOutputLabel: "ShowerDirectionNew"
+physics.producers.TRACSOne.ShowerFinderTools[11].EnergyCut: 186.27003344251057
+physics.producers.TRACSOne.ShowerDirectionLabel: "ShowerDirectionNew"
+physics.producers.TRACSOne.ShowerFinderTools[8].CreateTrack: false
+
+physics.producers.TRACSTwo.AllowPartialShowers: false
+physics.producers.TRACSTwo.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSTwo.Verbose: false
+physics.producers.TRACSTwo.ShowerFinderTools: [ 
+                                                    @local::ShowerStartPositionFinder
+                                                     ,@local::ShowerDirectionFinder
+                                                     ,@local::ShowerEnergyFinder
+                                                     ,@local::ShowerResidualTrackHitFinder
+                                                     ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                     ,@local::ShowerdEdxCutter
+                                                     ,@local::ShowerSlidingStandardCalodEdx 
+                                                     ,@local::ShowerLengthTool
+                                                     ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                     ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                     ,@local::ShowerDirectionTopologyDecision
+                                                     ]
+physics.producers.TRACSTwo.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[6].PFParticleModuleLabel: "pandora"
+#physics.producers.TRACSTwo.ShowerFinderTools[7].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSTwo.ShowerFinderTools[5].dEdxTrackLength: 3
+physics.producers.TRACSTwo.ShowerFinderTools[5].MinAngleToWire: 0
+physics.producers.TRACSTwo.ShowerFinderTools[5].MaxDist: 2.7277
+physics.producers.TRACSTwo.ShowerFinderTools[5].CutStartPosition: true
+physics.producers.TRACSTwo.ShowerFinderTools[5].MinDistCutOff: 0.7625
+physics.producers.TRACSTwo.ShowerFinderTools[3].MaxResidualDiff: 0.446
+physics.producers.TRACSTwo.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSTwo.ShowerFinderTools[3].NMissPoints: 9
+physics.producers.TRACSTwo.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 4.776
+physics.producers.TRACSTwo.ShowerFinderTools[3].MaxAverageResidual: 0.38695
+physics.producers.TRACSTwo.ShowerFinderTools[4].SlidingFitHalfWindow: 7
+physics.producers.TRACSTwo.ShowerFinderTools[6].ProbDiff: 0.06539923532130056
+physics.producers.TRACSTwo.ShowerFinderTools[6].ProbDiffSeed: 0.0038889347741837
+physics.producers.TRACSTwo.ShowerFinderTools[6].nSkipHits: 3
+physics.producers.TRACSTwo.ShowerFinderTools[6].NumSeedHits: 0
+physics.producers.TRACSTwo.ShowerFinderTools[6].DefineBestPlane: true
+physics.producers.TRACSTwo.ShowerFinderTools[8].SlidingFitHalfWindow:19
+physics.producers.TRACSTwo.ShowerFinderTools[8].InitialTrackOutputLabel: "SmartDirectionTrack"
+physics.producers.TRACSTwo.ShowerFinderTools[9].InitialTrackInputLabel: "SmartDirectionTrack"
+physics.producers.TRACSTwo.ShowerFinderTools[9].ShowerDirectionOutputLabel: "ShowerDirectionSmart"
+physics.producers.TRACSTwo.ShowerFinderTools[10].FirstDirectionInputLabel: "ShowerDirectionSmart"
+physics.producers.TRACSTwo.ShowerFinderTools[10].SecondDirectionInputLabel: "ShowerDirection"
+physics.producers.TRACSTwo.ShowerFinderTools[10].ShowerDirectionOutputLabel: "ShowerDirectionNew"
+physics.producers.TRACSTwo.ShowerDirectionLabel: "ShowerDirectionNew"
+physics.producers.TRACSTwo.ShowerFinderTools[8].CreateTrack: false
+
+physics.producers.TRACSThree.AllowPartialShowers: false
+physics.producers.TRACSThree.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSThree.Verbose: false
+physics.producers.TRACSThree.ShowerFinderTools: [ 
+                                                  @local::ShowerStartPositionFinder
+                                                   ,@local::ShowerDirectionFinder
+                                                   ,@local::ShowerEnergyFinder
+                                                   ,@local::ShowerResidualTrackHitFinder
+                                                   ,@local::ShowerdEdxFinder
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                   ,@local::ShowerSlidingStandardCalodEdx
+                                                   ,@local::ShowerdEdxCutter
+                                                   ,@local::ShowerLengthTool
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                   ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                  ]
+
+physics.producers.TRACSThree.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSThree.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSThree.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSThree.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSThree.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSThree.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSThree.ShowerFinderTools[3].ScaleWithEnergy: false
+physics.producers.TRACSThree.ShowerFinderTools[3].ScaleWithEnergy: false
+physics.producers.TRACSThree.ShowerFinderTools[6].dEdxTrackLength: 2.4390589999639687
+physics.producers.TRACSThree.ShowerFinderTools[6].MinAngleToWire: 0
+physics.producers.TRACSThree.ShowerFinderTools[6].MaxDist: 2.21823874152759
+physics.producers.TRACSThree.ShowerFinderTools[6].CutStartPosition: true
+physics.producers.TRACSThree.ShowerFinderTools[6].MinDistCutOff: 1.0084468513029041
+physics.producers.TRACSThree.ShowerFinderTools[3].MaxResidualDiff: 1.7997145343658025
+physics.producers.TRACSThree.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSThree.ShowerFinderTools[3].NMissPoints: 3
+physics.producers.TRACSThree.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 3.5999391280295807
+physics.producers.TRACSThree.ShowerFinderTools[3].MaxAverageResidual: 1.726563583269615
+physics.producers.TRACSThree.ShowerFinderTools[5].SlidingFitHalfWindow: 8
+physics.producers.TRACSThree.ShowerFinderTools[4].dEdxTrackLength: 6.850379553493702
+physics.producers.TRACSThree.ShowerFinderTools[7].ProbDiff: 0.025837792064343678
+physics.producers.TRACSThree.ShowerFinderTools[7].ProbDiffSeed: 0.10672851758251259
+physics.producers.TRACSThree.ShowerFinderTools[7].nSkipHits: 4
+physics.producers.TRACSThree.ShowerFinderTools[7].NumSeedHits: 0
+physics.producers.TRACSThree.ShowerFinderTools[7].DefineBestPlane: true
+physics.producers.TRACSThree.ShowerFinderTools[9].SlidingFitHalfWindow:19
+physics.producers.TRACSThree.ShowerFinderTools[9].InitialTrackOutputLabel: "SmartDirectionTrack"
+physics.producers.TRACSThree.ShowerFinderTools[9].InitialTrackInputLabel: "SmartDirectionTrack"
+physics.producers.TRACSThree.ShowerFinderTools[10].ShowerDirectionOutputLabel: "ShowerDirectionNew"
+physics.producers.TRACSThree.ShowerDirectionLabel: "ShowerDirectionNew"
+#physics.producers.TRACSThree.ShowerFinderTools[11].EnergyCut: 186.27003344251057
+physics.producers.TRACSThree.ShowerFinderTools[9].CreateTrack: false
+
+physics.producers.TRACSFour.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSFour.ShowerFinderTools: [ 
+                                                  @local::ShowerStartPositionFinder
+                                                   ,@local::ShowerDirectionFinder
+                                                   ,@local::ShowerEnergyFinder
+                                                   ,@local::ShowerResidualTrackHitFinder
+                                                   ,@local::ShowerdEdxFinder
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                   ,@local::ShowerSlidingStandardCalodEdx
+                                                   ,@local::ShowerdEdxCutter
+                                                   ,@local::ShowerLengthTool
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                   ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                  ]
+physics.producers.TRACSFour.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSFour.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSFour.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSFour.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSFour.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSFour.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSFour.ShowerFinderTools[3].ScaleWithEnergy: false
+physics.producers.TRACSFour.ShowerFinderTools[3].ScaleWithEnergy: false
+physics.producers.TRACSFour.ShowerFinderTools[6].dEdxTrackLength: 2.4390589999639687
+physics.producers.TRACSFour.ShowerFinderTools[6].MinAngleToWire: 0
+physics.producers.TRACSFour.ShowerFinderTools[6].MaxDist: 2.21823874152759
+physics.producers.TRACSFour.ShowerFinderTools[6].CutStartPosition: true
+physics.producers.TRACSFour.ShowerFinderTools[6].MinDistCutOff: 1.0084468513029041
+physics.producers.TRACSFour.ShowerFinderTools[3].MaxResidualDiff: 1.7997145343658025
+physics.producers.TRACSFour.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSFour.ShowerFinderTools[3].NMissPoints: 3
+physics.producers.TRACSFour.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 3.5999391280295807
+physics.producers.TRACSFour.ShowerFinderTools[3].MaxAverageResidual: 1.726563583269615
+physics.producers.TRACSFour.ShowerFinderTools[5].SlidingFitHalfWindow: 8
+physics.producers.TRACSFour.ShowerFinderTools[4].dEdxTrackLength: 6.850379553493702
+physics.producers.TRACSFour.ShowerFinderTools[7].ProbDiff: 0.025837792064343678
+physics.producers.TRACSFour.ShowerFinderTools[7].ProbDiffSeed: 0.10672851758251259
+physics.producers.TRACSFour.ShowerFinderTools[7].nSkipHits: 4
+physics.producers.TRACSFour.ShowerFinderTools[7].NumSeedHits: 7
+physics.producers.TRACSFour.ShowerFinderTools[7].DefineBestPlane: true
+physics.producers.TRACSFour.ShowerFinderTools[9].SlidingFitHalfWindow:19
+physics.producers.TRACSFour.ShowerFinderTools[9].InitialTrackOutputLabel: "SmartDirectionTrack"
+physics.producers.TRACSFour.ShowerFinderTools[10].InitialTrackInputLabel: "SmartDirectionTrack"
+physics.producers.TRACSFour.ShowerFinderTools[10].ShowerDirectionOutputLabel: "ShowerDirectionNew"
+physics.producers.TRACSFour.ShowerDirectionLabel: "ShowerDirectionNew"
+
+physics.producers.TRACSFour.ShowerFinderTools[9].CreateTrack: false
+physics.producers.TRACSFour.ShowerFinderTools[10].AngleCut:0.057340694458750785
+
+# physics.producers.TRACSFour.ShowerFinderTools[3].EnergyResidualConst: -0.6711859559253965
+# physics.producers.TRACSFour.ShowerFinderTools[3].EnergyLengthConst: 0.981936819635445
+# physics.producers.TRACSFour.ShowerFinderTools[3].MaxResidualDiff:  0.4467905451392316
+# physics.producers.TRACSFour.ShowerFinderTools[3].StartFitSize: 7
+# physics.producers.TRACSFour.ShowerFinderTools[3].NMissPoints: 15
+# physics.producers.TRACSFour.ShowerFinderTools[3].TrackMaxAdjacentSPDistance:  4.9924125000151255
+# physics.producers.TRACSFour.ShowerFinderTools[5].dEdxTrackLength: 3
+# physics.producers.TRACSFour.ShowerFinderTools[5].MinAngleToWire: 0
+# physics.producers.TRACSFour.ShowerFinderTools[5].MaxDist: 2.7277
+# physics.producers.TRACSFour.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSFour.ShowerFinderTools[5].MinDistCutOff: 0.7625
+# physics.producers.TRACSFour.ShowerFinderTools[3].MaxResidualDiff: 0.446
+# physics.producers.TRACSFour.ShowerFinderTools[3].StartFitSize: 17
+# physics.producers.TRACSFour.ShowerFinderTools[3].NMissPoints: 9
+# physics.producers.TRACSFour.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 4.776
+# physics.producers.TRACSFour.ShowerFinderTools[3].MaxAverageResidual: 0.38695
+# physics.producers.TRACSFour.ShowerFinderTools[4].SlidingFitHalfWindow: 7
+# physics.producers.TRACSFour.ShowerFinderTools[6].ProbDiff: 0.01
+# physics.producers.TRACSFour.ShowerFinderTools[6].ProbDiffSeed: 0.0025
+# physics.producers.TRACSFour.ShowerFinderTools[6].PostiorCut: 0.25
+# physics.producers.TRACSFour.ShowerFinderTools[6].nSkipHits: 3
+# physics.producers.TRACSFour.ShowerFinderTools[6].NumSeedHits: 0
+# physics.producers.TRACSFour.ShowerFinderTools[6].DefineBestPlane: true
+# physics.producers.TRACSFour.ShowerFinderTools[7].CutPerpendicular: true
+
+# physics.producers.TRACSThree.ShowerFinderTools[5].dEdxTrackLength:3
+# physics.producers.TRACSThree.ShowerFinderTools[5].MinAngleToWire: 0.1745
+# physics.producers.TRACSThree.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSThree.ShowerFinderTools[5].MinDistCutOff: 1.1
+#physics.producers.TRACSThree.ShowerFinderTools[5].dEdxCut: 2.8
+# physics.producers.TRACSFour.ShowerFinderTools[3].MaxResidualDiff: 0.2
+# physics.producers.TRACSFour.ShowerFinderTools[3].StartFitSize: 4
+# physics.producers.TRACSFour.ShowerFinderTools[3].NMissPoints: 2
+# physics.producers.TRACSFour.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 999
+# physics.producers.TRACSFour.ShowerFinderTools[3].MaxAverageResidual: 0.4
+# physics.producers.TRACSFour.ShowerFinderTools[3].ScaleWithEnergy: true
+# physics.producers.TRACSFour.ShowerFinderTools[3].EnergyResidualConst: -0.1
+# physics.producers.TRACSFour.ShowerFinderTools[3].EnergyLengthConst: 0.1
+
+
+
+physics.producers.TRACSStandard.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSStandard.AllowPartialShowers: true
+physics.producers.TRACSStandard.ShowerFinderTools: [ 
+                                                  @local::ShowerStartPositionFinder
+                                                   ,@local::ShowerDirectionFinder
+                                                   ,@local::ShowerEnergyFinder
+                                                   ,@local::Shower3DTrackHitFinder
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                   ,@local::ShowerdEdxFinder
+                                                   
+                                                  ]
+physics.producers.TRACSStandard.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSStandard.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSStandard.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSStandard.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSStandard.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSStandard.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+
+physics.producers.TRACSStandard.ShowerFinderTools[3].ScaleWithEnergy: false
+
+
+
+
+physics.producers.TRACSScaleOne.AllowPartialShowers: false
+physics.producers.TRACSScaleOne.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSScaleOne.Verbose: false
+physics.producers.TRACSScaleOne.ShowerFinderTools: [ 
+                                                     @local::ShowerStartPositionFinder
+                                                     ,@local::ShowerDirectionFinder
+                                                     ,@local::ShowerEnergyFinder
+                                                     ,@local::ShowerResidualTrackHitFinder
+                                                     ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                     ,@local::ShowerSlidingStandardCalodEdx
+                                                      ,@local::ShowerdEdxCutter
+                                                  ]
+physics.producers.TRACSScaleOne.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleOne.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleOne.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleOne.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleOne.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleOne.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleOne.ShowerFinderTools[5].dEdxTrackLength: 3.1619
+physics.producers.TRACSScaleOne.ShowerFinderTools[5].MinAngleToWire: 0.1745
+physics.producers.TRACSScaleOne.ShowerFinderTools[5].MaxDist: 5.0
+physics.producers.TRACSScaleOne.ShowerFinderTools[5].CutStartPosition: true
+physics.producers.TRACSScaleOne.ShowerFinderTools[5].MinDistCutOff: 0.7625
+physics.producers.TRACSScaleOne.ShowerFinderTools[3].MaxResidualDiff: 0.446
+physics.producers.TRACSScaleOne.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSScaleOne.ShowerFinderTools[3].NMissPoints: 9
+physics.producers.TRACSScaleOne.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 4.776
+physics.producers.TRACSScaleOne.ShowerFinderTools[3].MaxAverageResidual:0.3290053006683508
+physics.producers.TRACSScaleOne.ShowerFinderTools[4].SlidingFitHalfWindow: 7
+#physics.producers.TRACSFour.ShowerFinderTools[6].ProbDiff: 0.06539923532130056
+#physics.producers.TRACSFour.ShowerFinderTools[6].ProbDiffSeed: 0.0038889347741837
+#physics.producers.TRACSFour.ShowerFinderTools[6].nSkipHits: 3
+#physics.producers.TRACSFour.ShowerFinderTools[6].NumSeedHits: 0
+#physics.producers.TRACSFour.ShowerFinderTools[6].DefineBestPlane: true
+
+
+physics.producers.TRACSScaleTwo.AllowPartialShowers: false
+physics.producers.TRACSScaleTwo.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSScaleTwo.Verbose: false
+physics.producers.TRACSScaleTwo.ShowerFinderTools: [ 
+                                                    @local::ShowerStartPositionFinder
+                                                    ,@local::ShowerDirectionFinder
+                                                    ,@local::ShowerEnergyFinder
+                                                    ,@local::ShowerResidualTrackHitFinder
+                                                   # ,@local::ShowerPMATrackfinder
+                                                    ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                #   ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                     ,@local::ShowerSlidingStandardCalodEdx
+                                                  ]
+physics.producers.TRACSScaleTwo.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].dEdxTrackLength:4.164370306704351
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MinAngleToWire: 0.1745
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MinDistCutOff: 1.298336591572736
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].dEdxCut: 2.70665616077261
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MaxDist: 0.96489
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].dEdxTrackLength: 3.163
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MinAngleToWire: 0.1745
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MinDistCutOff: 1.099
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[3].MaxResidualDiff: 1.857
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[3].StartFitSize: 9 
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[3].NMissPoints: 8
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 1.9424
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[3].MaxAverageResidual: 0.8323
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[6].ProbDiff: 0.4895
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[6].ProbDiffSeed: 0.1858
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[6].nSkipHits: 3
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[6].NumSeedHits: 5
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[6].DefineBestPlane: true
+# physics.producers.TRACSScaleTwo.ShowerFinderTools[4].SlidingFitHalfWindow: 7 
+physics.producers.TRACSScaleTwo.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].dEdxTrackLength: 3.1619
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MinAngleToWire: 0.1745
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MaxDist: 2.7277
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].CutStartPosition: true
+physics.producers.TRACSScaleTwo.ShowerFinderTools[5].MinDistCutOff: 0.7625
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].MaxResidualDiff: 0.446
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].NMissPoints: 2
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 4.776
+physics.producers.TRACSScaleTwo.ShowerFinderTools[3].MaxAverageResidual: 0.38695
+physics.producers.TRACSScaleTwo.ShowerFinderTools[4].SlidingFitHalfWindow: 7
+
+
+physics.producers.TRACSScaleThree.AllowPartialShowers: false
+physics.producers.TRACSScaleThree.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSScaleThree.Verbose: false
+physics.producers.TRACSScaleThree.ShowerFinderTools: [ 
+                                                    @local::ShowerStartPositionFinder
+                                                    ,@local::ShowerDirectionFinder
+                                                   ,@local::ShowerEnergyFinder
+                                                     ,@local::ShowerResidualTrackHitFinder
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                #   ,@local::ShowerSmartTrackTrajectoryPointDirection
+                                                   ,@local::ShowerSlidingStandardCalodEdx
+                                                    ,@local::ShowerdEdxCutter
+                                                  ]
+
+physics.producers.TRACSScaleThree.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleThree.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleThree.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleThree.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleThree.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleThree.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleThree.ShowerFinderTools[5].MaxDist: 1.5758397502910582
+physics.producers.TRACSScaleThree.ShowerFinderTools[5].dEdxTrackLength: 9.170817468437825
+physics.producers.TRACSScaleThree.ShowerFinderTools[5].MinAngleToWire: 0.1745
+physics.producers.TRACSScaleThree.ShowerFinderTools[5].CutStartPosition: true
+physics.producers.TRACSScaleThree.ShowerFinderTools[5].MinDistCutOff: 2.138859211036284
+physics.producers.TRACSScaleThree.ShowerFinderTools[3].MaxResidualDiff: 1.1366559394957358
+physics.producers.TRACSScaleThree.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSScaleThree.ShowerFinderTools[3].NMissPoints: 0
+physics.producers.TRACSScaleThree.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 2.5094730397738765
+physics.producers.TRACSScaleThree.ShowerFinderTools[3].MaxAverageResidual: 1.5258417354462264
+physics.producers.TRACSScaleThree.ShowerFinderTools[6].ProbDiff: 0.12960925150664407
+physics.producers.TRACSScaleThree.ShowerFinderTools[6].ProbDiffSeed: 0.024340169957576614
+physics.producers.TRACSScaleThree.ShowerFinderTools[6].nSkipHits: 3
+physics.producers.TRACSScaleThree.ShowerFinderTools[6].NumSeedHits: 2
+physics.producers.TRACSScaleThree.ShowerFinderTools[6].DefineBestPlane: true
+physics.producers.TRACSScaleThree.ShowerFinderTools[4].SlidingFitHalfWindow: 17
+
+physics.producers.TRACSScaleFour.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSScaleFour.ShowerFinderTools: [ 
+                                                  @local::ShowerStartPositionFinder
+                                                   ,@local::ShowerDirectionFinder
+                                                   ,@local::ShowerEnergyFinder
+                                                   ,@local::ShowerResidualTrackHitFinder
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+                                                   ,@local::ShowerSlidingStandardCalodEdx
+                                                    ,@local::ShowerdEdxCutter
+                                                  ]
+physics.producers.TRACSScaleFour.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleFour.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleFour.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleFour.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleFour.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleFour.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleFour.ShowerFinderTools[5].dEdxTrackLength: 5
+physics.producers.TRACSScaleFour.ShowerFinderTools[5].MinAngleToWire: 0.1745
+physics.producers.TRACSScaleFour.ShowerFinderTools[5].MaxDist: 2.7277
+physics.producers.TRACSScaleFour.ShowerFinderTools[5].CutStartPosition: true
+physics.producers.TRACSScaleFour.ShowerFinderTools[5].MinDistCutOff: 0.7625
+physics.producers.TRACSScaleFour.ShowerFinderTools[3].MaxResidualDiff: 0.446
+physics.producers.TRACSScaleFour.ShowerFinderTools[3].StartFitSize: 17
+physics.producers.TRACSScaleFour.ShowerFinderTools[3].NMissPoints: 9
+physics.producers.TRACSScaleFour.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 4.776
+physics.producers.TRACSScaleFour.ShowerFinderTools[3].MaxAverageResidual: 0.38695
+physics.producers.TRACSScaleFour.ShowerFinderTools[4].SlidingFitHalfWindow: 7
+physics.producers.TRACSScaleFour.ShowerFinderTools[6].ProbDiff: 0.01
+physics.producers.TRACSScaleFour.ShowerFinderTools[6].ProbDiffSeed: 0.005
+physics.producers.TRACSScaleFour.ShowerFinderTools[6].nSkipHits: 1
+physics.producers.TRACSScaleFour.ShowerFinderTools[6].NumSeedHits: 3
+physics.producers.TRACSScaleFour.ShowerFinderTools[6].DefineBestPlane: true
+
+# physics.producers.TRACSScaleThree.ShowerFinderTools[5].dEdxTrackLength:3
+# physics.producers.TRACSScaleThree.ShowerFinderTools[5].MinAngleToWire: 0.1745
+# physics.producers.TRACSScaleThree.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSScaleThree.ShowerFinderTools[5].MinDistCutOff: 1.1
+# physics.producers.TRACSScaleThree.ShowerFinderTools[5].dEdxCut: 1
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].MaxResidualDiff: 0.42
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].StartFitSize: 8
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].NMissPoints: 1
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 1.2
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].MaxAverageResidual: 2.005611988456863
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].ScaleWithEnergy: true
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].EnergyResidualConst: -0.09
+# physics.producers.TRACSScaleFour.ShowerFinderTools[3].EnergyLengthConst: 0.09
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].dEdxTrackLength:0.5594880991661955
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].MinAngleToWire: 0.1745
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].MaxDist: 2.740733860413507
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].MinDistCutOff: 1.6941414166638258
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].dEdxCut: 0.9556692849655755
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].EnergyResidualConst: -2.14213316773256
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].EnergyLengthConst: 3.0882055053422057
+# physics.producers.TRACSScaleFour.ShowerFinderTools[5].ScaleWithEnergy: true
+
+
+physics.producers.TRACSScaleStandard.PFParticleModuleLabel: "pandora"  
+physics.producers.TRACSScaleStandard.ShowerFinderTools: [ 
+                                                  @local::ShowerStartPositionFinder
+                                                   ,@local::ShowerDirectionFinder
+                                                   ,@local::ShowerEnergyFinder
+                                                   ,@local::Shower3DTrackHitFinder
+ #                                                  ,@local::ShowerResidualTrackHitFinder
+                                                   ,@local::ShowerPandoraSlidingFitTrackFinder
+#                                                   ,@local::ShowerSlidingStandardCalodEdx
+                                                   ,@local::ShowerdEdxFinder
+                                                  ]
+physics.producers.TRACSScaleStandard.ShowerFinderTools[0].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleStandard.ShowerFinderTools[1].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleStandard.ShowerFinderTools[2].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleStandard.ShowerFinderTools[3].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleStandard.ShowerFinderTools[4].PFParticleModuleLabel: "pandora"
+physics.producers.TRACSScaleStandard.ShowerFinderTools[5].PFParticleModuleLabel: "pandora"
+
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[3].MaxResidualDiff: 0.45
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[3].StartFitSize: 8
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[3].NMissPoints: 1
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[3].TrackMaxAdjacentSPDistance: 0.9
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[3].MaxAverageResidual: 0.9
+
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[3].ScaleWithEnergy: false
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].dEdxTrackLength:0.5594880991661955
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].MinAngleToWire: 0.1745
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].MaxDist: 2.740733860413507
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].CutStartPosition: true
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].MinDistCutOff: 1.6941414166638258
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].dEdxCut: 0.9556692849655755
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].EnergyResidualConst: -2.14213316773256
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].EnergyLengthConst: 3.0882055053422057
+# physics.producers.TRACSScaleStandard.ShowerFinderTools[5].ScaleWithEnergy: true
+
+services.message.destinations.LogStandardOut.categories.BackTracker: {limit: 0}

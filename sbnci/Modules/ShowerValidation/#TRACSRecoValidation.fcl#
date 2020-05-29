@@ -1,0 +1,136 @@
+#include "caldata_sbnd.fcl"
+#include "hitfindermodules_sbnd.fcl"
+#include "cluster_sbnd.fcl"
+#include "trackfindermodules_sbnd.fcl"
+#include "calorimetry_sbnd.fcl"
+#include "showerfindermodules_sbnd.fcl"
+#include "databaseutil_sbnd.fcl"
+#include "vertexfindermodules.fcl"
+#include "pandoramodules_sbnd.fcl"
+#include "particleid_sbnd.fcl"
+#include "rootoutput_sbnd.fcl"
+
+
+#include "simulationservices_sbnd.fcl"
+#include "services_sbnd.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+#include "sam_sbnd.fcl"
+#include "showerfindermodules.fcl"
+
+#Legacy code in EMSHOWER uses the backtracker to be removed after the SBN Workshop March 2018
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+# include for shower validation
+#include "showerfindermodules.fcl"
+#include "simulationservices_sbnd.fcl"
+
+process_name: Reco2
+
+services:
+    {
+    TFileService: { fileName: "showervalidationGraphs.root" }
+        @table::sbnd_services
+        FileCatalogMetadata:  @local::sbnd_file_catalog_mc
+        ParticleInventoryService: @local::standard_particleinventoryservice
+        BackTrackerService:  @local::standard_backtrackerservice
+
+    #Legacy code in EMSHOWER uses the backtracker to be removed after the SBN Workshop March 2018
+        BackTrackerService:  @local::standard_backtrackerservice
+        ParticleInventoryService: @local::standard_particleinventoryservice
+    }
+
+source:
+    {
+    module_type: RootInput
+        maxEvents:  -1        # Number of events to create
+    }
+
+
+physics:
+    {
+
+    producers:
+        {
+        ### shower-finder producers
+
+        ### SBN Shower
+            TRACS:               @local::sbnd_tracs
+            TRACSSPToTraj:       @local::sbnd_tracs
+            TRACSSPToTrajRemove: @local::sbnd_tracs
+            TRACSTrajToSP:       @local::sbnd_tracs
+            TRACSTrajToSPRemove: @local::sbnd_tracs
+        }
+    analyzers:
+        {
+        ana: @local::standard_showervalidation
+        }
+
+    reco: [ TRACS, TRACSSPToTraj, TRACSSPToTrajRemove, TRACSTrajToSP, TRACSTrajToSPRemove ]
+
+    trigger_paths: [reco]
+        a1: [ ana ]
+        end_paths: [ a1 ]
+
+}
+
+
+physics.analyzers.ana.PFParticleLabel:               "pandora"
+physics.analyzers.ana.ShowerModuleLabels:           ["TRACS","TRACSSPToTraj","TRACSSPToTrajRemove","TRACSTrajToSP","TRACSTrajToSPRemove"]
+physics.analyzers.ana.UseBiggestShower:               true
+physics.analyzers.ana.RemoveNonContainedParticles:    true
+physics.analyzers.ana.PFPValidation:                  true
+physics.analyzers.ana.Verbose:                        2
+physics.analyzers.ana.MaxSimEnergy:                   1500
+physics.analyzers.ana.DrawCanvases:                   false
+physics.analyzers.ana.FillOnlyClosestShower:          true
+physics.analyzers.ana.MinHitSize:                     0
+physics.analyzers.ana.SimEnergyCut:                   0.06 #in GeV!!!
+physics.analyzers.ana.DensityCut:                     2
+
+#To use Blurred Cluster the ClusterModuleLabel to blurredcluster and comment out the PFParticle module label, add blurred cluster to the reco chain.
+
+physics.producers.TRACSSPToTraj.ShowerFinderTools: [
+    @local::sbnd_showerstartpositionfinder,
+    @local::sbnd_showerdirectionfinder,
+    @local::sbnd_showerenergyfinder,
+    @local::sbnd_shower3dtrackhitfinder,
+    @local::sbnd_showerpandoratrackfinder,
+    @local::showertrackspacepointtotraj,
+    @local::sbnd_showerdedxfinder
+]
+physics.producers.TRACSSPToTrajRemove.ShowerFinderTools: [
+    @local::sbnd_showerstartpositionfinder,
+    @local::sbnd_showerdirectionfinder,
+    @local::sbnd_showerenergyfinder,
+    @local::sbnd_shower3dtrackhitfinder,
+    @local::sbnd_showerpandoratrackfinder,
+    @local::showertrackspacepointtotraj,
+    @local::sbnd_showerdedxfinder
+]
+physics.producers.TRACSTrajToSP.ShowerFinderTools: [
+    @local::sbnd_showerstartpositionfinder,
+    @local::sbnd_showerdirectionfinder,
+    @local::sbnd_showerenergyfinder,
+    @local::sbnd_shower3dtrackhitfinder,
+    @local::sbnd_showerpandoratrackfinder,
+    @local::showertracktrajtospacepoint,
+    @local::sbnd_showerdedxfinder
+]
+physics.producers.TRACSTrajToSPRemove.ShowerFinderTools: [
+    @local::sbnd_showerstartpositionfinder,
+    @local::sbnd_showerdirectionfinder,
+    @local::sbnd_showerenergyfinder,
+    @local::sbnd_shower3dtrackhitfinder,
+    @local::sbnd_showerpandoratrackfinder,
+    @local::showertracktrajtospacepoint,
+    @local::sbnd_showerdedxfinder
+]
+
+physics.producers.TRACSSPToTraj.ShowerFinderTools[5].MaxDist:2
+physics.producers.TRACSSPToTrajRemove.ShowerFinderTools[5].MaxDist:2
+physics.producers.TRACSTrajToSP.ShowerFinderTools[5].MaxDist:2
+physics.producers.TRACSTrajToSPRemove.ShowerFinderTools[5].MaxDist:2
+physics.producers.TRACSSPToTrajRemove.ShowerFinderTools[5].EraseMatchedTraj: true
+physics.producers.TRACSTrajToSPRemove.ShowerFinderTools[5].EraseMatchedSP: true

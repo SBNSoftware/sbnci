@@ -1,0 +1,75 @@
+#include "caldata_sbnd.fcl"
+#include "hitfindermodules_sbnd.fcl"
+#include "cluster_sbnd.fcl"
+#include "trackfindermodules_sbnd.fcl"
+#include "calorimetry_sbnd.fcl"
+#include "showerfindermodules_sbnd.fcl"
+#include "databaseutil_sbnd.fcl"
+#include "vertexfindermodules.fcl"
+#include "pandoramodules_sbnd.fcl"
+#include "particleid_sbnd.fcl"
+#include "rootoutput_sbnd.fcl"
+
+
+#include "simulationservices_sbnd.fcl"
+#include "services_sbnd.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+#include "sam_sbnd.fcl"
+#include "showerfindermodules.fcl"
+
+#Legacy code in EMSHOWER uses the backtracker to be removed after the SBN Workshop March 2018
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+# include for shower validation
+#include "showerfindermodules.fcl"
+#include "simulationservices_sbnd.fcl"
+
+process_name: Reco2
+
+services:
+{
+    TFileService: { fileName: "showervalidationGraphs.root" }
+    @table::sbnd_services
+    FileCatalogMetadata:  @local::sbnd_file_catalog_mc
+    ParticleInventoryService: @local::standard_particleinventoryservice
+    BackTrackerService:  @local::standard_backtrackerservice
+
+    #Legacy code in EMSHOWER uses the backtracker to be removed after the SBN Workshop March 2018
+    BackTrackerService:  @local::standard_backtrackerservice
+    ParticleInventoryService: @local::standard_particleinventoryservice
+}
+
+source:
+{
+    module_type: RootInput
+    maxEvents:  -1        # Number of events to create
+}
+
+
+physics:
+{
+    analyzers:
+    {
+        showerValidation: @local::standard_showervalidation
+    }
+
+    a1: [ showerValidation ]
+    end_paths: [ a1 ]
+
+}
+
+
+physics.analyzers.showerValidation.PFParticleLabel:                "pandora"
+physics.analyzers.showerValidation.ShowerModuleLabels:             ["tracs"]
+physics.analyzers.showerValidation.UseBiggestShower:               true
+physics.analyzers.showerValidation.RemoveNonContainedParticles:    true
+physics.analyzers.showerValidation.PFPValidation:                  true
+physics.analyzers.showerValidation.Verbose:                        2
+physics.analyzers.showerValidation.MaxSimEnergy:                   1500
+physics.analyzers.showerValidation.DrawCanvases:                   false
+physics.analyzers.showerValidation.FillOnlyClosestShower:          false
+physics.analyzers.showerValidation.MinHitSize:                     0
+physics.analyzers.showerValidation.SimEnergyCut:                   0.06 #in GeV!!!
+physics.analyzers.showerValidation.DensityCut:                     2

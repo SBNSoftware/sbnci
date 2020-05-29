@@ -1,0 +1,41 @@
+#include "TCanvas.h"
+#include "TStyle.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TGaxis.h"
+#include "TRandom.h"
+#include "TFile.h"
+#include "TLegend.h"
+#include "TCollection.h"
+#include <iostream>
+#include "THStack.h"
+#include "TAxis.h"
+#include "TGraphErrors.h"
+#include <sstream>
+#include <vector>
+#include "TString.h"
+
+
+void ShowerValidation_plots(){
+
+  //TString inputFile = "/sbnd/data/users/ascarff/ci/ShowerValidation_trees.root";
+  //TFile *inFile = TFile::Open(inputFile.Data());
+
+  //TFile *inFile = TFile::Open("/sbnd/data/users/ascarff/ci/ShowerValidation_trees.root");
+  TFile *inFile = new TFile("/sbnd/data/users/ascarff/ci/ShowerValidation_trees.root");
+
+
+  TH1F* hist = new TH1F("sTrueEnergy", "sTrueEnergy;sTrueEnergy", 100, 0, 2000); 
+  inFile->cd("showerValidation");
+
+  TTree* metricTree; inFile->GetObject("showerValidation/MetricTree", metricTree);
+  // sTrueEnergy_tracs->Draw();
+  metricTree->Draw(sTrueEnergy_tracs + ">>" + sTrueEnergy);
+  
+  //TH1F* hist = new TH1F(histName, title+";"+xTitle, numBins, lowBin, highBin); 
+  //tree->Draw(metric + ">>" + histName, cut);
+
+  TFile *outFile = new TFile("ShowerValidation_plots.root","RECREATE");
+  sTrueEnergy_tracs->Write();
+
+}
