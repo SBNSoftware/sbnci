@@ -47,7 +47,7 @@ int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXa
   inFile->GetObject("showerValidation/MetricTree", metricTree);
   metricTree->Draw(metricToPlot + " >> " + histName);
   
-  TFile *outFile = new TFile("ShowerValidation_plots.root","RECREATE");
+  TFile *outFile = new TFile("/pnfs/sbnd/persistent/users/ascarff/ciplots/ShowerValidation_plots.root","RECREATE");
   gStyle->SetOptStat(0);
   hist->Write();
   
