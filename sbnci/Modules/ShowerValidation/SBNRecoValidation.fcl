@@ -160,7 +160,7 @@ standard_tracs_shower_stancheat.ShowerFinderTools: [ @local::ShowerStartPosition
 
 services:
 {
-  TFileService: { fileName: "showervalidationGraphs_Photons.root" }
+  TFileService: { fileName: "showervalidationGraphs.root" }
   @table::sbnd_services
   FileCatalogMetadata:  @local::sbnd_file_catalog_mc
   ParticleInventoryService: @local::standard_particleinventoryservice

@@ -101,7 +101,7 @@ add_subdirectory(ups)
 # fcl - contains job level fcl files (useful for the MCC)
 add_subdirectory(fcl)
 # subdirectory for scripts
-##add_subdirectory(bin)
+#add_subdirectory(bin)
 
 # packaging utility
 include(UseCPack)

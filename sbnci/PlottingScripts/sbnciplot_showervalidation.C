@@ -15,7 +15,7 @@
 #include <vector>
 #include "TString.h"
 
-void ShowerValidation_plots()
+void sbnciplot_showervalidation()
 {
   int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot);
   
@@ -33,6 +33,9 @@ void ShowerValidation_plots()
   TString metricToPlot = "sTrueEnergy_tracs";
 
   PlotHists(inFile,  histName, histTitle, histXaxis, histYaxis, nBins, xMin, xMax, metricToPlot);
+  PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_tracs");
+
+
 }
 
 
@@ -45,6 +48,7 @@ int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXa
   metricTree->Draw(metricToPlot + " >> " + histName);
   
   TFile *outFile = new TFile("ShowerValidation_plots.root","RECREATE");
+  gStyle->SetOptStat(0);
   hist->Write();
   
   return(1);
