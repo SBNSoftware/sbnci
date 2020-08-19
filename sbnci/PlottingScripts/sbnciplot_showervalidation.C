@@ -19,7 +19,7 @@ void sbnciplot_showervalidation()
 {
   int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot);
   
-  TString inputFile = "/sbnd/data/users/ascarff/ci/ShowerValidation_trees.root";
+  TString inputFile = "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/sbnd/persistent/users/ascarff/ciplots/ShowerValidation_trees.root";
   TFile *inFile = new TFile(inputFile);
 
   TString histName = "sTrueEnergy";
@@ -35,7 +35,6 @@ void sbnciplot_showervalidation()
   PlotHists(inFile,  histName, histTitle, histXaxis, histYaxis, nBins, xMin, xMax, metricToPlot);
   PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_tracs");
 
-
 }
 
 
@@ -47,7 +46,8 @@ int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXa
   inFile->GetObject("showerValidation/MetricTree", metricTree);
   metricTree->Draw(metricToPlot + " >> " + histName);
   
-  TFile *outFile = new TFile("/pnfs/sbnd/persistent/users/ascarff/ciplots/ShowerValidation_plots.root","RECREATE");
+  //TFile *outFile = new TFile("root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/sbnd/persistent/users/ascarff/ciplots/","RECREATE");
+  TFile *outFile = new TFile("ShowerValidationPlots.root", "RECREATE");
   gStyle->SetOptStat(0);
   hist->Write();
   
