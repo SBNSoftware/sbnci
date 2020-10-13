@@ -15,13 +15,13 @@
 #include <vector>
 #include "TString.h"
 
+void PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot);
+
 void sbnciplot_showervalidation(TString inputFile)
 {
-  int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot);
   
   //TString inputFile = "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/sbnd/persistent/users/ascarff/ciplots/ShowerValidation_trees.root";
-  TFile *inFile = new TFile(inputFile);
-
+  TFile *inFile = TFile::Open(inputFile.Data());
   TString histName = "sTrueEnergy";
   TString histTitle = "True Shower Energy";
   TString histXaxis = "True Shower Energy";
@@ -40,7 +40,7 @@ void sbnciplot_showervalidation(TString inputFile)
 }
 
 
-int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot)
+void PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot)
 {
   TH1F* hist = new TH1F(histName, histTitle+";"+histXaxis+";"+histYaxis, nBins, xMin, xMax); 
 
@@ -50,6 +50,12 @@ int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXa
   
   gStyle->SetOptStat(0);
   hist->Write();
-  hist->Print(histname+".png");
-  return(1);
+  
+  TCanvas *c1 = new TCanvas("c1","c1",800,1000);
+  hist->Draw();
+  c1->Print(histName+".png");
+  
+  delete c1;
+  delete hist;
+  return;
 }
