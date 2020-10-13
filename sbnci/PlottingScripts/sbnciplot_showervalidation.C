@@ -51,5 +51,5 @@ int PlotHists(TFile *inFile, TString histName, TString histTitle, TString histXa
   gStyle->SetOptStat(0);
   hist->Write();
   hist->Print(histname+".png");
-  return(0);
+  return(1);
 }
