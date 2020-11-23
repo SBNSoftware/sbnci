@@ -5,20 +5,20 @@
 ///////////////////////////////////////////////
 // Shower.h
 //
-// A few reco utilities like truth matching 
+// A few reco utilities like truth matching
 // D Barker: Functions to are shower specific.
 ///////////////////////////////////////////////
 
 // framework
 #include "art/Framework/Principal/Event.h"
-#include "fhiclcpp/ParameterSet.h" 
-#include "art/Framework/Principal/Handle.h" 
-#include "canvas/Persistency/Common/Ptr.h" 
-#include "canvas/Persistency/Common/PtrVector.h" 
-#include "art/Framework/Services/Registry/ServiceHandle.h" 
-//#include "art/Framework/Services/Optional/TFileService.h" 
-//#include "art/Framework/Services/Optional/TFileDirectory.h" 
-//#include "messagefacility/MessageLogger/MessageLogger.h" 
+#include "fhiclcpp/ParameterSet.h"
+#include "art/Framework/Principal/Handle.h"
+#include "canvas/Persistency/Common/Ptr.h"
+#include "canvas/Persistency/Common/PtrVector.h"
+#include "art/Framework/Services/Registry/ServiceHandle.h"
+//#include "art/Framework/Services/Optional/TFileService.h"
+//#include "art/Framework/Services/Optional/TFileDirectory.h"
+//#include "messagefacility/MessageLogger/MessageLogger.h"
 #include "canvas/Persistency/Common/FindManyP.h"
 
 // LArSoft
@@ -41,16 +41,19 @@
 
 namespace ShowerUtils{
 
-  std::pair<int,double> TrueParticleIDFromTrueChain(std::map<int,std::vector<int> >& ShowersMothers,const std::vector<art::Ptr<recob::Hit> >& hits, int planeid);
-  std::map<geo::PlaneID,int> NumberofWiresHitByShower(std::vector<int> &TrackIDs, const std::vector<art::Ptr<recob::Hit> >& hits);
-
-  std::map<int,std::vector<int> > FindTrueShowerIDs(std::map<int,const simb::MCParticle*>& particles);
-
   std::map<int,std::vector<int> > GetShowerMothersCandidates(std::map<int,const simb::MCParticle*>& trueParticles);
 
-    void CutShowerMothersByE(std::map<int,std::vector<int> >& ShowersMothers, std::map<int,const simb::MCParticle*>& trueParticles, float& EnergyCut);
-    
-    void CutShowerMothersByDensity(std::map<int,std::vector<int> >& ShowersMothers, std::map<int,const simb::MCParticle*>& trueParticles,std::vector<art::Ptr<recob::Hit> >& hits, float& fDensityCut);
+  std::pair<int,double> TrueParticleIDFromTrueChain(const detinfo::DetectorClocksData& clockData, std::map<int,std::vector<int> >& ShowersMothers,const std::vector<art::Ptr<recob::Hit> >& hits, int planeid);
+
+  std::map<geo::PlaneID,int> NumberofWiresHitByShower(const detinfo::DetectorClocksData& clockData, std::vector<int> &TrackIDs, const std::vector<art::Ptr<recob::Hit> >& hits);
+
+  void CutShowerMothersByE(std::map<int,std::vector<int> >& ShowersMothers, std::map<int,const simb::MCParticle*>& trueParticles, float& EnergyCut);
+
+  void CutShowerMothersByDensity(const detinfo::DetectorClocksData& clockData,
+      std::map<int,std::vector<int> >& ShowersMothers,
+      std::map<int,const simb::MCParticle*>& trueParticles,
+      std::vector<art::Ptr<recob::Hit> >& hits,
+      float& fDensityCut);
 
   void RemoveNoneContainedParticles(std::map<int,std::vector<int> >&  ShowersMothers, std::map<int,const simb::MCParticle*>& trueParticles, std::map<int,float>& MCTrack_Energy_map);
 
