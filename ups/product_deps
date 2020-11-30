@@ -2,7 +2,7 @@
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vxx_yy_zz (e.g. v01_02_03)
 
-parent sbnci v09_09_02
+parent sbnci v09_10_00
 defaultqual e19
 
 # These optional lines define the installed directories where headers,
@@ -27,8 +27,8 @@ defaultqual e19
 # With "product  version" table below, we now define dependencies
 # Add the dependent product and version
 product          version
-larsoft		    v09_09_02
-sbndcode            v09_09_02
+larsoft		    v09_10_00
+sbndcode            v09_10_00
 ## icaruscode       v08_43_00
 ## uboonecode       v08_43_00
 ## ubcore           v08_43_00
@@ -52,7 +52,7 @@ e19:prof      e19:prof   e19:prof   -nq-
 
 
 table_fragment_begin
-    # The plotting scripts for the CI validation are stored in 'PlottingScripts':
+    # The plotting scripts for the CI validation are stored in 'PlottingScripts' and are put in ${SBNCI_DIR}/scripts when built:
     pathPrepend(FW_SEARCH_PATH, ${SBNCI_DIR}/scripts)
 table_fragment_end
 
