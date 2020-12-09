@@ -62,7 +62,7 @@ physics:
 
 
 physics.analyzers.showerValidation.PFParticleLabel:                "pandora"
-physics.analyzers.showerValidation.ShowerModuleLabels:             ["tracs"]
+physics.analyzers.showerValidation.ShowerModuleLabels:             ["pandoraShower", "emshower"]
 physics.analyzers.showerValidation.UseBiggestShower:               true
 physics.analyzers.showerValidation.RemoveNonContainedParticles:    true
 physics.analyzers.showerValidation.PFPValidation:                  true

@@ -46,6 +46,7 @@ void PlotHists(TFile *inFile, TString histName, TString histTitle, TString histX
 
   TTree* metricTree; 
   inFile->GetObject("showerValidation/MetricTree", metricTree);
+  std::cout<<"metricToPlot: " << metricToPlot << ". histName: " << histName << std::endl;
   metricTree->Draw(metricToPlot + " >> " + histName);
   
   gStyle->SetOptStat(0);
