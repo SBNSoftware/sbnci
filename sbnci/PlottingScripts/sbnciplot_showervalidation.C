@@ -36,6 +36,11 @@ void sbnciplot_showervalidation(TString inputFile)
 
   PlotHists(inFile,  histName, histTitle, histXaxis, histYaxis, nBins, xMin, xMax, metricToPlot);
   PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_pandoraShower");
+  PlotHists(inFile,  "pfpShowerHitsComp", "Shower Hit Completeness", "Completeness", histYaxis, nBins, 0, 1, "pfpShowerHitsComp_pandoraShower");
+  PlotHists(inFile,  "sDirDiff", "Shower Start Direction Difference", "X", histYaxis, nBins, -1, 1, "sDirDiff_pandoraShower");
+  PlotHists(inFile,  "sStartDist", "Shower Start Position Difference", "Y", histYaxis, nBins, 0, 60, "sStartDist_pandoraShower");
+  PlotHists(inFile,  "sdEdx", "Shower Start dE/dx", "dE/dx", histYaxis, nBins, 0, 20, "sdEdx_pandoraShower");
+  PlotHists(inFile,  "sEnergy", "Shower Start Energy", "Energy", histYaxis, nBins, 0, 1500, "sEnergy_pandoraShower");
   
 }
 
