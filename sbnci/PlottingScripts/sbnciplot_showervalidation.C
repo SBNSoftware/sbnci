@@ -30,12 +30,12 @@ void sbnciplot_showervalidation(TString inputFile)
   int xMin = 0;
   int xMax = 2000;
 
-  TString metricToPlot = "sTrueEnergy_tracs";
+  TString metricToPlot = "sTrueEnergy_pandoraShower";
 
   TFile *outFile = new TFile("ShowerValidationPlots.root", "RECREATE");
 
   PlotHists(inFile,  histName, histTitle, histXaxis, histYaxis, nBins, xMin, xMax, metricToPlot);
-  PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_tracs");
+  PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_pandoraShower");
   
 }
 
