@@ -29,8 +29,6 @@ defaultqual e19
 product          version
 sbndcode            v09_12_00_01
 ## icaruscode       v08_43_00
-## uboonecode       v08_43_00
-## ubcore           v08_43_00
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
@@ -41,13 +39,13 @@ cetbuildtools v7_15_01 - only_for_build
 # We now define allowed qualifiers and the corresponding qualifiers for the dependencies.
 # Make the table by adding columns before "notes". 
 
-qualifier     sbndcode   larsoft    notes
-e19:debug     e19:debug  e19:debug  -nq-
-e19:prof      e19:prof   e19:prof   -nq-
+qualifier     sbndcode     notes
+e19:debug     e19:debug    -nq-
+e19:prof      e19:prof     -nq-
 
-## qualifier     sbndcode    uboonecode  icaruscode    ubcore     notes
-## e19:debug     e19:debug   e19:debug   e19:debug     e19:debug  -nq-
-## e19:prof      e19:prof    e19:prof    e19:prof      e19:prof   -nq-
+## qualifier     sbndcode    icaruscode   notes
+## e19:debug     e19:debug   e19:debug    -nq-
+## e19:prof      e19:prof    e19:prof     -nq-
 
 
 table_fragment_begin
