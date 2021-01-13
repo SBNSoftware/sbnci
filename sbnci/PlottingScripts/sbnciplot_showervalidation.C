@@ -20,22 +20,10 @@ void PlotHists(TFile *inFile, TString histName, TString histTitle, TString histX
 void sbnciplot_showervalidation(TString inputFile)
 {
   
-  //TString inputFile = "root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/sbnd/persistent/users/ascarff/ciplots/ShowerValidation_trees.root";
   TFile *inFile = TFile::Open(inputFile.Data());
-  TString histName = "sTrueEnergy";
-  TString histTitle = "True Shower Energy";
-  TString histXaxis = "True Shower Energy";
-  TString histYaxis = "Counts";
-  int nBins = 100;
-  int xMin = 0;
-  int xMax = 2000;
-
-  TString metricToPlot = "sTrueEnergy_pandoraShower";
-
-  //TFile *outFile = new TFile("ShowerValidationPlots.root", "RECREATE");
   TFile *outFile = new TFile("ci_validation_histos.root", "RECREATE");
 
-  PlotHists(inFile,  histName, histTitle, histXaxis, histYaxis, nBins, xMin, xMax, metricToPlot);
+  PlotHists(inFile,  "sTrueEnergy", "True Shower Energy", "True Shower Energy", Counts, 100, 0, 2000, "sTrueEnergy_pandoraShower");
   PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_pandoraShower");
   PlotHists(inFile,  "pfpShowerHitsComp", "Shower Hit Completeness", "Completeness", histYaxis, nBins, 0, 1, "pfpShowerHitsComp_pandoraShower");
   PlotHists(inFile,  "sDirDiff", "Shower Start Direction Difference", "X", histYaxis, nBins, -1, 1, "sDirDiff_pandoraShower");
