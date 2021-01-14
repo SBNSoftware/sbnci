@@ -23,10 +23,13 @@ void sbnciplot_showervalidation(TString inputFile)
   TFile *inFile = TFile::Open(inputFile.Data());
   TFile *outFile = new TFile("ci_validation_histos.root", "RECREATE");
 
-  TString histName, histTitle, histXaxis, histYaxis, metricToPlot;
-  int nBins, xMin, xMax;
+  TString histName, histTitle, histXaxis, metricToPlot;
+  int xMin, xMax;
+  TString histYaxis = "Counts";
+  int nBins = 100
 
-  PlotHists(inFile,  "sTrueEnergy", "True Shower Energy", "True Shower Energy", Counts, 100, 0, 2000, "sTrueEnergy_pandoraShower");
+
+  PlotHists(inFile,  "sTrueEnergy", "True Shower Energy", "True Shower Energy", histYaxis, nBins, 0, 2000, "sTrueEnergy_pandoraShower");
   PlotHists(inFile,  "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_pandoraShower");
   PlotHists(inFile,  "pfpShowerHitsComp", "Shower Hit Completeness", "Completeness", histYaxis, nBins, 0, 1, "pfpShowerHitsComp_pandoraShower");
   PlotHists(inFile,  "sDirDiff", "Shower Start Direction Difference", "X", histYaxis, nBins, -1, 1, "sDirDiff_pandoraShower");
