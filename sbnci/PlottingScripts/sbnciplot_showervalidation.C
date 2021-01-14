@@ -26,7 +26,7 @@ void sbnciplot_showervalidation(TString inputFile)
   TString histName, histTitle, histXaxis, metricToPlot;
   int xMin, xMax;
   TString histYaxis = "Counts";
-  int nBins = 100
+  int nBins = 100;
 
 
   PlotHists(inFile,  "sTrueEnergy", "True Shower Energy", "True Shower Energy", histYaxis, nBins, 0, 2000, "sTrueEnergy_pandoraShower");
