@@ -1,8 +1,9 @@
 #!/bin/bash
 
-## Name of plotting script. This should be the only line that needs changing for other CI chains.
-plotScript="$SBNCI_DIR/scripts/sbnciplot_showervalidation.C"
+## This script should be called from a specific .sh file for each validation process, e.g. showervalidation.sh
 
+## Setting the plotting script location. 
+plotScript=${1}
 
 ## Setting up reference file for comparison
 echo "ref_sbndcode_ana_hist: ${ref_sbndcode_ana_hist}"
@@ -19,7 +20,7 @@ mv -v ci_validation_histos.root ci_validation_histos_${ref_sbndcode_version}.roo
 
 
 ## Run plotting script, producing ci_validation_histos.root
-root -l -b -q $plotScript\(\"${1}\"\)
+root -l -b -q $plotScript\(\"${2}\"\)
 
 
 ## Setup and run the comparison script.
