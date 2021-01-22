@@ -1,0 +1,91 @@
+#include "TTree.h"
+#include "TFile.h"
+#include "TH1F.h"
+#include "TString.h"
+
+void Plot(TTree *tree, TFile* outputFile, TString directoryName, TString PDG, TString variable, 
+	  int nBins, float xMin, float xMax, TString title, bool goodReco = false);
+
+void sbnciplot_recoeff(TString inputFileName)
+{
+  TFile *inputFile = TFile::Open(inputFileName.Data());
+  TTree *tree = (TTree*) inputFile->Get("recoEff/ParticleTree");
+
+  TFile *outputFile = new TFile("ci_validation_histos.root","RECREATE");
+
+  TString directoryName = "efficiencyPlots";
+
+  outputFile->cd();
+  gDirectory->mkdir(directoryName);
+  gSystem->Exec(Form("mkdir -v %s",directoryName.Data()));
+
+  Plot(tree,outputFile,directoryName,"13","mc_theta_xz",30,-90,90,";#theta_{xz} (#circ);Fraction;");
+  Plot(tree,outputFile,directoryName,"13","mc_momentum",30,0,1.5,";p (GeV/c);Fraction;");
+
+  Plot(tree,outputFile,directoryName,"2212","mc_theta_xz",30,-90,90,";#theta_{xz} (#circ);Fraction;");
+  Plot(tree,outputFile,directoryName,"2212","mc_momentum",30,0,1.5,";p (GeV/c);Fraction;");
+
+  outputFile->Close();
+
+  delete inputFile, outputFile, tree;
+}
+  
+void Plot(TTree* tree, TFile* outputFile, TString directoryName, TString PDG, TString variable, 
+	  int nBins, float xMin, float xMax, TString title, bool goodReco = false)
+{
+  TString recoDef = "";
+  TString histName = "";
+  TString short_variable(variable);
+  short_variable.Remove(0,3);
+
+  if(PDG == "13"){
+    histName += "muon";
+    recoDef += "reco_nTracks > 0";
+    if(goodReco) recoDef += " && reco_track_completeness > 0.9 && reco_track_purity > 0.9";
+  }
+  else if(PDG == "2212"){
+    histName += "proton";
+    recoDef += "reco_nTracks > 0";
+    if(goodReco) recoDef += " && reco_track_completeness > 0.8 && reco_track_purity > 0.8";
+  }
+  else if(PDG == "211"){
+    histName += "piplus";
+    recoDef += "reco_nTracks > 0";
+    if(goodReco) recoDef += " && reco_track_completeness > 0.8 && reco_track_purity > 0.8";
+  }
+  else if(PDG == "-211"){
+    histName += "piminus";
+    recoDef += "reco_nTracks > 0";
+    if(goodReco) recoDef += " && reco_track_completeness > 0.8 && reco_track_purity > 0.8";
+  }
+  else if(PDG == "11"){
+    histName += "electron";
+    recoDef += "reco_nShowers > 0";
+    if(goodReco) recoDef += " && reco_shower_completeness > 0.7 && reco_shower_purity > 0.9";
+  }
+
+  histName += "_";
+  histName += short_variable;
+  if(goodReco) histName += "_high_quality";
+
+  TH1F *tHist = new TH1F("tHist","",nBins,xMin,xMax);
+  TH1F *rHist = new TH1F(histName,"",nBins,xMin,xMax);
+
+  tree->Draw(variable + ">>tHist","mc_PDG == " + PDG);
+  tree->Draw(variable + ">>" + histName,"mc_PDG == " + PDG + " && " + recoDef);
+
+  TEfficiency eff(*rHist,*tHist);
+  eff.SetTitle(title);
+  eff.SetName(histName);
+
+  outputFile->cd();
+  outputFile->cd(directoryName.Data());
+
+  eff.Write(histName,TObject::kOverwrite);
+
+  TCanvas *canvas = new TCanvas("canvas","canvas");
+  eff.Draw();
+  canvas->Print(Form("%s/%s.png",directoryName.Data(),histName.Data()));
+
+  delete tHist, rHist, canvas;
+}

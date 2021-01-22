@@ -1,0 +1,44 @@
+#include "simulationservices_sbnd.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+#include "analysistreemodule.fcl"
+#include "rootoutput_sbnd.fcl"
+#include "showerfindermodules_sbnd.fcl"
+
+process_name: AnaTree
+
+services:
+{
+FileCatalogMetadata: @local::sbnd_file_catalog_mc
+		     TFileService: { fileName: @local::sbnd_rootoutput.fileName }
+		     @table::sbnd_services
+		     ParticleInventoryService: @local::standard_particleinventoryservice
+		     BackTrackerService:  @local::standard_backtrackerservice
+}
+
+source: {
+  module_type: RootInput
+}
+
+physics:
+{
+  producers:{}
+  filters:  {} 
+  analyzers:{
+    
+  recoEff: {
+    module_type: "RecoEff"
+    NuGenModuleLabel:		"generator"
+    LArGeantModuleLabel:      	"largeant"
+    TrackModuleLabel:         	"pandoraTrack"
+    ShowerModuleLabel:        	"pandoraShower"
+    PFParticleModuleLabel:    	"pandora"
+    HitsModuleLabel:          	"linecluster"
+ }    
+ } # analyzers
+ 
+ ana:  [ recoEff ] 
+ end_paths:     [ ana ] 
+    
+} # physics
