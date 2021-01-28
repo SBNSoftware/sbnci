@@ -69,6 +69,7 @@ private:
 
   float Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID);
   float Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID);
+  float TrackLength(art::Ptr<recob::Track> const &track);
   float TrueTrackLength(art::Ptr<simb::MCParticle> const &particle);
 
 
@@ -90,12 +91,12 @@ private:
     mc_pY0, mc_pZ0, mc_energy0, mc_momentum, mc_pXEnd, mc_pYEnd, mc_pZEnd,
     mc_energyEnd, mc_mass, mc_theta_xy, mc_theta_yz, mc_theta_xz, mc_length, 
     reco_nTracks, reco_nShowers, reco_shower_purity, reco_shower_completeness,
-    reco_track_purity, reco_track_completeness;
+    reco_track_purity, reco_track_completeness, reco_track_length, reco_shower_dEdx;
   bool reco_isReconstructed;
 
   std::map<int,int> n_showers_map, n_tracks_map;
   std::map<int,float> shower_comp_map, shower_pur_map, track_comp_map,
-    track_pur_map;
+    track_pur_map, track_length_map, shower_dEdx_map;
   std::map<int,int> hits_map;
   
 };
@@ -143,12 +144,15 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
     fParticleTree->Branch("reco_track_completeness",&reco_track_completeness);
     fParticleTree->Branch("reco_shower_purity",&reco_shower_purity);
     fParticleTree->Branch("reco_shower_completeness",&reco_shower_completeness);
+    fParticleTree->Branch("reco_track_length",&reco_track_length);
+    fParticleTree->Branch("reco_shower_dEdx",&reco_shower_dEdx);
   }
 
 void RecoEff::ClearData()
 {
   n_tracks_map.clear(); track_comp_map.clear(); track_pur_map.clear();
   n_showers_map.clear(); shower_comp_map.clear(); shower_pur_map.clear();
+  track_length_map.clear(); shower_dEdx_map.clear();
   hits_map.clear();
 }
 
@@ -191,14 +195,17 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	int trackID = TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,trackHits,true);
 	float comp = Completeness(trackHits,trackID);
 	float pur = Purity(trackHits,trackID);
+	float length = TrackLength(track);
 
 	if(n_tracks_map[trackID] == 0){
 	  track_comp_map[trackID] = comp;
 	  track_pur_map[trackID] = pur;
+	  track_length_map[trackID] = length;
 	}
 	else if(comp > track_comp_map[trackID]) {
 	  track_comp_map[trackID] = comp;
 	  track_pur_map[trackID] = pur;
+	  track_length_map[trackID] = length;
 	}
 
 	n_tracks_map[trackID]++;
@@ -220,13 +227,20 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	float comp = Completeness(showerHits,trackID);
 	float pur = Purity(showerHits,trackID);
 
+	std::vector<double> dEdxVec = shower->dEdx();
+	int best_plane = shower->best_plane();
+	float dEdx = -999;
+	if(dEdxVec.size() != 0) dEdx = dEdxVec[best_plane];
+
 	if(n_showers_map[trackID] == 0){
 	  shower_comp_map[trackID] = comp;
 	  shower_pur_map[trackID] = pur;
+	  shower_dEdx_map[trackID] = dEdx;
 	}
 	else if(comp > shower_comp_map[trackID]) {
 	  shower_comp_map[trackID] = comp;
 	  shower_pur_map[trackID] = pur;
+	  shower_dEdx_map[trackID] = dEdx;
 	}
 
 	n_showers_map[trackID]++;
@@ -253,7 +267,8 @@ void RecoEff::TruthProcessor(art::Event const &e)
       mc_pZEnd = -999; mc_energyEnd = -999; mc_mass = -999; mc_theta_xy = -999; mc_theta_yz = -999;
       mc_theta_xz = -999; mc_length = -999; reco_nTracks = -999; reco_nShowers = -999; 
       reco_shower_purity = -999; reco_shower_completeness = -999; reco_track_purity = -999; 
-      reco_track_completeness = -999; reco_isReconstructed = false;
+      reco_track_completeness = -999; reco_track_length = -999; reco_shower_dEdx = -999; 
+      reco_isReconstructed = false;
 
       mc_trackID = particle->TrackId();
       mc_PDG = particle->PdgCode();
@@ -293,6 +308,8 @@ void RecoEff::TruthProcessor(art::Event const &e)
       reco_shower_completeness = shower_comp_map[mc_trackID];
       reco_track_purity = track_pur_map[mc_trackID];
       reco_track_completeness = track_comp_map[mc_trackID];
+      reco_track_length = track_length_map[mc_trackID];
+      reco_shower_dEdx = shower_dEdx_map[mc_trackID];
 
       fParticleTree->Fill();
     }
@@ -343,6 +360,23 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
     objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
   }
   return objectHitsMap[trackID]/static_cast<float>(hits_map[trackID]);
+}
+
+float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
+{
+  float length = 0;
+  int nTrajPoints = track->NumberTrajectoryPoints();
+
+  if(nTrajPoints < 2) return length;
+
+  for(int point = 1; point < nTrajPoints; ++point) {
+    TVector3 l = track->LocationAtPoint<TVector3>(point);
+    if(l.X() == -999 || l.Y() == -999 || l.Z() == -999) break;
+
+    TVector3 diff = track->LocationAtPoint<TVector3>(point) - track->LocationAtPoint<TVector3>(point-1);
+    length += TMath::Sqrt(diff.Mag2());
+  }
+  return length;
 }
 
 float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
