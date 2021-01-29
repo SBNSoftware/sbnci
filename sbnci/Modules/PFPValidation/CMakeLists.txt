@@ -1,6 +1,4 @@
-
 art_make(MODULE_LIBRARIES
-    larreco_RecoAlg
     sbnci_Modules_MCRecoUtils
           lardataobj_RecoBase
           ${ART_FRAMEWORK_SERVICES_REGISTRY}

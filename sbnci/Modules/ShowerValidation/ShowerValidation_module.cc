@@ -52,8 +52,8 @@
 #include "lardataobj/RecoBase/PFParticle.h"
 #include "lardataobj/RecoBase/Vertex.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "MCRecoUtils/RecoUtils.h"
-#include "MCRecoUtils/ShowerUtils.h"
+#include "sbnci/Modules/MCRecoUtils/RecoUtils.h"
+#include "sbnci/Modules/MCRecoUtils/ShowerUtils.h"
 
 //Root Includes
 #include "TMath.h"
