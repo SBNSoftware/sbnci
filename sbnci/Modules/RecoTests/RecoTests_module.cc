@@ -1,14 +1,14 @@
 ///////////////////////////////////////////////////////////////////////////
-// Class:        RecoEff                                                 //
+// Class:        RecoTests                                               //
 // Module Type:  Analyser                                                //
-// File:         RecoEff_module.cc                                       //
+// File:         RecoTests_module.cc                                     //
 // Author:       Henry Lay h.lay@lancaster.ac.uk                         //
 //                                                                       //
 // Purpose:      The module saves truth information regarding the        //
 //               primary products of neutrino interactions. It also      //
 //               saves their status in reconstruction. This allows       //
-//               for plotting of a series of reconstruction efficiency   //
-//               plots.                                                  //
+//               for plotting of a series of plots of different          //
+//               reconstruction metrics.                                 //
 ///////////////////////////////////////////////////////////////////////////
 
 //Standard
@@ -44,16 +44,16 @@
 #include "art_root_io/TFileService.h"
 #include "TTree.h"
 
-class RecoEff;
+class RecoTests;
 
-class RecoEff : public art::EDAnalyzer {
+class RecoTests : public art::EDAnalyzer {
 public:
-  explicit RecoEff(fhicl::ParameterSet const& pset);
+  explicit RecoTests(fhicl::ParameterSet const& pset);
 
-  RecoEff(RecoEff const&) = delete;
-  RecoEff(RecoEff&&) = delete;
-  RecoEff& operator=(RecoEff const&) = delete;
-  RecoEff& operator=(RecoEff&&) = delete;
+  RecoTests(RecoTests const&) = delete;
+  RecoTests(RecoTests&&) = delete;
+  RecoTests& operator=(RecoTests const&) = delete;
+  RecoTests& operator=(RecoTests&&) = delete;
 
   void analyze(art::Event const &e) override;
 
@@ -102,7 +102,7 @@ private:
 };
 
 
-RecoEff::RecoEff(fhicl::ParameterSet const &pset)
+RecoTests::RecoTests(fhicl::ParameterSet const &pset)
   : EDAnalyzer{pset},
   fNuGenModuleLabel (pset.get<std::string>("NuGenModuleLabel")),
   fLArGeantModuleLabel (pset.get<std::string>("LArGeantModuleLabel")),
@@ -148,7 +148,7 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
     fParticleTree->Branch("reco_shower_dEdx",&reco_shower_dEdx);
   }
 
-void RecoEff::ClearData()
+void RecoTests::ClearData()
 {
   n_tracks_map.clear(); track_comp_map.clear(); track_pur_map.clear();
   n_showers_map.clear(); shower_comp_map.clear(); shower_pur_map.clear();
@@ -156,7 +156,7 @@ void RecoEff::ClearData()
   hits_map.clear();
 }
 
-void RecoEff::SetupHitsMap()
+void RecoTests::SetupHitsMap()
 {
   for(unsigned hit_i = 0; hit_i < eHandleHits->size(); ++hit_i) {
     const art::Ptr<recob::Hit> hit(eHandleHits,hit_i);
@@ -164,7 +164,7 @@ void RecoEff::SetupHitsMap()
   }
 }
 
-void RecoEff::ReconstructionProcessor(art::Event const &e)
+void RecoTests::ReconstructionProcessor(art::Event const &e)
 {
   art::FindManyP<recob::Track> pfpTrackAssn(eHandlePFPs,e,fTrackModuleLabel);
   art::FindManyP<recob::Shower> pfpShowerAssn(eHandlePFPs,e,fShowerModuleLabel);
@@ -249,7 +249,7 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
   }
 }
 
-void RecoEff::TruthProcessor(art::Event const &e)
+void RecoTests::TruthProcessor(art::Event const &e)
 {
   art::FindManyP<simb::MCParticle> nuParticleAssn(eHandleNeutrinos,e,fLArGeantModuleLabel);
   
@@ -316,7 +316,7 @@ void RecoEff::TruthProcessor(art::Event const &e)
   }
 }
 
-std::vector<art::Ptr<recob::PFParticle> > RecoEff::GetPrimaryPFPs()
+std::vector<art::Ptr<recob::PFParticle> > RecoTests::GetPrimaryPFPs()
 {
   std::vector<art::Ptr<recob::PFParticle> > primaries;
   for(unsigned int pfp_i = 0; pfp_i < eHandlePFPs->size(); ++pfp_i) {
@@ -331,7 +331,7 @@ std::vector<art::Ptr<recob::PFParticle> > RecoEff::GetPrimaryPFPs()
   return primaries;
 }
 
-art::Ptr<recob::PFParticle> RecoEff::GetPFP(long unsigned int const &id)
+art::Ptr<recob::PFParticle> RecoTests::GetPFP(long unsigned int const &id)
 {
   const art::Ptr<recob::PFParticle> nullReturn;
    
@@ -342,7 +342,7 @@ art::Ptr<recob::PFParticle> RecoEff::GetPFP(long unsigned int const &id)
   return nullReturn;
 }
 
-float RecoEff::Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID)
+float RecoTests::Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID)
 {
   std::map<int,int> objectHitsMap;
 
@@ -352,7 +352,7 @@ float RecoEff::Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int
   return objectHitsMap[trackID]/static_cast<float>(objectHits.size());
 }
 
-float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID)
+float RecoTests::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID)
 {
   std::map<int,int> objectHitsMap;
 
@@ -362,7 +362,7 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
   return objectHitsMap[trackID]/static_cast<float>(hits_map[trackID]);
 }
 
-float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
+float RecoTests::TrackLength(art::Ptr<recob::Track> const &track)
 {
   float length = 0;
   int nTrajPoints = track->NumberTrajectoryPoints();
@@ -379,7 +379,7 @@ float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
   return length;
 }
 
-float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
+float RecoTests::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
 {
   float length = 0;
   unsigned int nTrajPoints = particle->NumberTrajectoryPoints();
@@ -398,7 +398,7 @@ float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
 }
 
 
-void RecoEff::analyze(art::Event const &e)
+void RecoTests::analyze(art::Event const &e)
 {
   e.getByLabel(fNuGenModuleLabel,eHandleNeutrinos);
   e.getByLabel(fHitsModuleLabel,eHandleHits);
@@ -415,4 +415,4 @@ void RecoEff::analyze(art::Event const &e)
   TruthProcessor(e);
 }
 
-DEFINE_ART_MODULE(RecoEff)
+DEFINE_ART_MODULE(RecoTests)

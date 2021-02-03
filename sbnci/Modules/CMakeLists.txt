@@ -1,7 +1,7 @@
 add_subdirectory(NoiseTest)
 add_subdirectory(dEdx)
 add_subdirectory(ShowerValidation)
-add_subdirectory(RecoEff)
+add_subdirectory(RecoTests)
 
 install_headers()
 install_fhicl()

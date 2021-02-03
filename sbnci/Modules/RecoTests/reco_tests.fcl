@@ -27,8 +27,8 @@ physics:
   filters:  {} 
   analyzers:{
     
-  recoEff: {
-    module_type: "RecoEff"
+  recoTests: {
+    module_type: "RecoTests"
     NuGenModuleLabel:		"generator"
     LArGeantModuleLabel:      	"largeant"
     TrackModuleLabel:         	"pandoraTrack"
@@ -38,7 +38,7 @@ physics:
  }    
  } # analyzers
  
- ana:  [ recoEff ] 
+ ana:  [ recoTests ] 
  end_paths:     [ ana ] 
     
 } # physics
