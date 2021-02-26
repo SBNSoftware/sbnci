@@ -4,3 +4,4 @@ cet_find_library( BOOST_DATE_TIME     NAMES boost_date_time     PATHS ENV BOOST_
 add_subdirectory(Modules)
 add_subdirectory(PlottingScripts)
 add_subdirectory(scripts)
+add_subdirectory(thresholds)
