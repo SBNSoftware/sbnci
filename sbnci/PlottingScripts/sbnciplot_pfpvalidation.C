@@ -15,7 +15,7 @@
 #include <vector>
 #include "TString.h"
 
-void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString dirName);
+void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString condition, TString dirName);
 
 void sbnciplot_pfpvalidation(TString inputFile)
 {
@@ -35,33 +35,58 @@ void sbnciplot_pfpvalidation(TString inputFile)
   gSystem->Exec(Form("mkdir -v %s", dirName.Data()));
 
 
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpNumHits", "PFP nHits", "PFP nHits", histYaxis, nBins, 0, 2000, "pfpNumHits_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpTrackScore", "PFP track score", "PFP track score", histYaxis, nBins, 0, 1, "pfpTrackScore_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpHitPurity", "PFP hit purity", "PFP hit purity", histYaxis, nBins, 0, 1, "pfpHitPurity_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpHitComp", "PFP hit completeness", "PFP hit completeness", histYaxis, nBins, 0, 1, "pfpHitComp_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpEnergyPurity", "PFP energy purity", "PFP energy purity", histYaxis, nBins, 0, 1, "pfpEnergyPurity_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpEnergyComp", "PFP energy completeness", "PFP energy completeness", histYaxis, nBins, 0, 1, "pfpEnergyComp_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpHitSPRatio", "PFP Space point to hit ratio", "PFP Space point to hit ratio", histYaxis, nBins, 0, 1, "pfpHitSPRatio_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpNumHits", "PFP nHits", "PFP nHits", histYaxis, nBins, 0, 2000, "pfpNumHits_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpTrackScore", "PFP track score", "PFP track score", histYaxis, nBins, 0, 1, "pfpTrackScore_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpHitPurity", "PFP hit purity", "PFP hit purity", histYaxis, nBins, 0, 1, "pfpHitPurity_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpHitComp", "PFP hit completeness", "PFP hit completeness", histYaxis, nBins, 0, 1, "pfpHitComp_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpEnergyPurity", "PFP energy purity", "PFP energy purity", histYaxis, nBins, 0, 1, "pfpEnergyPurity_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpEnergyComp", "PFP energy completeness", "PFP energy completeness", histYaxis, nBins, 0, 1, "pfpEnergyComp_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/pfpTree", "pfpHitSPRatio", "PFP Space point to hit ratio", "PFP Space point to hit ratio", histYaxis, nBins, 0, 1, "pfpHitSPRatio_pandora", "", dirName);
 
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "recoPFPs", "Reco PFPs per true particle", "Reco PFPs per true particle", histYaxis, 10, 0, 10, "recoPFPs_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "recoPFPTracks", "Reco tracks per true particle", "Reco tracks per true particle", histYaxis, 10, 0, 10, "recoPFPTracks_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "recoPFPShowers", "Reco showers per true particle", "Reco showers per true particle", histYaxis, 10, 0, 10, "recoPFPShowers_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "hitPurity", "Hit purity per true particle", "Hit purity per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "hitComp", "Hit completeness per true particle", "Hit completeness per true particle", histYaxis, nBins, 0, 1, "hitComp_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "energyPurity", "Energy purity per true particle", "Energy purity per true particle", histYaxis, nBins, 0, 1, "energyPurity_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "energyComp", "Energy completeness per true particle", "Energy completeness per true particle", histYaxis, nBins, 0, 1, "energyComp_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "hitSPRatio", "Space point to hit ratio per true particle", "Space point to hit ratio per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "", dirName);
 
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonRecoPFPs", "Reco PFPs per true particle", "Reco PFPs per true particle", histYaxis, 10, 0, 10, "recoPFPs_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonRecoPFPTracks", "Reco tracks per true particle", "Reco tracks per true particle", histYaxis, 10, 0, 10, "recoPFPTracks_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonRecoPFPShowers", "Reco showers per true particle", "Reco showers per true particle", histYaxis, 10, 0, 10, "recoPFPShowers_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonHitPurity", "Hit purity per true particle", "Hit purity per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonHitComp", "Hit completeness per true particle", "Hit completeness per true particle", histYaxis, nBins, 0, 1, "hitComp_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonEnergyPurity", "Energy purity per true particle", "Energy purity per true particle", histYaxis, nBins, 0, 1, "energyPurity_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonEnergyComp", "Energy completeness per true particle", "Energy completeness per true particle", histYaxis, nBins, 0, 1, "energyComp_pandora", "truePdg==13", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "muonHitSPRatio", "Space point to hit ratio per true particle", "Space point to hit ratio per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "truePdg==13", dirName);
 
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "recoPFPs", "Reco PFPs per true particle", "Reco PFPs per true particle", histYaxis, 10, 0, 10, "recoPFPs_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "recoPFPTracks", "Reco tracks per true particle", "Reco tracks per true particle", histYaxis, 10, 0, 10, "recoPFPTracks_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "recoPFPShowers", "Reco showers per true particle", "Reco showers per true particle", histYaxis, 10, 0, 10, "recoPFPShowers_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "hitPurity", "Hit purity per true particle", "Hit purity per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "hitComp", "Hit completeness per true particle", "Hit completeness per true particle", histYaxis, nBins, 0, 1, "hitComp_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "energyPurity", "Energy purity per true particle", "Energy purity per true particle", histYaxis, nBins, 0, 1, "energyPurity_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "energyComp", "Energy completeness per true particle", "Energy completeness per true particle", histYaxis, nBins, 0, 1, "energyComp_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "hitSPRatio", "Space point to hit ratio per true particle", "Space point to hit ratio per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonRecoPFPs", "Reco PFPs per true particle", "Reco PFPs per true particle", histYaxis, 10, 0, 10, "recoPFPs_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonRecoPFPTracks", "Reco tracks per true particle", "Reco tracks per true particle", histYaxis, 10, 0, 10, "recoPFPTracks_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonRecoPFPShowers", "Reco showers per true particle", "Reco showers per true particle", histYaxis, 10, 0, 10, "recoPFPShowers_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonHitPurity", "Hit purity per true particle", "Hit purity per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonHitComp", "Hit completeness per true particle", "Hit completeness per true particle", histYaxis, nBins, 0, 1, "hitComp_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonEnergyPurity", "Energy purity per true particle", "Energy purity per true particle", histYaxis, nBins, 0, 1, "energyPurity_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonEnergyComp", "Energy completeness per true particle", "Energy completeness per true particle", histYaxis, nBins, 0, 1, "energyComp_pandora", "truePdg==2212", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "protonHitSPRatio", "Space point to hit ratio per true particle", "Space point to hit ratio per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "truePdg==2212", dirName);
 
-  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFP", "Number of PFPs per event", "Number of PFPs per event", histYaxis, 20, 0, 20, "numPFP_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFPNu", "Number of neutrino PFPs per event", "Number of neutrino PFPs per event", histYaxis, 10, 0, 10, "numPFPNu_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFPShower", "Number of showers per event", "Number of showers per event", histYaxis, 10, 0, 10, "numPFPShower_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFPTrack", "Number of tracks per event", "Number of tracks per event", histYaxis, 10, 0, 10, "numPFPTrack_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronRecoPFPs", "Reco PFPs per true particle", "Reco PFPs per true particle", histYaxis, 10, 0, 10, "recoPFPs_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronRecoPFPTracks", "Reco tracks per true particle", "Reco tracks per true particle", histYaxis, 10, 0, 10, "recoPFPTracks_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronRecoPFPShowers", "Reco showers per true particle", "Reco showers per true particle", histYaxis, 10, 0, 10, "recoPFPShowers_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronHitPurity", "Hit purity per true particle", "Hit purity per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronHitComp", "Hit completeness per true particle", "Hit completeness per true particle", histYaxis, nBins, 0, 1, "hitComp_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronEnergyPurity", "Energy purity per true particle", "Energy purity per true particle", histYaxis, nBins, 0, 1, "energyPurity_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronEnergyComp", "Energy completeness per true particle", "Energy completeness per true particle", histYaxis, nBins, 0, 1, "energyComp_pandora", "truePdg==11", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/trueTree", "electronHitSPRatio", "Space point to hit ratio per true particle", "Space point to hit ratio per true particle", histYaxis, nBins, 0, 1, "hitPurity_pandora", "truePdg==11", dirName);
+
+  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFP", "Number of PFPs per event", "Number of PFPs per event", histYaxis, 20, 0, 20, "numPFP_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFPNu", "Number of neutrino PFPs per event", "Number of neutrino PFPs per event", histYaxis, 10, 0, 10, "numPFPNu_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFPShower", "Number of showers per event", "Number of showers per event", histYaxis, 10, 0, 10, "numPFPShower_pandora", "", dirName);
+  PlotHists(inFile, outFile, "pfpvalidation/eventTree", "numPFPTrack", "Number of tracks per event", "Number of tracks per event", histYaxis, 10, 0, 10, "numPFPTrack_pandora", "", dirName);
 }
 
 
-void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString dirName)
+void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString condition, TString dirName)
 {
 
   TH1F* hist = new TH1F(histName, histTitle+";"+histXaxis+";"+histYaxis, nBins, xMin, xMax); 
@@ -69,7 +94,7 @@ void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName
   TTree* metricTree; 
   inFile->GetObject(treeName, metricTree);
   std::cout<<"metricToPlot: " << metricToPlot << ". histName: " << histName << std::endl;
-  metricTree->Draw(metricToPlot + " >> " + histName,metricToPlot + " != -999");
+  metricTree->Draw(metricToPlot + " >> " + histName, condition);
   gStyle->SetOptStat(0);
 
   outFile->cd();
