@@ -206,12 +206,59 @@ int getNBins(TH1D *h){
     return nBins;
 }
 
+map<string, vector<float>> thresholdmap(ifstream &infile){
+    //build threshold map from file
+    map<string, vector<float>> mapping;
+    string line;
+    string out1;
+
+    vector<string> out;
+
+    if (infile.is_open())
+    {
+        while ( getline (infile ,line))
+        {
+            line.erase(remove(line.begin(), line.end(), ' '), line.end());
+            stringstream ss(line);
+            while ( getline (ss ,out1, '#'))
+                out.push_back(out1);
+            if(out.size()==3 && out.at(0).size()>0){
+                float v = stof(out.at(1));
+                vector<float> th{stof(out.at(1)),stof(out.at(2))};
+                mapping[out.at(0)] = th;
+            }
+            out.clear();
+        }
+    }
+
+    return mapping;
+}
+
 void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersion="v07_00_00"){
 
 //   TString ref_xrootd_path=gSystem->Getenv("ref_dunetpc_ana_hist_xrootd_path");
 
-  std::ofstream ComparisonChiSquare_file("ComparisonChiSquare.txt");
+  //set default chi2 thresholds
+  float th1 = 0.25;
+  float th2 = 0.5;
+  // threshold file is retrived through env var CI_COMP_TH_FILE
+  string thfile_env="CI_COMP_TH_FILE";
+  char * thfile = getenv( thfile_env.c_str() );
+  map<string, vector<float>> thmap;
+  if (!thfile){
+      cout << "*** WARNING no threshold file found with env var " << thfile_env << endl;
+      cout << "\t default chi2 threshold values are used\n" << endl;
+  }
+  else{
+    ifstream infile(thfile);
+    thmap = thresholdmap(infile);
+    if(thmap.size()==0){
+        cout << "*** WARNING no thresholds found in " << thfile << endl;
+        cout << "\t default chi2 threshold values are used\n" << endl;
+    }
+  }
 
+  std::ofstream ComparisonChiSquare_file("ComparisonChiSquare.txt");
 
   vector<string> list_folder, list_histo;
   vector<uint> folder_size;
@@ -333,6 +380,19 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
           setLegend(hRef, 3, RefLegend.Data(), hCur, 1, CurLegend.Data());
 
           double chisqv = calculateChiSqDistance(hCur, hRef);
+          Color_t CanvasColor = kWhite;
+          map<string, vector<float>>::const_iterator iter = thmap.find(Form("%s/%s", s_local_branch_names.Data(), s_histo_names.Data()));
+          if(iter!=thmap.end()){
+              vector<float> th = vector<float>(iter->second);
+              th1 = th.at(0);
+              th2 = th.at(1);
+          }
+          if (chisqv>th2) CanvasColor = kRed;
+          else if (chisqv>th1) CanvasColor = kYellow;
+          topPad->SetFillColor(CanvasColor);
+          topPad->SetFrameFillColor(-1);
+          bottomPad->SetFillColor(CanvasColor);
+          bottomPad->SetFrameFillColor(-1);
           TString chisq = Form("#chi^{2}: %g", chisqv);
           int nBins = std::max(getNBins(hRef),getNBins(hCur));
           TString NDF = Form("No. Bins: %i", nBins);
