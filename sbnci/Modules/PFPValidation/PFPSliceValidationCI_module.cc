@@ -30,8 +30,8 @@
 #include "lardataobj/RecoBase/PFParticleMetadata.h"
 #include "lardataobj/RecoBase/Slice.h"
 #include "lardataobj/RecoBase/Vertex.h"
-#include "larsim/MCCheater/BackTrackerService.h"
 #include "larsim/MCCheater/ParticleInventoryService.h"
+#include "larsim/Utils/TruthMatchUtils.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 
 // Root Includes
@@ -125,7 +125,6 @@ class sbnci::PFPSliceValidationCI : public art::EDAnalyzer {
   std::vector<std::string> fPFParticleLabels;
 
   art::ServiceHandle<art::TFileService> tfs;
-  art::ServiceHandle<cheat::BackTrackerService> bt_serv;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
 
   TTree* eventTree;
@@ -510,17 +509,7 @@ std::map<art::Ptr<simb::MCTruth>, int> sbnci::PFPSliceValidationCI::GetTruthHitM
   // Create a map of true particles to number of hits
   std::map<int, int> trueParticleHits;
   for (const auto& hit : allHits) {
-    int trackID = -1;
-    float hitEnergy = 0;
-
-    // For each hit, chose the particle that contributed the most energy
-    std::vector<sim::TrackIDE> trackIDEs = bt_serv->HitToTrackIDEs(clockData, hit);
-    for (const auto& ide : trackIDEs) {
-      if (ide.energy > hitEnergy) {
-        hitEnergy = ide.energy;
-        trackID = std::abs(ide.trackID);
-      } // ide.energy > hitEnergy
-    }   // ide: trackIDEs
+    const int trackID(TruthMatchUtils::TrueParticleID(clockData, hit, true));
     ++trueParticleHits[trackID];
   } // hit: allHits
 
@@ -543,17 +532,7 @@ art::Ptr<simb::MCTruth> sbnci::PFPSliceValidationCI::GetSliceTruthMatchHits(
   // Create a map of true particles to number of hits
   std::map<int, int> trueParticleHits;
   for (const auto& hit : sliceHits) {
-    int trackID = 0;
-    float hitEnergy = 0;
-
-    // For each hit, chose the particle that contributed the most energy
-    std::vector<sim::TrackIDE> trackIDEs = bt_serv->HitToTrackIDEs(clockData, hit);
-    for (const auto& ide : trackIDEs) {
-      if (ide.energy > hitEnergy) {
-        hitEnergy = ide.energy;
-        trackID = std::abs(ide.trackID);
-      } // ide.energy > hitEnergy
-    }   // ide: trackIDEs
+    const int trackID(TruthMatchUtils::TrueParticleID(clockData, hit, true));
     ++trueParticleHits[trackID];
   } // hit: sliceHits
 
@@ -564,23 +543,18 @@ art::Ptr<simb::MCTruth> sbnci::PFPSliceValidationCI::GetSliceTruthMatchHits(
   } // [trueParticle, truth]: particleTruthMap
 
   // Choose the truth that contributed the most hits
-  int maxHits = 0;
-  art::Ptr<simb::MCTruth> bestTruthMatch;
-  for (const auto& [truth, truthHits] : sliceTruthHitMap) {
-    if (truthHits > maxHits) {
-      maxHits = truthHits;
-      bestTruthMatch = truth;
-    } // truthHits > maxHuts
-  }   // [truth, truthHits]: sliceTruthHitMap
+  const auto& maxIter = std::max_element(sliceTruthHitMap.cbegin(), sliceTruthHitMap.cend(),
+      [](auto const& lhs, auto const& rhs) { return lhs.second < rhs.second; });
+
+  if (maxIter == sliceTruthHitMap.cend())
+    return art::Ptr<simb::MCTruth>();
 
   // If we have truth matched the slice, calculate purtity and completeness
-  // Note these are passed by referecne
-  if (!bestTruthMatch.isNull()) {
-    purity = (float)maxHits / sliceHits.size();
-    completeness = (float)maxHits / truthHitMap.at(bestTruthMatch);
-  } // !bestTruthMatch.isNull()
+  // Note these are passed by reference
+  purity = (float)maxIter->second / sliceHits.size();
+  completeness = (float)maxIter->second / truthHitMap.at(maxIter->first);
 
-  return bestTruthMatch;
+  return maxIter->first;
 } // GetSliceTruthMatchHits
 
 void sbnci::PFPSliceValidationCI::ClearTrueTree()
