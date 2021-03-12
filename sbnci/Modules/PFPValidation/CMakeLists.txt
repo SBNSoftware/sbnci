@@ -1,6 +1,7 @@
 art_make(MODULE_LIBRARIES
     sbnci_Modules_MCRecoUtils
           lardataobj_RecoBase
+          larsim_Utils
           ${ART_FRAMEWORK_SERVICES_REGISTRY}
     ROOT::Core
           ROOT::Physics

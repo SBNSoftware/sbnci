@@ -31,10 +31,9 @@
 #include "lardataobj/RecoBase/SpacePoint.h"
 #include "lardataobj/RecoBase/Vertex.h"
 #include "lardataobj/Simulation/SimChannel.h"
-#include "larsim/MCCheater/BackTrackerService.h"
 #include "larsim/MCCheater/ParticleInventoryService.h"
+#include "larsim/Utils/TruthMatchUtils.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
-#include "sbnci/Modules/MCRecoUtils/RecoUtils.h"
 #include "sbnci/Modules/MCRecoUtils/ShowerUtils.h"
 
 //Root Includes
@@ -135,7 +134,6 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
   std::string fHitLabel, fLArGeantLabel;
   std::vector<std::string> fPFPLabels;
   art::ServiceHandle<art::TFileService> tfs;
-  art::ServiceHandle<cheat::BackTrackerService> bt_serv;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
 
   // Declare member data here.
@@ -478,15 +476,7 @@ std::map<int, int> sbnci::PFPValidationCI::GetTruePrimaryHits(
 
   std::map<int, int> trueParticleHits;
   for (const auto& hit : allHits) {
-    int trackID = 0;
-    float hitEnergy = 0;
-    const std::vector<sim::TrackIDE> trackIDEs(bt_serv->HitToTrackIDEs(clockData, hit));
-    for (const auto& ide : trackIDEs) {
-      if (ide.energy > hitEnergy) {
-        hitEnergy = ide.energy;
-        trackID = std::abs(ide.trackID);
-      }
-    }
+    const int trackID(TruthMatchUtils::TrueParticleID(clockData, hit, true));
     ++trueParticleHits[trackID];
   }
 
@@ -506,7 +496,6 @@ std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryEnergies(
 {
 
   std::map<int, float> trueParticleEnergies;
-
   for (const auto& simChannel : simChannels) {
     const auto tdcideMap(simChannel->TDCIDEMap());
     for (const auto& [tdc, ideVec] : tdcideMap) {
@@ -515,6 +504,7 @@ std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryEnergies(
       }
     }
   }
+
   std::map<int, float> truePrimaryEnergies;
   for (const auto& truePrimary : truePrimaries) {
     for (const auto& trueDaughter : truePrimary.second) {
@@ -531,17 +521,14 @@ std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryHitEnergies(
     const std::vector<art::Ptr<recob::Hit>>& allHits) const
 {
 
-  std::map<int, float> trueParticleEnergies;
-  for (const auto& hit : allHits) {
-    const std::vector<sim::TrackIDE> trackIDEs(bt_serv->HitToTrackIDEs(clockData, hit));
-    for (const auto& ide : trackIDEs) {
-      trueParticleEnergies[std::abs(ide.trackID)] += ide.energy;
-    }
-  }
+  TruthMatchUtils::IDToEDepositMap idToEDepMap;
+  for (const art::Ptr<recob::Hit>& pHit : allHits)
+    TruthMatchUtils::FillG4IDToEnergyDepositMap(idToEDepMap, clockData, pHit, true);
+
   std::map<int, float> truePrimaryHitEnergies;
   for (const auto& truePrimary : truePrimaries) {
     for (const auto& trueDaughter : truePrimary.second) {
-      truePrimaryHitEnergies[truePrimary.first] += trueParticleEnergies[trueDaughter];
+      truePrimaryHitEnergies[truePrimary.first] += idToEDepMap[trueDaughter];
     }
   }
   return truePrimaryHitEnergies;
@@ -552,14 +539,12 @@ float sbnci::PFPValidationCI::GetTotalEnergyInHits(
     const std::vector<art::Ptr<recob::Hit>>& hits) const
 {
 
-  float energy = 0;
-  for (auto const& hit : hits) {
-    const std::vector<sim::TrackIDE> trackIDEs(bt_serv->HitToTrackIDEs(clockData, hit));
-    for (auto const& trackIDE : trackIDEs) {
-      energy += trackIDE.energy;
-    }
-  }
-  return energy;
+  TruthMatchUtils::IDToEDepositMap idToEDepMap;
+  for (const art::Ptr<recob::Hit>& pHit : hits)
+    TruthMatchUtils::FillG4IDToEnergyDepositMap(idToEDepMap, clockData, pHit, true);
+
+  return std::accumulate(idToEDepMap.cbegin(), idToEDepMap.cend(), 0.f,
+      [](float sum, auto const& iter) { return sum + iter.second; });
 }
 
 template <class T>
