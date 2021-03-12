@@ -24,6 +24,8 @@
 
 // LArSoft Includes
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
+#include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
+#include "larcore/Geometry/Geometry.h"
 #include "lardataobj/RecoBase/Cluster.h"
 #include "lardataobj/RecoBase/Hit.h"
 #include "lardataobj/RecoBase/PFParticle.h"
@@ -126,6 +128,8 @@ class sbnci::PFPSliceValidationCI : public art::EDAnalyzer {
 
   art::ServiceHandle<art::TFileService> tfs;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
+  geo::GeometryCore const* geom = art::ServiceHandle<geo::Geometry>()->provider();
+
 
   TTree* eventTree;
   TTree* trueTree;
@@ -217,6 +221,10 @@ void sbnci::PFPSliceValidationCI::analyze(art::Event const& evt)
 {
   ClearEventTree();
 
+  // Get properties and clock data for event
+  detinfo::DetectorPropertiesData propData = art::ServiceHandle<detinfo::DetectorPropertiesService>()->DataFor(evt);
+  auto const clockData(art::ServiceHandle<detinfo::DetectorClocksService const>()->DataFor(evt));
+
   // Get the truths in the event:
   const std::vector<art::Ptr<simb::MCTruth>> truthVec(particleInventory->MCTruthVector_Ps());
 
@@ -252,7 +260,6 @@ void sbnci::PFPSliceValidationCI::analyze(art::Event const& evt)
   // Set the handles
 
   // Get map of true primary particle to number of reco hits / energy in reco hits
-  auto const clockData(art::ServiceHandle<detinfo::DetectorClocksService const>()->DataFor(evt));
   std::map<art::Ptr<simb::MCTruth>, int> truthHitMap(this->GetTruthHitMap(clockData, trueParticlesMap, particleTruthMap, allHits));
 
   // Create maps to store the best matched slice to each truth
@@ -470,7 +477,11 @@ void sbnci::PFPSliceValidationCI::analyze(art::Event const& evt)
         // If we matched a neutrino slice, get the vertex info
         if (nuMatchNeutrino[fPFParticleLabel]) {
 
-          pfpVertexX[fPFParticleLabel] = match.mVtxX;
+	  float xCorrection = propData.ConvertTicksToX(clockData.TPCG4Time2Tick(neutrino.Nu().T())-clockData.Time2Tick(clockData.BeamGateTime()),0,0,0) 
+	    - propData.ConvertTicksToX(0,0,0,0);
+	  if(nu.Vx() >  0) xCorrection = -xCorrection;
+
+          pfpVertexX[fPFParticleLabel] = match.mVtxX - xCorrection;
           pfpVertexY[fPFParticleLabel] = match.mVtxY;
           pfpVertexZ[fPFParticleLabel] = match.mVtxZ;
 
