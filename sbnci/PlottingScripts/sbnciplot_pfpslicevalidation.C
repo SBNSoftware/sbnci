@@ -40,7 +40,7 @@ void sbnciplot_pfpslicevalidation(TString inputFile)
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "purity", "Slice purity", "Slice purity", histYaxis, nBins, 0, 1, "purity_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "comp", "Slice completeness", "Slice completness", histYaxis, nBins, 0, 1, "comp_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "score", "Slice ID score", "Slice ID score", histYaxis, nBins, 0, 1, "score_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "recoPDG", "Slice PDG ID", "Slice PDG ID", histYaxis, 4, 11, 15, "recoPDG_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "recoPdg", "Slice PDG ID", "Slice PDG ID", histYaxis, 4, 11, 15, "recoPdg_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexX", "Reconstructed vertex x", "Reconstructed vertex x (cm)", histYaxis, nBins, -200,200, "pfpVertexX_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexY", "Reconstructed vertex y", "Reconstructed vertex y (cm)", histYaxis, nBins, -200,200, "pfpVertexY_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexZ", "Reconstructed vertex z", "Reconstructed vertex z (cm)", histYaxis, nBins, 0, 500, "pfpVertexZ_pandora", dirName);
