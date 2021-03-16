@@ -284,7 +284,7 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
   // For debug purpose - END
 
 
-  TFile *RefFile = TFile::Open(Form("ci_validation_histos_%s.root", gRefVersion.Data()));
+  TFile *RefFile = TFile::Open(Form("ci_validation_histos_ref_%s.root", gRefVersion.Data()));
   TFile *CurFile = TFile::Open(Form("ci_validation_histos_%s.root", gCurVersion.Data()));
 
   UInt_t nBranches=list_folder.size();
