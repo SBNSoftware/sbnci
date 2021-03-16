@@ -16,7 +16,7 @@ xrdcp -s ${ref_sbndcode_ana_hist_xrootd_path} $(basename ${ref_sbndcode_ana_hist
 xrdcp_exitcode=$?
 echo "xrdcp_exitcode: ${xrdcp_exitcode}"
 
-mv -v ci_validation_histos.root ci_validation_histos_${ref_sbndcode_version}.root
+mv -v ci_validation_histos.root ci_validation_histos_ref_${ref_sbndcode_version}.root
 
 
 ## Run plotting script, producing ci_validation_histos.root
