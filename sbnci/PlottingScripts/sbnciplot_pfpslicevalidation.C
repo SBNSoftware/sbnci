@@ -26,7 +26,7 @@ void sbnciplot_pfpslicevalidation(TString inputFile)
   TString histName, histTitle, histXaxis, metricToPlot;
   int xMin, xMax;
   TString histYaxis = "Counts";
-  int nBins = 100;
+  int nBins = 40;
 
   TString dirName = "pfpslicevalidation";
 
@@ -44,9 +44,9 @@ void sbnciplot_pfpslicevalidation(TString inputFile)
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexX", "Reconstructed vertex x", "Reconstructed vertex x (cm)", histYaxis, nBins, -200,200, "pfpVertexX_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexY", "Reconstructed vertex y", "Reconstructed vertex y (cm)", histYaxis, nBins, -200,200, "pfpVertexY_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexZ", "Reconstructed vertex z", "Reconstructed vertex z (cm)", histYaxis, nBins, 0, 500, "pfpVertexZ_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexDistX", "(reco - true) vertex x", "(reco - true) vertex x (cm)", histYaxis, nBins, -10, 10, "pfpVertexDistX_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexDistY", "(reco - true) vertex y", "(reco - true) vertex y (cm)", histYaxis, nBins, -10, 10, "pfpVertexDistY_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexDistZ", "(reco - true) vertex z", "(reco - true) vertex z (cm)", histYaxis, nBins, -10, 10, "pfpVertexDistZ_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexDistX", "(reco - true) vertex x", "(reco - true) vertex x (cm)", histYaxis, 100, -10, 10, "pfpVertexDistX_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexDistY", "(reco - true) vertex y", "(reco - true) vertex y (cm)", histYaxis, 100, -10, 10, "pfpVertexDistY_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexDistZ", "(reco - true) vertex z", "(reco - true) vertex z (cm)", histYaxis, 100, -10, 10, "pfpVertexDistZ_pandora", dirName);
 
   PlotHists(inFile, outFile, "pfpslicevalidation/eventTree", "cosmicScores", "Cosmic slice ID scores", "Cosmic slice ID scores", histYaxis, nBins, 0, 1, "cosmicScores_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/eventTree", "nuScores", "Neutrino slice ID scores", "Neutrino slice ID scores", histYaxis, nBins, 0, 1, "nuScores_pandora", dirName);
