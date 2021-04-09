@@ -38,7 +38,7 @@ void sbnciplot_pfpslicevalidation(TString inputFile)
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "numSlices", "Slices", "Slices", histYaxis, 10, 0, 10, "numSlices_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "numNeutrinos", "Neutrino slices", "Neutrino slices", histYaxis, 10, 0, 10, "numNeutrinos_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "purity", "Slice purity", "Slice purity", histYaxis, nBins, 0, 1, "purity_pandora", dirName);
-  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "comp", "Slice completeness", "Slice completness", histYaxis, nBins, 0, 1, "comp_pandora", dirName);
+  PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "comp", "Slice completeness", "Slice completeness", histYaxis, nBins, 0, 1, "comp_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "score", "Slice ID score", "Slice ID score", histYaxis, nBins, 0, 1, "score_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "recoPdg", "Slice PDG ID", "Slice PDG ID", histYaxis, 4, 11, 15, "recoPdg_pandora", dirName);
   PlotHists(inFile, outFile, "pfpslicevalidation/trueTree", "pfpVertexX", "Reconstructed vertex x", "Reconstructed vertex x (cm)", histYaxis, nBins, -200,200, "pfpVertexX_pandora", dirName);
