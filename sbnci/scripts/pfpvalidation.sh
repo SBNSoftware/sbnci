@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Allows for different naming structure in cfg file
-export ref_sbndcode_ana_hist=$(echo ${ref_pfp_hist})
+export ref_sbndcode_ana_hist=${ref_pfp_hist}
 
 ## Name of plotting script. This should be the only line that needs changing for other CI chains.
 plotScript="$SBNCI_DIR/scripts/sbnciplot_pfpvalidation.C"
