@@ -1,0 +1,20 @@
+BEGIN_PROLOG
+
+sbnd_pfpslicevalidation_ci:
+{
+    module_type:              PFPSliceValidationCI
+    GenieGenModuleLabel:      "generator"
+    PFParticleLabels:         ["pandora"]
+    HitLabel:                 "linecluster"
+    UseBeamSpillXCorrection:  true
+}
+
+sbnd_pfpvalidation_ci:
+{
+    module_type:    PFPValidationCI
+    LArGeantLabel:  "largeant"
+    PFPLabels:      ["pandora"]
+    HitLabel:       "linecluster"
+}
+
+END_PROLOG
