@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Class:       PFPSliceValidationCI                                            //
+// Class:       PFPSliceValidationCI                                          //
 // Plugin Type: analyzer (art v3_02_06)                                       //
-// File:        PFPSliceValidationCI_module.cc                                  //
+// File:        PFPSliceValidationCI_module.cc                                //
 //                                                                            //
 // Generated at Wed Oct  2 03:27:09 2019 by Edward Tyley using cetskelgen     //
 // from cetlib version v3_07_02.                                              //
@@ -126,6 +126,8 @@ class sbnci::PFPSliceValidationCI : public art::EDAnalyzer {
   std::string fHitLabel, fGenieGenModuleLabel;
   std::vector<std::string> fPFParticleLabels;
 
+  bool fUseBeamSpillXCorrection;
+
   art::ServiceHandle<art::TFileService> tfs;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
   geo::GeometryCore const* geom = art::ServiceHandle<geo::Geometry>()->provider();
@@ -160,6 +162,7 @@ sbnci::PFPSliceValidationCI::PFPSliceValidationCI(fhicl::ParameterSet const& pse
     , fHitLabel(pset.get<std::string>("HitLabel"))
     , fGenieGenModuleLabel(pset.get<std::string>("GenieGenModuleLabel"))
     , fPFParticleLabels(pset.get<std::vector<std::string>>("PFParticleLabels"))
+    , fUseBeamSpillXCorrection(pset.get<bool>("UseBeamSpillXCorrection"))
 {
 }
 
@@ -477,13 +480,17 @@ void sbnci::PFPSliceValidationCI::analyze(art::Event const& evt)
         // If we matched a neutrino slice, get the vertex info
         if (nuMatchNeutrino[fPFParticleLabel]) {
 
-	  float xCorrection = propData.ConvertTicksToX(clockData.TPCG4Time2Tick(neutrino.Nu().T())-clockData.Time2Tick(clockData.BeamGateTime()),0,0,0) 
-	    - propData.ConvertTicksToX(0,0,0,0);
-	  if(nu.Vx() >  0) xCorrection = -xCorrection;
-
-          pfpVertexX[fPFParticleLabel] = match.mVtxX - xCorrection;
+          pfpVertexX[fPFParticleLabel] = match.mVtxX;
           pfpVertexY[fPFParticleLabel] = match.mVtxY;
           pfpVertexZ[fPFParticleLabel] = match.mVtxZ;
+
+	  if(fUseBeamSpillXCorrection){
+	    float xCorrection = propData.ConvertTicksToX(clockData.TPCG4Time2Tick(neutrino.Nu().T())-clockData.Time2Tick(clockData.BeamGateTime()),0,0,0) 
+	      - propData.ConvertTicksToX(0,0,0,0);
+	    if(nu.Vx() >  0) xCorrection = -xCorrection;
+
+	    pfpVertexX[fPFParticleLabel] -= xCorrection;
+	  }
 
           pfpVertexDistX[fPFParticleLabel] = pfpVertexX[fPFParticleLabel] - nu.Vx();
           pfpVertexDistY[fPFParticleLabel] = pfpVertexY[fPFParticleLabel] - nu.Vy();
