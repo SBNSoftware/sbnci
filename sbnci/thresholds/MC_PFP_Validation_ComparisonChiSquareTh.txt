@@ -1,4 +1,4 @@
-# this threshold file uses # as filed separator
+# this threshold file uses # as field separator
 # the format is
 # parameter#warning_threshold#failure_threshold
 # the first # separator needs to be appended to the parameter without any space
