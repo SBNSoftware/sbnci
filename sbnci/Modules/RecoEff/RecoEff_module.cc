@@ -60,24 +60,18 @@ public:
 private:
 
   void ClearData();
-  void SetupHitsMap();
+  void SetupHitsMap(art::Event const &e);
   void ReconstructionProcessor(art::Event const &e);
   void TruthProcessor(art::Event const &e);
 
-  std::vector<art::Ptr<recob::PFParticle> > GetPrimaryPFPs();
-  art::Ptr<recob::PFParticle> GetPFP(long unsigned int const &id);
+  std::vector<art::Ptr<recob::PFParticle> > GetPrimaryPFPs(art::Event const &e);
+  art::Ptr<recob::PFParticle> GetPFP(art::Event const &e, long unsigned int const &id);
 
   float Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID);
   float Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID);
   float TrackLength(art::Ptr<recob::Track> const &track);
   float TrueTrackLength(art::Ptr<simb::MCParticle> const &particle);
 
-
-  art::Handle<std::vector<simb::MCTruth> > eHandleNeutrinos;
-  art::Handle<std::vector<recob::Hit> > eHandleHits;
-  art::Handle<std::vector<recob::Track> > eHandleTracks;
-  art::Handle<std::vector<recob::Shower> > eHandleShowers;
-  art::Handle<std::vector<recob::PFParticle> > eHandlePFPs;
 
   detinfo::DetectorClocksData clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
 
@@ -156,28 +150,38 @@ void RecoEff::ClearData()
   hits_map.clear();
 }
 
-void RecoEff::SetupHitsMap()
+void RecoEff::SetupHitsMap(art::Event const &e)
 {
-  for(unsigned hit_i = 0; hit_i < eHandleHits->size(); ++hit_i) {
-    const art::Ptr<recob::Hit> hit(eHandleHits,hit_i);
+  art::Handle<std::vector<recob::Hit> > handleHits;
+  e.getByLabel(fHitsModuleLabel,handleHits);
+
+  for(unsigned hit_i = 0; hit_i < handleHits->size(); ++hit_i) {
+    const art::Ptr<recob::Hit> hit(handleHits,hit_i);
     hits_map[TruthMatchUtils::TrueParticleID(clockData,hit,true)]++;
   }
 }
 
 void RecoEff::ReconstructionProcessor(art::Event const &e)
 {
-  art::FindManyP<recob::Track> pfpTrackAssn(eHandlePFPs,e,fTrackModuleLabel);
-  art::FindManyP<recob::Shower> pfpShowerAssn(eHandlePFPs,e,fShowerModuleLabel);
-  art::FindManyP<recob::Hit> trackHitAssn(eHandleTracks,e,fTrackModuleLabel);
-  art::FindManyP<recob::Hit> showerHitAssn(eHandleShowers,e,fShowerModuleLabel);
+  art::Handle<std::vector<recob::PFParticle> > handlePFPs;
+  art::Handle<std::vector<recob::Track> > handleTracks;
+  art::Handle<std::vector<recob::Shower> > handleShowers;
+  e.getByLabel(fPFParticleModuleLabel,handlePFPs);
+  e.getByLabel(fTrackModuleLabel,handleTracks);
+  e.getByLabel(fShowerModuleLabel,handleShowers);
 
-  const std::vector<art::Ptr<recob::PFParticle> > primaries = GetPrimaryPFPs();
+  art::FindManyP<recob::Track> pfpTrackAssn(handlePFPs,e,fTrackModuleLabel);
+  art::FindManyP<recob::Shower> pfpShowerAssn(handlePFPs,e,fShowerModuleLabel);
+  art::FindManyP<recob::Hit> trackHitAssn(handleTracks,e,fTrackModuleLabel);
+  art::FindManyP<recob::Hit> showerHitAssn(handleShowers,e,fShowerModuleLabel);
+
+  const std::vector<art::Ptr<recob::PFParticle> > primaries = GetPrimaryPFPs(e);
 
   for(auto primary : primaries){
     const std::vector<long unsigned int> daughterIDs = primary->Daughters();
 
     for(auto id: daughterIDs){
-      const art::Ptr<recob::PFParticle> daughter = GetPFP(id);
+      const art::Ptr<recob::PFParticle> daughter = GetPFP(e,id);
       if(daughter.isNull()) continue;
 
       if(daughter->PdgCode() == 13) {
@@ -251,10 +255,13 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 
 void RecoEff::TruthProcessor(art::Event const &e)
 {
-  art::FindManyP<simb::MCParticle> nuParticleAssn(eHandleNeutrinos,e,fLArGeantModuleLabel);
+  art::Handle<std::vector<simb::MCTruth> > handleNeutrinos;
+  e.getByLabel(fNuGenModuleLabel,handleNeutrinos);
 
-  for(unsigned int nu_i = 0; nu_i < eHandleNeutrinos->size(); ++nu_i){
-    const art::Ptr<simb::MCTruth> truthNeutrino(eHandleNeutrinos,nu_i);
+  art::FindManyP<simb::MCParticle> nuParticleAssn(handleNeutrinos,e,fLArGeantModuleLabel);
+
+  for(unsigned int nu_i = 0; nu_i < handleNeutrinos->size(); ++nu_i){
+    const art::Ptr<simb::MCTruth> truthNeutrino(handleNeutrinos,nu_i);
     if(truthNeutrino.isNull()) continue;
     std::vector<art::Ptr<simb::MCParticle> > particles = nuParticleAssn.at(truthNeutrino.key());
 
@@ -316,11 +323,15 @@ void RecoEff::TruthProcessor(art::Event const &e)
   }
 }
 
-std::vector<art::Ptr<recob::PFParticle> > RecoEff::GetPrimaryPFPs()
+std::vector<art::Ptr<recob::PFParticle> > RecoEff::GetPrimaryPFPs(art::Event const &e)
 {
+  art::Handle<std::vector<recob::PFParticle> > handlePFPs;
+  e.getByLabel(fPFParticleModuleLabel,handlePFPs);
+
   std::vector<art::Ptr<recob::PFParticle> > primaries;
-  for(unsigned int pfp_i = 0; pfp_i < eHandlePFPs->size(); ++pfp_i) {
-    const art::Ptr<recob::PFParticle> pfp(eHandlePFPs,pfp_i);
+
+  for(unsigned int pfp_i = 0; pfp_i < handlePFPs->size(); ++pfp_i) {
+    const art::Ptr<recob::PFParticle> pfp(handlePFPs,pfp_i);
     if(pfp->IsPrimary()){
       if(pfp->PdgCode() == 12 || pfp->PdgCode() == -12
          || pfp->PdgCode() == 14 || pfp->PdgCode() == -14){
@@ -331,12 +342,15 @@ std::vector<art::Ptr<recob::PFParticle> > RecoEff::GetPrimaryPFPs()
   return primaries;
 }
 
-art::Ptr<recob::PFParticle> RecoEff::GetPFP(long unsigned int const &id)
+art::Ptr<recob::PFParticle> RecoEff::GetPFP(art::Event const &e, long unsigned int const &id)
 {
+  art::Handle<std::vector<recob::PFParticle> > handlePFPs;
+  e.getByLabel(fPFParticleModuleLabel,handlePFPs);
+
   const art::Ptr<recob::PFParticle> nullReturn;
 
-  for(unsigned int pfp_i = 0; pfp_i < eHandlePFPs->size(); ++pfp_i) {
-    const art::Ptr<recob::PFParticle> pfp(eHandlePFPs,pfp_i);
+  for(unsigned int pfp_i = 0; pfp_i < handlePFPs->size(); ++pfp_i) {
+    const art::Ptr<recob::PFParticle> pfp(handlePFPs,pfp_i);
     if(pfp->Self() == id) return pfp;
   }
   return nullReturn;
@@ -400,16 +414,10 @@ float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
 
 void RecoEff::analyze(art::Event const &e)
 {
-  e.getByLabel(fNuGenModuleLabel,eHandleNeutrinos);
-  e.getByLabel(fHitsModuleLabel,eHandleHits);
-  e.getByLabel(fTrackModuleLabel,eHandleTracks);
-  e.getByLabel(fShowerModuleLabel,eHandleShowers);
-  e.getByLabel(fPFParticleModuleLabel,eHandlePFPs);
-
   clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(e);
 
   ClearData();
-  SetupHitsMap();
+  SetupHitsMap(e);
   ReconstructionProcessor(e);
   TruthProcessor(e);
 }
