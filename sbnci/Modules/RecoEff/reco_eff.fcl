@@ -28,7 +28,7 @@ physics:
   analyzers:{
 
   recoEff: {
-    module_type: "RecoEff"
+    module_type:                "RecoEff"
     NuGenModuleLabel:		"generator"
     LArGeantModuleLabel:      	"largeant"
     TrackModuleLabel:         	"pandoraTrack"
