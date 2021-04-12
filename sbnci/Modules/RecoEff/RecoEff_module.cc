@@ -348,8 +348,7 @@ std::vector<art::Ptr<recob::PFParticle> > RecoEff::GetPrimaryPFPs(art::Event con
   for(unsigned int pfp_i = 0; pfp_i < handlePFPs->size(); ++pfp_i) {
     const art::Ptr<recob::PFParticle> pfp(handlePFPs,pfp_i);
     if(pfp->IsPrimary()){
-      if(pfp->PdgCode() == 12 || pfp->PdgCode() == -12
-         || pfp->PdgCode() == 14 || pfp->PdgCode() == -14){
+      if(std::abs(pfp->PdgCode()) == 12 || std::abs(pfp->PdgCode()) == 14) {
         primaries.push_back(pfp);
       }
     }
@@ -378,7 +377,7 @@ float RecoEff::Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
     objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
   }
-  return objectHitsMap[trackID]/static_cast<float>(objectHits.size());
+  return (objectHits.size() == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(objectHits.size());
 }
 
 float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID)
@@ -388,7 +387,7 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
     objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
   }
-  return objectHitsMap[trackID]/static_cast<float>(hits_map[trackID]);
+  return (hits_map[trackID] == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(hits_map[trackID]);
 }
 
 float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
@@ -400,10 +399,10 @@ float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
 
   for(int point = 1; point < nTrajPoints; ++point) {
     TVector3 l = track->LocationAtPoint<TVector3>(point);
-    if(l.X() == -999 || l.Y() == -999 || l.Z() == -999) break;
+    if(!track->HasValidPoint(point)) break;
 
     TVector3 diff = track->LocationAtPoint<TVector3>(point) - track->LocationAtPoint<TVector3>(point-1);
-    length += TMath::Sqrt(diff.Mag2());
+    length += diff.Mag2();
   }
   return length;
 }
@@ -421,7 +420,7 @@ float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
        l.Z() > 500 || l.Z() < 0) break;
 
     TVector3 diff = particle->Position(point).Vect() - particle->Position(point-1).Vect();
-    length += TMath::Sqrt(diff.Mag2());
+    length += diff.Mag2();
   }
   return length;
 }
