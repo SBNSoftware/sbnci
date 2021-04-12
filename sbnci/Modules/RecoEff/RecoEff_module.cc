@@ -76,7 +76,6 @@ private:
 
   float Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID);
   float Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHits, int const &trackID);
-  float TrackLength(art::Ptr<recob::Track> const &track);
   float TrueTrackLength(art::Ptr<simb::MCParticle> const &particle);
 
 
@@ -255,7 +254,7 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	int trackID = TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,trackHits,true);
 	float comp = Completeness(trackHits,trackID);
 	float pur = Purity(trackHits,trackID);
-	float length = TrackLength(track);
+	float length = track->Length();
 
 	if(fNTracksMap[trackID] == 0){
 	  fTrackCompMap[trackID] = comp;
@@ -420,23 +419,6 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
     objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
   }
   return (fHitsMap[trackID] == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(fHitsMap[trackID]);
-}
-
-float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
-{
-  float length = 0;
-  int nTrajPoints = track->NumberTrajectoryPoints();
-
-  if(nTrajPoints < 2) return length;
-
-  for(int point = 1; point < nTrajPoints; ++point) {
-    TVector3 l = track->LocationAtPoint<TVector3>(point);
-    if(!track->HasValidPoint(point)) break;
-
-    TVector3 diff = track->LocationAtPoint<TVector3>(point) - track->LocationAtPoint<TVector3>(point-1);
-    length += diff.Mag();
-  }
-  return length;
 }
 
 float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
