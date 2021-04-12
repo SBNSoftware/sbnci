@@ -449,8 +449,8 @@ float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
 
   for(unsigned int point = 1; point < nTrajPoints; ++point) {
     TVector3 l = particle->Position(point).Vect();
-    if(l.X() > 200 || l.X() < -200 || l.Y() > 200 || l.Y() < -200 ||
-       l.Z() > 500 || l.Z() < 0) break;
+    if(l.X() > fTPCGeo.MaxX() || l.X() < fTPCGeo.MinX() || l.Y() > fTPCGeo.MaxY() || l.Y() < fTPCGeo.MinY() ||
+       l.Z() > fTPCGeo.MaxZ() || l.Z() < fTPCGeo.MinZ()) break;
 
     TVector3 diff = particle->Position(point).Vect() - particle->Position(point-1).Vect();
     length += diff.Mag2();
