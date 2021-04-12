@@ -97,19 +97,18 @@ private:
 
   TTree *fParticleTree;
 
-  int mc_trackID, mc_PDG, reco_nTracks, reco_nShowers;
-  float mc_x0, mc_y0, mc_z0, mc_xEnd, mc_yEnd, mc_zEnd, mc_pX0,
-    mc_pY0, mc_pZ0, mc_energy0, mc_momentum, mc_pXEnd, mc_pYEnd, mc_pZEnd,
-    mc_energyEnd, mc_mass, mc_theta_xy, mc_theta_yz, mc_theta_xz, mc_length, 
-    reco_shower_purity, reco_shower_completeness, reco_track_purity, 
-    reco_track_completeness, reco_track_length, reco_shower_dEdx;
-  bool reco_isReconstructed;
+  int fMC_trackID, fMC_PDG, fReco_nTracks, fReco_nShowers;
+  float fMC_x0, fMC_y0, fMC_z0, fMC_xEnd, fMC_yEnd, fMC_zEnd, fMC_pX0,
+    fMC_pY0, fMC_pZ0, fMC_energy0, fMC_momentum, fMC_pXEnd, fMC_pYEnd, fMC_pZEnd,
+    fMC_energyEnd, fMC_mass, fMC_theta_xy, fMC_theta_yz, fMC_theta_xz, fMC_length, 
+    fReco_showerPurity, fReco_showerCompleteness, fReco_trackPurity, 
+    fReco_trackCompleteness, fReco_trackLength, fReco_showerdEdx;
+  bool fReco_isReconstructed;
 
-  std::map<int,int> n_showers_map, n_tracks_map;
-  std::map<int,float> shower_comp_map, shower_pur_map, track_comp_map,
-    track_pur_map, track_length_map, shower_dEdx_map;
-  std::map<int,int> hits_map;
-
+  std::map<int,int> fNShowersMap, fNTracksMap;
+  std::map<int,float> fShowerCompMap, fShowerPurMap, fTrackCompMap,
+    fTrackPurMap, fTrackLengthMap, fShowerdEdxMap;
+  std::map<int,int> fHitsMap;
 };
 
 
@@ -135,37 +134,37 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
     art::ServiceHandle<art::TFileService> tfs;
     fParticleTree = tfs->make<TTree>("ParticleTree","Particle data TTree");
 
-    fParticleTree->Branch("mc_trackID",&mc_trackID);
-    fParticleTree->Branch("mc_PDG",&mc_PDG);
-    fParticleTree->Branch("mc_x0",&mc_x0);
-    fParticleTree->Branch("mc_y0",&mc_y0);
-    fParticleTree->Branch("mc_z0",&mc_z0);
-    fParticleTree->Branch("mc_xEnd",&mc_xEnd);
-    fParticleTree->Branch("mc_yEnd",&mc_yEnd);
-    fParticleTree->Branch("mc_zEnd",&mc_zEnd);
-    fParticleTree->Branch("mc_pX0",&mc_pX0);
-    fParticleTree->Branch("mc_pY0",&mc_pY0);
-    fParticleTree->Branch("mc_pZ0",&mc_pZ0);
-    fParticleTree->Branch("mc_energy0",&mc_energy0);
-    fParticleTree->Branch("mc_momentum",&mc_momentum);
-    fParticleTree->Branch("mc_pXEnd",&mc_pXEnd);
-    fParticleTree->Branch("mc_pYEnd",&mc_pYEnd);
-    fParticleTree->Branch("mc_pZEnd",&mc_pZEnd);
-    fParticleTree->Branch("mc_energyEnd",&mc_energyEnd);
-    fParticleTree->Branch("mc_mass",&mc_mass);
-    fParticleTree->Branch("mc_theta_xy",&mc_theta_xy);
-    fParticleTree->Branch("mc_theta_yz",&mc_theta_yz);
-    fParticleTree->Branch("mc_theta_xz",&mc_theta_xz);
-    fParticleTree->Branch("mc_length",&mc_length);
-    fParticleTree->Branch("reco_isReconstructed",&reco_isReconstructed);
-    fParticleTree->Branch("reco_nTracks",&reco_nTracks);
-    fParticleTree->Branch("reco_nShowers",&reco_nShowers);
-    fParticleTree->Branch("reco_track_purity",&reco_track_purity);
-    fParticleTree->Branch("reco_track_completeness",&reco_track_completeness);
-    fParticleTree->Branch("reco_shower_purity",&reco_shower_purity);
-    fParticleTree->Branch("reco_shower_completeness",&reco_shower_completeness);
-    fParticleTree->Branch("reco_track_length",&reco_track_length);
-    fParticleTree->Branch("reco_shower_dEdx",&reco_shower_dEdx);
+    fParticleTree->Branch("mc_trackID",&fMC_trackID);
+    fParticleTree->Branch("mc_PDG",&fMC_PDG);
+    fParticleTree->Branch("mc_x0",&fMC_x0);
+    fParticleTree->Branch("mc_y0",&fMC_y0);
+    fParticleTree->Branch("mc_z0",&fMC_z0);
+    fParticleTree->Branch("mc_xEnd",&fMC_xEnd);
+    fParticleTree->Branch("mc_yEnd",&fMC_yEnd);
+    fParticleTree->Branch("mc_zEnd",&fMC_zEnd);
+    fParticleTree->Branch("mc_pX0",&fMC_pX0);
+    fParticleTree->Branch("mc_pY0",&fMC_pY0);
+    fParticleTree->Branch("mc_pZ0",&fMC_pZ0);
+    fParticleTree->Branch("mc_energy0",&fMC_energy0);
+    fParticleTree->Branch("mc_momentum",&fMC_momentum);
+    fParticleTree->Branch("mc_pXEnd",&fMC_pXEnd);
+    fParticleTree->Branch("mc_pYEnd",&fMC_pYEnd);
+    fParticleTree->Branch("mc_pZEnd",&fMC_pZEnd);
+    fParticleTree->Branch("mc_energyEnd",&fMC_energyEnd);
+    fParticleTree->Branch("mc_mass",&fMC_mass);
+    fParticleTree->Branch("mc_theta_xy",&fMC_theta_xy);
+    fParticleTree->Branch("mc_theta_yz",&fMC_theta_yz);
+    fParticleTree->Branch("mc_theta_xz",&fMC_theta_xz);
+    fParticleTree->Branch("mc_length",&fMC_length);
+    fParticleTree->Branch("reco_isReconstructed",&fReco_isReconstructed);
+    fParticleTree->Branch("reco_nTracks",&fReco_nTracks);
+    fParticleTree->Branch("reco_nShowers",&fReco_nShowers);
+    fParticleTree->Branch("reco_track_purity",&fReco_trackPurity);
+    fParticleTree->Branch("reco_track_completeness",&fReco_trackCompleteness);
+    fParticleTree->Branch("reco_shower_purity",&fReco_showerPurity);
+    fParticleTree->Branch("reco_shower_completeness",&fReco_showerCompleteness);
+    fParticleTree->Branch("reco_track_length",&fReco_trackLength);
+    fParticleTree->Branch("reco_shower_dEdx",&fReco_showerdEdx);
 
 
     fXOutEdge   = fTPCGeo.MaxX() - fXEdgeCut;
@@ -184,28 +183,28 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
 
 void RecoEff::ClearMaps()
 {
-  n_tracks_map.clear(); track_comp_map.clear(); track_pur_map.clear();
-  n_showers_map.clear(); shower_comp_map.clear(); shower_pur_map.clear();
-  track_length_map.clear(); shower_dEdx_map.clear();
-  hits_map.clear();
+  fNTracksMap.clear(); fTrackCompMap.clear(); fTrackPurMap.clear();
+  fNShowersMap.clear(); fShowerCompMap.clear(); fShowerPurMap.clear();
+  fTrackLengthMap.clear(); fShowerdEdxMap.clear();
+  fHitsMap.clear();
 }
 
 void RecoEff::ResetData()
 {
-  mc_trackID = def_int; mc_PDG = def_int; 
+  fMC_trackID = def_int; fMC_PDG = def_int; 
 
-  mc_x0 = def_float; mc_y0 = def_float; mc_z0 = def_float; mc_xEnd = def_float; mc_yEnd = def_float; 
-  mc_zEnd = def_float; mc_pX0 = def_float; mc_pY0 = def_float; mc_pZ0 = def_float; mc_energy0 = def_float; 
-  mc_momentum = def_float; mc_pXEnd = def_float; mc_pYEnd = def_float; mc_pZEnd = def_float; 
-  mc_energyEnd = def_float; mc_mass = def_float; mc_theta_xy = def_float; mc_theta_yz = def_float;
-  mc_theta_xz = def_float; mc_length = def_float; 
+  fMC_x0 = def_float; fMC_y0 = def_float; fMC_z0 = def_float; fMC_xEnd = def_float; fMC_yEnd = def_float; 
+  fMC_zEnd = def_float; fMC_pX0 = def_float; fMC_pY0 = def_float; fMC_pZ0 = def_float; fMC_energy0 = def_float; 
+  fMC_momentum = def_float; fMC_pXEnd = def_float; fMC_pYEnd = def_float; fMC_pZEnd = def_float; 
+  fMC_energyEnd = def_float; fMC_mass = def_float; fMC_theta_xy = def_float; fMC_theta_yz = def_float;
+  fMC_theta_xz = def_float; fMC_length = def_float; 
 
-  reco_nTracks = def_int; reco_nShowers = def_int; 
+  fReco_nTracks = def_int; fReco_nShowers = def_int; 
   
-  reco_shower_purity = def_float; reco_shower_completeness = def_float; reco_track_purity = def_float; 
-  reco_track_completeness = def_float; reco_track_length = def_float; reco_shower_dEdx = def_float; 
+  fReco_showerPurity = def_float; fReco_showerCompleteness = def_float; fReco_trackPurity = def_float; 
+  fReco_trackCompleteness = def_float; fReco_trackLength = def_float; fReco_showerdEdx = def_float; 
 
-  reco_isReconstructed = false;
+  fReco_isReconstructed = false;
 }
 
 void RecoEff::SetupHitsMap(art::Event const &e)
@@ -215,7 +214,7 @@ void RecoEff::SetupHitsMap(art::Event const &e)
 
   for(unsigned hit_i = 0; hit_i < handleHits->size(); ++hit_i) {
     const art::Ptr<recob::Hit> hit(handleHits,hit_i);
-    hits_map[TruthMatchUtils::TrueParticleID(clockData,hit,true)]++;
+    fHitsMap[TruthMatchUtils::TrueParticleID(clockData,hit,true)]++;
   }
 }
 
@@ -258,18 +257,18 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	float pur = Purity(trackHits,trackID);
 	float length = TrackLength(track);
 
-	if(n_tracks_map[trackID] == 0){
-	  track_comp_map[trackID] = comp;
-	  track_pur_map[trackID] = pur;
-	  track_length_map[trackID] = length;
+	if(fNTracksMap[trackID] == 0){
+	  fTrackCompMap[trackID] = comp;
+	  fTrackPurMap[trackID] = pur;
+	  fTrackLengthMap[trackID] = length;
 	}
-	else if(comp > track_comp_map[trackID]) {
-	  track_comp_map[trackID] = comp;
-	  track_pur_map[trackID] = pur;
-	  track_length_map[trackID] = length;
+	else if(comp > fTrackCompMap[trackID]) {
+	  fTrackCompMap[trackID] = comp;
+	  fTrackPurMap[trackID] = pur;
+	  fTrackLengthMap[trackID] = length;
 	}
 
-	n_tracks_map[trackID]++;
+	fNTracksMap[trackID]++;
       }
       else if(daughter->PdgCode() == 11) {
 	const std::vector<art::Ptr<recob::Shower> > showersVec = pfpShowerAssn.at(daughter.key());
@@ -291,18 +290,18 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	float dEdx = def_float;
 	if(dEdxVec.size() != 0) dEdx = dEdxVec[best_plane];
 
-	if(n_showers_map[trackID] == 0){
-	  shower_comp_map[trackID] = comp;
-	  shower_pur_map[trackID] = pur;
-	  shower_dEdx_map[trackID] = dEdx;
+	if(fNShowersMap[trackID] == 0){
+	  fShowerCompMap[trackID] = comp;
+	  fShowerPurMap[trackID] = pur;
+	  fShowerdEdxMap[trackID] = dEdx;
 	}
-	else if(comp > shower_comp_map[trackID]) {
-	  shower_comp_map[trackID] = comp;
-	  shower_pur_map[trackID] = pur;
-	  shower_dEdx_map[trackID] = dEdx;
+	else if(comp > fShowerCompMap[trackID]) {
+	  fShowerCompMap[trackID] = comp;
+	  fShowerPurMap[trackID] = pur;
+	  fShowerdEdxMap[trackID] = dEdx;
 	}
 
-	n_showers_map[trackID]++;
+	fNShowersMap[trackID]++;
       }
     }
   }
@@ -325,46 +324,46 @@ void RecoEff::TruthProcessor(art::Event const &e)
 
       ResetData();
 
-      mc_trackID = particle->TrackId();
-      mc_PDG = particle->PdgCode();
-      mc_x0 = particle->Vx();
-      mc_y0 = particle->Vy();
-      mc_z0 = particle->Vz();
+      fMC_trackID = particle->TrackId();
+      fMC_PDG = particle->PdgCode();
+      fMC_x0 = particle->Vx();
+      fMC_y0 = particle->Vy();
+      fMC_z0 = particle->Vz();
 
-      if(std::abs(mc_PDG) == 11 || std::abs(mc_PDG) == 22) {
-	if(TMath::Abs(mc_x0) > fXOutEdgeShowers || TMath::Abs(mc_x0) < fXCathodeEdge ||
-	   TMath::Abs(mc_y0) > fYEdgeShowers || mc_z0 < fZFrontEdgeShowers || mc_z0 > fZBackEdgeShowers) continue;
+      if(std::abs(fMC_PDG) == 11 || std::abs(fMC_PDG) == 22) {
+	if(TMath::Abs(fMC_x0) > fXOutEdgeShowers || TMath::Abs(fMC_x0) < fXCathodeEdge ||
+	   TMath::Abs(fMC_y0) > fYEdgeShowers || fMC_z0 < fZFrontEdgeShowers || fMC_z0 > fZBackEdgeShowers) continue;
       }
-      else if(TMath::Abs(mc_x0) > fXOutEdge || TMath::Abs(mc_x0) < fXCathodeEdge ||
-	      TMath::Abs(mc_y0) > fYEdge || mc_z0 < fZFrontEdge || mc_z0 > fZBackEdge) continue;
+      else if(TMath::Abs(fMC_x0) > fXOutEdge || TMath::Abs(fMC_x0) < fXCathodeEdge ||
+	      TMath::Abs(fMC_y0) > fYEdge || fMC_z0 < fZFrontEdge || fMC_z0 > fZBackEdge) continue;
 
-      mc_xEnd = particle->EndX();
-      mc_yEnd = particle->EndY();
-      mc_zEnd = particle->EndZ();
-      mc_pX0 = particle->Px();
-      mc_pY0 = particle->Py();
-      mc_pZ0 = particle->Pz();
-      mc_energy0 = particle->E();
-      mc_momentum = particle->P();
-      mc_pXEnd = particle->EndPx();
-      mc_pYEnd = particle->EndPy();
-      mc_pZEnd = particle->EndPz();
-      mc_energyEnd = particle->EndE();
-      mc_mass = particle->Mass();
-      mc_theta_xy = TMath::RadToDeg() * TMath::ATan(mc_pX0/mc_pY0);
-      mc_theta_yz = TMath::RadToDeg() * TMath::ATan(mc_pY0/mc_pZ0);
-      mc_theta_xz = TMath::RadToDeg() * TMath::ATan(mc_pX0/mc_pZ0);
-      mc_length = TrueTrackLength(particle);
+      fMC_xEnd = particle->EndX();
+      fMC_yEnd = particle->EndY();
+      fMC_zEnd = particle->EndZ();
+      fMC_pX0 = particle->Px();
+      fMC_pY0 = particle->Py();
+      fMC_pZ0 = particle->Pz();
+      fMC_energy0 = particle->E();
+      fMC_momentum = particle->P();
+      fMC_pXEnd = particle->EndPx();
+      fMC_pYEnd = particle->EndPy();
+      fMC_pZEnd = particle->EndPz();
+      fMC_energyEnd = particle->EndE();
+      fMC_mass = particle->Mass();
+      fMC_theta_xy = TMath::RadToDeg() * TMath::ATan(fMC_pX0/fMC_pY0);
+      fMC_theta_yz = TMath::RadToDeg() * TMath::ATan(fMC_pY0/fMC_pZ0);
+      fMC_theta_xz = TMath::RadToDeg() * TMath::ATan(fMC_pX0/fMC_pZ0);
+      fMC_length = TrueTrackLength(particle);
 
-      if(n_tracks_map[mc_trackID] > 0 || n_showers_map[mc_trackID] > 0) reco_isReconstructed = true;
-      reco_nTracks = n_tracks_map[mc_trackID];
-      reco_nShowers = n_showers_map[mc_trackID];
-      reco_shower_purity = shower_pur_map[mc_trackID];
-      reco_shower_completeness = shower_comp_map[mc_trackID];
-      reco_track_purity = track_pur_map[mc_trackID];
-      reco_track_completeness = track_comp_map[mc_trackID];
-      reco_track_length = track_length_map[mc_trackID];
-      reco_shower_dEdx = shower_dEdx_map[mc_trackID];
+      if(fNTracksMap[fMC_trackID] > 0 || fNShowersMap[fMC_trackID] > 0) fReco_isReconstructed = true;
+      fReco_nTracks = fNTracksMap[fMC_trackID];
+      fReco_nShowers = fNShowersMap[fMC_trackID];
+      fReco_showerPurity = fShowerPurMap[fMC_trackID];
+      fReco_showerCompleteness = fShowerCompMap[fMC_trackID];
+      fReco_trackPurity = fTrackPurMap[fMC_trackID];
+      fReco_trackCompleteness = fTrackCompMap[fMC_trackID];
+      fReco_trackLength = fTrackLengthMap[fMC_trackID];
+      fReco_showerdEdx = fShowerdEdxMap[fMC_trackID];
 
       fParticleTree->Fill();
     }
@@ -420,7 +419,7 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
     objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
   }
-  return (hits_map[trackID] == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(hits_map[trackID]);
+  return (fHitsMap[trackID] == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(fHitsMap[trackID]);
 }
 
 float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
@@ -435,7 +434,7 @@ float RecoEff::TrackLength(art::Ptr<recob::Track> const &track)
     if(!track->HasValidPoint(point)) break;
 
     TVector3 diff = track->LocationAtPoint<TVector3>(point) - track->LocationAtPoint<TVector3>(point-1);
-    length += diff.Mag2();
+    length += diff.Mag();
   }
   return length;
 }
@@ -453,7 +452,7 @@ float RecoEff::TrueTrackLength(art::Ptr<simb::MCParticle> const &particle)
        l.Z() > fTPCGeo.MaxZ() || l.Z() < fTPCGeo.MinZ()) break;
 
     TVector3 diff = particle->Position(point).Vect() - particle->Position(point-1).Vect();
-    length += diff.Mag2();
+    length += diff.Mag();
   }
   return length;
 }
