@@ -44,6 +44,9 @@
 #include "art_root_io/TFileService.h"
 #include "TTree.h"
 
+//SBNDCODE
+#include "sbndcode/Geometry/GeometryWrappers/TPCGeoAlg.h"
+
 constexpr int def_int     = -999;
 constexpr float def_float = -999.0f;
 
@@ -79,8 +82,18 @@ private:
 
   detinfo::DetectorClocksData clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
 
+  sbnd::TPCGeoAlg fTPCGeo;
+  
   std::string fNuGenModuleLabel, fLArGeantModuleLabel, fPFParticleModuleLabel,
     fTrackModuleLabel, fShowerModuleLabel, fHitsModuleLabel;
+
+  float fXEdgeCut, fYEdgeCut, fZFrontCut, fZBackCut,
+    fXEdgeCutShowers, fYEdgeCutShowers, fZFrontCutShowers, fZBackCutShowers,
+    fCathodeXCut;
+
+  float fXOutEdge, fYEdge, fZFrontEdge, fZBackEdge,
+    fXOutEdgeShowers, fYEdgeShowers, fZFrontEdgeShowers, fZBackEdgeShowers,
+    fXCathodeEdge;
 
   TTree *fParticleTree;
 
@@ -107,7 +120,16 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
   fPFParticleModuleLabel (pset.get<std::string>("PFParticleModuleLabel")),
   fTrackModuleLabel (pset.get<std::string>("TrackModuleLabel")),
   fShowerModuleLabel (pset.get<std::string>("ShowerModuleLabel")),
-  fHitsModuleLabel (pset.get<std::string>("HitsModuleLabel"))
+  fHitsModuleLabel (pset.get<std::string>("HitsModuleLabel")),
+  fXEdgeCut (pset.get<float>("XEdgeCut",15.f)),
+  fYEdgeCut (pset.get<float>("YEdgeCut",15.f)),
+  fZFrontCut (pset.get<float>("ZFrontCut",30.f)),
+  fZBackCut (pset.get<float>("ZBackCut",65.f)),
+  fXEdgeCutShowers (pset.get<float>("XEdgeCutShowers",25.f)),
+  fYEdgeCutShowers (pset.get<float>("YEdgeCutShowers",25.f)),
+  fZFrontCutShowers (pset.get<float>("ZFrontCutShowers",30.f)),
+  fZBackCutShowers (pset.get<float>("ZBackCutShowers",50.f)),
+  fCathodeXCut (pset.get<float>("CathodeXCut",1.5f))
 
   {
     art::ServiceHandle<art::TFileService> tfs;
@@ -144,6 +166,20 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
     fParticleTree->Branch("reco_shower_completeness",&reco_shower_completeness);
     fParticleTree->Branch("reco_track_length",&reco_track_length);
     fParticleTree->Branch("reco_shower_dEdx",&reco_shower_dEdx);
+
+
+    fXOutEdge   = fTPCGeo.MaxX() - fXEdgeCut;
+    fYEdge      = fTPCGeo.MaxY() - fYEdgeCut;
+    fZFrontEdge = fTPCGeo.MinZ() + fZFrontCut;
+    fZBackEdge  = fTPCGeo.MaxZ() - fZBackCut;
+
+    fXOutEdgeShowers   = fTPCGeo.MaxX() - fXEdgeCutShowers;
+    fYEdgeShowers      = fTPCGeo.MaxY() - fYEdgeCutShowers;
+    fZFrontEdgeShowers = fTPCGeo.MinZ() + fZFrontCutShowers;
+    fZBackEdgeShowers  = fTPCGeo.MaxZ() - fZBackCutShowers;
+
+    fXCathodeEdge = 0 + fCathodeXCut;
+
   }
 
 void RecoEff::ClearMaps()
@@ -211,11 +247,10 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	if(tracksVec.size() != 1) continue;
 	const art::Ptr<recob::Track> track = tracksVec[0];
 
-	float xOutEdge = 185, xInEdge = 1.5, yEdge = 185, zFrontEdge = 30, zBackEdge = 435;
 	float x = track->Start().X(), y = track->Start().Y(), z = track->Start().Z();
 
-	if(TMath::Abs(x) > xOutEdge || TMath::Abs(x) < xInEdge ||
-	   TMath::Abs(y) > yEdge || z < zFrontEdge || z > zBackEdge) continue;
+	if(TMath::Abs(x) > fXOutEdge || TMath::Abs(x) < fXCathodeEdge ||
+	   TMath::Abs(y) > fYEdge || z < fZFrontEdge || z > fZBackEdge) continue;
 
 	std::vector<art::Ptr<recob::Hit> > trackHits = trackHitAssn.at(track.key());
 	int trackID = TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,trackHits,true);
@@ -241,12 +276,10 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	if(showersVec.size() != 1) continue;
 	const art::Ptr<recob::Shower> shower = showersVec[0];
 
-	float xOutEdge = 175, xInEdge = 1.5, yEdge = 175, zFrontEdge = 30, zBackEdge = 450;
-	float x = shower->ShowerStart().X(), y = shower->ShowerStart().Y(), 
-	  z = shower->ShowerStart().Z();
+	float x = shower->ShowerStart().X(), y = shower->ShowerStart().Y(), z = shower->ShowerStart().Z();
 
-	if(TMath::Abs(x) > xOutEdge || TMath::Abs(x) < xInEdge ||
-	   TMath::Abs(y) > yEdge || z < zFrontEdge || z > zBackEdge) continue;
+	if(TMath::Abs(x) > fXOutEdgeShowers || TMath::Abs(x) < fXCathodeEdge ||
+	   TMath::Abs(y) > fYEdgeShowers || z < fZFrontEdgeShowers || z > fZBackEdgeShowers) continue;
 
 	std::vector<art::Ptr<recob::Hit> > showerHits = showerHitAssn.at(shower.key());
 	int trackID = TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,showerHits,true);
@@ -298,12 +331,12 @@ void RecoEff::TruthProcessor(art::Event const &e)
       mc_y0 = particle->Vy();
       mc_z0 = particle->Vz();
 
-      float xOutEdge = 185, xInEdge = 1.5, yEdge = 185, zFrontEdge = 30, zBackEdge = 435;
-      if(mc_PDG == 11 || mc_PDG == -11) {
-	xOutEdge = 175, xInEdge = 1.5, yEdge = 175, zFrontEdge = 30, zBackEdge = 450;}
-
-      if(TMath::Abs(mc_x0) > xOutEdge || TMath::Abs(mc_x0) < xInEdge ||
-	 TMath::Abs(mc_y0) > yEdge || mc_z0 < zFrontEdge || mc_z0 > zBackEdge) continue;
+      if(std::abs(mc_PDG) == 11 || std::abs(mc_PDG) == 22) {
+	if(TMath::Abs(mc_x0) > fXOutEdgeShowers || TMath::Abs(mc_x0) < fXCathodeEdge ||
+	   TMath::Abs(mc_y0) > fYEdgeShowers || mc_z0 < fZFrontEdgeShowers || mc_z0 > fZBackEdgeShowers) continue;
+      }
+      else if(TMath::Abs(mc_x0) > fXOutEdge || TMath::Abs(mc_x0) < fXCathodeEdge ||
+	      TMath::Abs(mc_y0) > fYEdge || mc_z0 < fZFrontEdge || mc_z0 > fZBackEdge) continue;
 
       mc_xEnd = particle->EndX();
       mc_yEnd = particle->EndY();
