@@ -44,6 +44,9 @@
 #include "art_root_io/TFileService.h"
 #include "TTree.h"
 
+constexpr int def_int     = -999;
+constexpr float def_float = -999.0f;
+
 class RecoEff;
 
 class RecoEff : public art::EDAnalyzer {
@@ -59,7 +62,8 @@ public:
 
 private:
 
-  void ClearData();
+  void ClearMaps();
+  void ResetData();
   void SetupHitsMap(art::Event const &e);
   void ReconstructionProcessor(art::Event const &e);
   void TruthProcessor(art::Event const &e);
@@ -80,12 +84,12 @@ private:
 
   TTree *fParticleTree;
 
-  int mc_trackID, mc_PDG;
+  int mc_trackID, mc_PDG, reco_nTracks, reco_nShowers;
   float mc_x0, mc_y0, mc_z0, mc_xEnd, mc_yEnd, mc_zEnd, mc_pX0,
     mc_pY0, mc_pZ0, mc_energy0, mc_momentum, mc_pXEnd, mc_pYEnd, mc_pZEnd,
     mc_energyEnd, mc_mass, mc_theta_xy, mc_theta_yz, mc_theta_xz, mc_length, 
-    reco_nTracks, reco_nShowers, reco_shower_purity, reco_shower_completeness,
-    reco_track_purity, reco_track_completeness, reco_track_length, reco_shower_dEdx;
+    reco_shower_purity, reco_shower_completeness, reco_track_purity, 
+    reco_track_completeness, reco_track_length, reco_shower_dEdx;
   bool reco_isReconstructed;
 
   std::map<int,int> n_showers_map, n_tracks_map;
@@ -142,12 +146,30 @@ RecoEff::RecoEff(fhicl::ParameterSet const &pset)
     fParticleTree->Branch("reco_shower_dEdx",&reco_shower_dEdx);
   }
 
-void RecoEff::ClearData()
+void RecoEff::ClearMaps()
 {
   n_tracks_map.clear(); track_comp_map.clear(); track_pur_map.clear();
   n_showers_map.clear(); shower_comp_map.clear(); shower_pur_map.clear();
   track_length_map.clear(); shower_dEdx_map.clear();
   hits_map.clear();
+}
+
+void RecoEff::ResetData()
+{
+  mc_trackID = def_int; mc_PDG = def_int; 
+
+  mc_x0 = def_float; mc_y0 = def_float; mc_z0 = def_float; mc_xEnd = def_float; mc_yEnd = def_float; 
+  mc_zEnd = def_float; mc_pX0 = def_float; mc_pY0 = def_float; mc_pZ0 = def_float; mc_energy0 = def_float; 
+  mc_momentum = def_float; mc_pXEnd = def_float; mc_pYEnd = def_float; mc_pZEnd = def_float; 
+  mc_energyEnd = def_float; mc_mass = def_float; mc_theta_xy = def_float; mc_theta_yz = def_float;
+  mc_theta_xz = def_float; mc_length = def_float; 
+
+  reco_nTracks = def_int; reco_nShowers = def_int; 
+  
+  reco_shower_purity = def_float; reco_shower_completeness = def_float; reco_track_purity = def_float; 
+  reco_track_completeness = def_float; reco_track_length = def_float; reco_shower_dEdx = def_float; 
+
+  reco_isReconstructed = false;
 }
 
 void RecoEff::SetupHitsMap(art::Event const &e)
@@ -233,7 +255,7 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 
 	std::vector<double> dEdxVec = shower->dEdx();
 	int best_plane = shower->best_plane();
-	float dEdx = -999;
+	float dEdx = def_float;
 	if(dEdxVec.size() != 0) dEdx = dEdxVec[best_plane];
 
 	if(n_showers_map[trackID] == 0){
@@ -268,14 +290,7 @@ void RecoEff::TruthProcessor(art::Event const &e)
     for(auto particle : particles){
       if(particle->Mother() != 0 || particle->StatusCode() != 1) continue;
 
-      mc_trackID = -999; mc_PDG = -999; mc_x0 = -999; mc_y0 = -999; mc_z0 = -999;
-      mc_xEnd = -999; mc_yEnd = -999; mc_zEnd = -999; mc_pX0 = -999; mc_pY0 = -999;
-      mc_pZ0 = -999; mc_energy0 = -999; mc_momentum = -999; mc_pXEnd = -999; mc_pYEnd = -999;
-      mc_pZEnd = -999; mc_energyEnd = -999; mc_mass = -999; mc_theta_xy = -999; mc_theta_yz = -999;
-      mc_theta_xz = -999; mc_length = -999; reco_nTracks = -999; reco_nShowers = -999; 
-      reco_shower_purity = -999; reco_shower_completeness = -999; reco_track_purity = -999; 
-      reco_track_completeness = -999; reco_track_length = -999; reco_shower_dEdx = -999; 
-      reco_isReconstructed = false;
+      ResetData();
 
       mc_trackID = particle->TrackId();
       mc_PDG = particle->PdgCode();
@@ -416,7 +431,7 @@ void RecoEff::analyze(art::Event const &e)
 {
   clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(e);
 
-  ClearData();
+  ClearMaps();
   SetupHitsMap(e);
   ReconstructionProcessor(e);
   TruthProcessor(e);
