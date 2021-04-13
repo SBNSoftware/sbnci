@@ -2,9 +2,9 @@ add_subdirectory(MCRecoUtils)
 add_subdirectory(NoiseTest)
 add_subdirectory(dEdx)
 add_subdirectory(ShowerValidation)
+add_subdirectory(RecoEff)
 add_subdirectory(PFPValidation)
 
 install_headers()
 install_fhicl()
 install_source()
-

@@ -1,0 +1,50 @@
+# this threshold file uses # as field separator
+# the format is
+# parameter#warning_threshold#failure_threshold
+# the first # separator needs to be appended to the parameter without any space
+
+muonCompare/muon_theta_xz#0.1#0.4
+muonCompare/muon_theta_yz#0.1#0.4
+muonCompare/muon_theta_xy#0.1#0.4
+muonCompare/muon_momentum#0.1#0.4
+muonCompare/muon_energy0#0.1#0.4
+muonCompare/muon_length#0.1#0.4
+muonCompare/muon_completeness#0.1#0.4
+muonCompare/muon_purity#0.1#0.4
+muonCompare/muon_length_metric#0.1#0.4
+muonCompare/muon_theta_xz_high_quality#0.2#0.5
+muonCompare/muon_theta_yz_high_quality#0.2#0.5
+muonCompare/muon_theta_xy_high_quality#0.2#0.5
+muonCompare/muon_momentum_high_quality#0.2#0.5
+muonCompare/muon_energy0_high_quality#0.2#0.5
+muonCompare/muon_length_high_quality#0.2#0.5
+electronCompare/electron_theta_xz#0.1#0.4
+electronCompare/electron_theta_yz#0.1#0.4
+electronCompare/electron_theta_xy#0.1#0.4
+electronCompare/electron_momentum#0.1#0.4
+electronCompare/electron_energy0#0.1#0.4
+electronCompare/electron_length#0.1#0.4
+electronCompare/electron_completeness#0.1#0.4
+electronCompare/electron_purity#0.1#0.4
+electronCompare/electron_length_metric#0.1#0.4
+electronCompare/electron_theta_xz_high_quality#0.2#0.5
+electronCompare/electron_theta_yz_high_quality#0.2#0.5
+electronCompare/electron_theta_xy_high_quality#0.2#0.5
+electronCompare/electron_momentum_high_quality#0.2#0.5
+electronCompare/electron_energy0_high_quality#0.2#0.5
+electronCompare/electron_length_high_quality#0.2#0.5
+protonCompare/proton_theta_xz#0.1#0.4
+protonCompare/proton_theta_yz#0.1#0.4
+protonCompare/proton_theta_xy#0.1#0.4
+protonCompare/proton_momentum#0.1#0.4
+protonCompare/proton_energy0#0.1#0.4
+protonCompare/proton_length#0.1#0.4
+protonCompare/proton_completeness#0.1#0.4
+protonCompare/proton_purity#0.1#0.4
+protonCompare/proton_length_metric#0.1#0.4
+protonCompare/proton_theta_xz_high_quality#0.2#0.5
+protonCompare/proton_theta_yz_high_quality#0.2#0.5
+protonCompare/proton_theta_xy_high_quality#0.2#0.5
+protonCompare/proton_momentum_high_quality#0.2#0.5
+protonCompare/proton_energy0_high_quality#0.2#0.5
+protonCompare/proton_length_high_quality#0.2#0.5
