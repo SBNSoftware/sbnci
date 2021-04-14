@@ -28,9 +28,9 @@ void sbnciplot_recoeff(TString inputFileName)
   gSystem->Exec(Form("mkdir -v %s","proton"));
 
   //Muon Plots
-  EffPlot(tree,outputFile,"muon","13","mc_theta_xz",30,-180,180,";True #theta_{xz} (#circ);Fraction;");
-  EffPlot(tree,outputFile,"muon","13","mc_theta_yz",30,-180,180,";True #theta_{yz} (#circ);Fraction;");
-  EffPlot(tree,outputFile,"muon","13","mc_theta_xy",30,-180,180,";True #theta_{xy} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"muon","13","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"muon","13","mc_theta_yz",30,-90,90,";True #theta_{yz} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"muon","13","mc_theta_xy",30,-90,90,";True #theta_{xy} (#circ);Fraction;");
   EffPlot(tree,outputFile,"muon","13","mc_momentum",30,0,1.5,";True p (GeV/c);Fraction;");
   EffPlot(tree,outputFile,"muon","13","mc_energy0",50,0,1.2,";True E (GeV);Fraction;");
   EffPlot(tree,outputFile,"muon","13","mc_length",40,0,400,";True track length (cm);Fraction;");
@@ -39,18 +39,18 @@ void sbnciplot_recoeff(TString inputFileName)
   Plot(tree,outputFile,"muon","13","(reco_track_length - mc_length)/mc_length",40,-1,1,";#frac{reco - true}{true} track length (cm);Entries","length_metric");
 
   //Muon High Quality Plots
-  EffPlot(tree,outputFile,"muon","13","mc_theta_xz",30,-180,180,";True #theta_{xz} (#circ);Fraction;",true);
-  EffPlot(tree,outputFile,"muon","13","mc_theta_yz",30,-180,180,";True #theta_{yz} (#circ);Fraction;",true);
-  EffPlot(tree,outputFile,"muon","13","mc_theta_xy",30,-180,180,";True #theta_{xy} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"muon","13","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"muon","13","mc_theta_yz",30,-90,90,";True #theta_{yz} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"muon","13","mc_theta_xy",30,-90,90,";True #theta_{xy} (#circ);Fraction;",true);
   EffPlot(tree,outputFile,"muon","13","mc_momentum",30,0,1.5,";True p (GeV/c);Fraction;",true);
   EffPlot(tree,outputFile,"muon","13","mc_energy0",50,0,1.2,";True E (GeV);Fraction;",true);
   EffPlot(tree,outputFile,"muon","13","mc_length",40,0,400,";True track length (cm);Fraction;",true);
 
 
   //Electron Plots
-  EffPlot(tree,outputFile,"electron","11","mc_theta_xz",30,-180,180,";True #theta_{xz} (#circ);Fraction;");
-  EffPlot(tree,outputFile,"electron","11","mc_theta_yz",30,-180,180,";True #theta_{yz} (#circ);Fraction;");
-  EffPlot(tree,outputFile,"electron","11","mc_theta_xy",30,-180,180,";True #theta_{xy} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"electron","11","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"electron","11","mc_theta_yz",30,-90,90,";True #theta_{yz} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"electron","11","mc_theta_xy",30,-90,90,";True #theta_{xy} (#circ);Fraction;");
   EffPlot(tree,outputFile,"electron","11","mc_momentum",30,0,2,";True p (GeV/c);Fraction;");
   EffPlot(tree,outputFile,"electron","11","mc_energy0",30,0,2,";True E (GeV);Fraction;");
   EffPlot(tree,outputFile,"electron","11","mc_length",40,0,100,";True track length (cm);Fraction;");
@@ -59,18 +59,18 @@ void sbnciplot_recoeff(TString inputFileName)
   Plot(tree,outputFile,"electron","11","(reco_track_length - mc_length)/mc_length",40,-1,1,";#frac{reco - true}{true} track length (cm);Entries","length_metric");
 
   //Electron High Quality Plots
-  EffPlot(tree,outputFile,"electron","11","mc_theta_xz",30,-180,180,";True #theta_{xz} (#circ);Fraction;",true);
-  EffPlot(tree,outputFile,"electron","11","mc_theta_yz",30,-180,180,";True #theta_{yz} (#circ);Fraction;",true);
-  EffPlot(tree,outputFile,"electron","11","mc_theta_xy",30,-180,180,";True #theta_{xy} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"electron","11","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"electron","11","mc_theta_yz",30,-90,90,";True #theta_{yz} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"electron","11","mc_theta_xy",30,-90,90,";True #theta_{xy} (#circ);Fraction;",true);
   EffPlot(tree,outputFile,"electron","11","mc_momentum",30,0,2,";True p (GeV/c);Fraction;",true);
   EffPlot(tree,outputFile,"electron","11","mc_energy0",30,0,2,";True E (GeV);Fraction;",true);
   EffPlot(tree,outputFile,"electron","11","mc_length",40,0,100,";True track length (cm);Fraction;",true);
 
 
   // Proton Plots
-  EffPlot(tree,outputFile,"proton","2212","mc_theta_xz",30,-180,180,";True #theta_{xz} (#circ);Fraction;");
-  EffPlot(tree,outputFile,"proton","2212","mc_theta_yz",30,-180,180,";True #theta_{yz} (#circ);Fraction;");
-  EffPlot(tree,outputFile,"proton","2212","mc_theta_xy",30,-180,180,";True #theta_{xy} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"proton","2212","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"proton","2212","mc_theta_yz",30,-90,90,";True #theta_{yz} (#circ);Fraction;");
+  EffPlot(tree,outputFile,"proton","2212","mc_theta_xy",30,-90,90,";True #theta_{xy} (#circ);Fraction;");
   EffPlot(tree,outputFile,"proton","2212","mc_momentum",30,0,1.2,";True p (GeV/c);Fraction;");
   EffPlot(tree,outputFile,"proton","2212","mc_energy0",50,0,1.5,";True E (GeV);Fraction;");
   EffPlot(tree,outputFile,"proton","2212","mc_length",50,0,40,";True track length (cm);Fraction;");
@@ -79,9 +79,9 @@ void sbnciplot_recoeff(TString inputFileName)
   Plot(tree,outputFile,"proton","2212","(reco_track_length - mc_length)/mc_length",40,-1,1,";#frac{reco - true}{true} track length (cm);Entries","length_metric");
 
   // Proton High Quality Plots
-  EffPlot(tree,outputFile,"proton","2212","mc_theta_xz",30,-180,180,";True #theta_{xz} (#circ);Fraction;",true);
-  EffPlot(tree,outputFile,"proton","2212","mc_theta_yz",30,-180,180,";True #theta_{yz} (#circ);Fraction;",true);
-  EffPlot(tree,outputFile,"proton","2212","mc_theta_xy",30,-180,180,";True #theta_{xy} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"proton","2212","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"proton","2212","mc_theta_yz",30,-90,90,";True #theta_{yz} (#circ);Fraction;",true);
+  EffPlot(tree,outputFile,"proton","2212","mc_theta_xy",30,-90,90,";True #theta_{xy} (#circ);Fraction;",true);
   EffPlot(tree,outputFile,"proton","2212","mc_momentum",30,0,1.2,";True p (GeV/c);Fraction;",true);
   EffPlot(tree,outputFile,"proton","2212","mc_energy0",50,0,1.5,";True E (GeV);Fraction;",true);
   EffPlot(tree,outputFile,"proton","2212","mc_length",50,0,40,";True track length (cm);Fraction;",true);
