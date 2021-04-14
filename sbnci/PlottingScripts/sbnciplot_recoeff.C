@@ -105,6 +105,11 @@ void sbnciplot_recoeff(TString inputFileName)
      recoDef += "reco_nTracks > 0";
      if(goodReco) recoDef += " && reco_track_completeness > 0.9 && reco_track_purity > 0.9";
    }
+   else if(PDG == "11"){
+     histName += "electron";
+     recoDef += "reco_nShowers > 0";
+     if(goodReco) recoDef += " && reco_shower_completeness > 0.8 && reco_shower_purity > 0.8";
+   }
    else if(PDG == "2212"){
      histName += "proton";
      recoDef += "reco_nTracks > 0";
@@ -156,7 +161,10 @@ void Plot(TTree* tree, TFile* outputFile, TString directoryName, TString PDG, TS
   if(PDG == "13"){
     histName += "muon";
     recoDef += "reco_nTracks > 0";
-    ;
+  }
+  else if(PDG == "11"){
+    histName += "electron";
+    recoDef += "reco_nShowers > 0";
   }
   else if(PDG == "2212"){
     histName += "proton";
