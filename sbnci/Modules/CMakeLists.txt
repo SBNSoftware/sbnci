@@ -1,3 +1,4 @@
+add_subdirectory(JobConfigurations)
 add_subdirectory(MCRecoUtils)
 add_subdirectory(NoiseTest)
 add_subdirectory(dEdx)
