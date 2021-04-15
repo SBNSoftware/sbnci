@@ -54,9 +54,8 @@ void sbnciplot_recoeff(TString inputFileName)
   EffPlot(tree,outputFile,"electron","11","mc_momentum",30,0,2,";True p (GeV/c);Fraction;");
   EffPlot(tree,outputFile,"electron","11","mc_energy0",30,0,2,";True E (GeV);Fraction;");
   EffPlot(tree,outputFile,"electron","11","mc_length",40,0,100,";True track length (cm);Fraction;");
-  Plot(tree,outputFile,"electron","11","reco_track_completeness",40,0,1,";Track completeness;Entries","completeness");
-  Plot(tree,outputFile,"electron","11","reco_track_purity",40,0,1,";Track purity;Entries","purity");
-  Plot(tree,outputFile,"electron","11","(reco_track_length - mc_length)/mc_length",40,-1,1,";#frac{reco - true}{true} track length (cm);Entries","length_metric");
+  Plot(tree,outputFile,"electron","11","reco_shower_completeness",40,0,1,";Shower completeness;Entries","completeness");
+  Plot(tree,outputFile,"electron","11","reco_shower_purity",40,0,1,";Shower purity;Entries","purity");
 
   //Electron High Quality Plots
   EffPlot(tree,outputFile,"electron","11","mc_theta_xz",30,-90,90,";True #theta_{xz} (#circ);Fraction;",true);
