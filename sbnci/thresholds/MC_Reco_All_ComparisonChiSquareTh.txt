@@ -4,6 +4,11 @@
 # the first # separator needs to be appended to the parameter without any space
 
 
+# ================================
+# Thresholds for plots produced by
+# sbnci_pfpvalidation.C
+# ================================
+
 pfpvalidationCompare/electronEnergyComp#0.25#0.5
 pfpvalidationCompare/electronEnergyPurity#0.25#0.5
 pfpvalidationCompare/electronHitComp#0.25#0.5
@@ -41,6 +46,11 @@ pfpvalidationCompare/protonRecoPFPs#0.25#0.5
 pfpvalidationCompare/protonRecoPFPTracks#0.25#0.5
 
 
+# ================================
+# Thresholds for plots produced by
+# sbnci_pfpslicevalidation.C
+# ================================
+
 pfpslicevalidationCompare/comp#0.25#0.5
 pfpslicevalidationCompare/cosmicScores#0.25#0.5
 pfpslicevalidationCompare/numNeutrinos#0.25#0.5
@@ -56,6 +66,11 @@ pfpslicevalidationCompare/purity#0.25#0.5
 pfpslicevalidationCompare/recoPdg#0.25#0.5
 pfpslicevalidationCompare/score#0.25#0.5
 
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_recoeff.C
+# ================================
 
 muonCompare/muon_theta_xz#0.1#0.4
 muonCompare/muon_theta_yz#0.1#0.4
@@ -103,6 +118,11 @@ protonCompare/proton_momentum_high_quality#0.2#0.5
 protonCompare/proton_energy0_high_quality#0.2#0.5
 protonCompare/proton_length_high_quality#0.2#0.5
 
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_showervalidation.C
+# ================================
 
 pandoraShowerCompare/pfpShowerHitsPurity#0.25#0.5
 pandoraShowerCompare/pfpShowerHitsComp#0.0025#0.3

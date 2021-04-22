@@ -3,6 +3,12 @@
 # parameter#warning_threshold#failure_threshold
 # the first # separator needs to be appended to the parameter without any space
 
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_recoeff.C
+# ================================
+
 muonCompare/muon_theta_xz#0.1#0.4
 muonCompare/muon_theta_yz#0.1#0.4
 muonCompare/muon_theta_xy#0.1#0.4
