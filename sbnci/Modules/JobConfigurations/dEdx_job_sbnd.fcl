@@ -1,0 +1,28 @@
+#include "simulationservices_sbnd.fcl"
+
+#include "dEdx.fcl"
+
+process_name: AnaCI
+
+services:
+{
+  @table::sbnd_services
+  TFileService: { fileName: "dEdxHists.root" }
+}
+
+source:
+{
+  module_type: RootInput
+}
+
+physics:
+{
+  analyzers:
+  {
+    dEdx: @local::sbnd_dEdxvalidation_ci
+  }
+
+  ana:       [ dEdx ]
+  end_paths: [ ana ]
+
+}

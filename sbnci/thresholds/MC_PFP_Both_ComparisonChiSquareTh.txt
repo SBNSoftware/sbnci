@@ -3,6 +3,12 @@
 # parameter#warning_threshold#failure_threshold
 # the first # separator needs to be appended to the parameter without any space
 
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_pfpvalidation.C
+# ================================
+
 pfpvalidation/electronEnergyComp#0.25#0.5
 pfpvalidation/electronEnergyPurity#0.25#0.5
 pfpvalidation/electronHitComp#0.25#0.5
@@ -46,6 +52,13 @@ pfpvalidation/protonRecoPFPTracks#0.25#0.5
 pfpvalidation/recoPFPShowers#0.25#0.5
 pfpvalidation/recoPFPs#0.25#0.5
 pfpvalidation/recoPFPTracks#0.25#0.5
+
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_pfpslicevalidation.C
+# ================================
+
 pfpslicevalidation/comp#0.25#0.5
 pfpslicevalidation/cosmicScores#0.25#0.5
 pfpslicevalidation/numNeutrinos#0.25#0.5
