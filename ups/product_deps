@@ -2,8 +2,8 @@
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vxx_yy_zz (e.g. v01_02_03)
 
-parent sbnci v09_18_00
-defaultqual e19
+parent sbnci v09_22_01_01
+defaultqual e20
 
 # These optional lines define the installed directories where headers,
 # libraries, and executables will be found.
@@ -27,19 +27,21 @@ defaultqual e19
 # With "product  version" table below, we now define dependencies
 # Add the dependent product and version
 product          version
-sbndcode            v09_18_00
+sbndcode            v09_22_01_01
 ## icaruscode       v08_43_00
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
 
-cetbuildtools v7_15_01 - only_for_build
+cetbuildtools v7_17_01 - only_for_build
 
 
 # We now define allowed qualifiers and the corresponding qualifiers for the dependencies.
 # Make the table by adding columns before "notes". 
 
 qualifier     sbndcode     notes
+e20:debug     e20:debug    -nq-
+e20:prof      e20:prof     -nq-
 e19:debug     e19:debug    -nq-
 e19:prof      e19:prof     -nq-
 
