@@ -8,7 +8,7 @@ sbnd_recoeff_ci:
     TrackModuleLabel:         	"pandoraTrack"
     ShowerModuleLabel:        	"pandoraShower"
     PFParticleModuleLabel:    	"pandora"
-    HitsModuleLabel:          	"linecluster"
+    HitsModuleLabel:          	"gaushit"
 
     ## Fiducial volume cuts from edges   
 
