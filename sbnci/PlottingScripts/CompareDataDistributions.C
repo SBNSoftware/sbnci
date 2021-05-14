@@ -234,7 +234,7 @@ map<string, vector<float>> thresholdmap(ifstream &infile){
     return mapping;
 }
 
-void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersion="v07_00_00"){
+void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersion="v07_00_00", const bool useNormalised = true){
 
 //   TString ref_xrootd_path=gSystem->Getenv("ref_dunetpc_ana_hist_xrootd_path");
 
@@ -326,13 +326,11 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
               hRef = (TH1D*)RefFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
               hCur = (TH1D*)CurFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
 
-              if (hRef->Integral() > 0 && hCur->Integral() > 0) {
+              if (hRef->Integral() > 0 && hCur->Integral() > 0 && useNormalised)
                   hCur->Scale((hRef->Integral()+hRef->GetBinContent(0)+hRef->GetBinContent(hRef->GetNbinsX()+1))/(hCur->Integral()+hCur->GetBinContent(0)+hCur->GetBinContent(hCur->GetNbinsX()+1)));
-
-                  double maxext = getMax(hRef, hCur);
-                  hRef->SetMaximum(maxext);
-
-              }
+	      
+	      double maxext = getMax(hRef, hCur);
+	      hRef->SetMaximum(maxext);
           }
           else{
 
