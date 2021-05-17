@@ -31,4 +31,4 @@ ln -v ci_validation_histos.root ci_validation_histos_${SBNDCODE_VERSION}.root
 
 ls -lh
 
-root -l -b -q $comparisonScript\(\"${SBNDCODE_VERSION}\",\"${ref_sbndcode_version}\",${normalise_plots}\)
+root -l -b -q $comparisonScript\(\"${SBNDCODE_VERSION}\",\"${ref_sbndcode_version}\",${normalise_plots:-false}\)

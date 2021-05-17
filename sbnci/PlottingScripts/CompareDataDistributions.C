@@ -326,7 +326,7 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
               hRef = (TH1D*)RefFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
               hCur = (TH1D*)CurFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
 
-              if (hRef->Integral() > 0 && hCur->Integral() > 0 && useNormalised)
+              if (useNormalised && hRef->Integral() > 0 && hCur->Integral() > 0)
                   hCur->Scale((hRef->Integral()+hRef->GetBinContent(0)+hRef->GetBinContent(hRef->GetNbinsX()+1))/(hCur->Integral()+hCur->GetBinContent(0)+hCur->GetBinContent(hCur->GetNbinsX()+1)));
 	      
 	      double maxext = getMax(hRef, hCur);
