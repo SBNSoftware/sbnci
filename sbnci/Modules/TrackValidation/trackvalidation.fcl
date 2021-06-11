@@ -1,0 +1,21 @@
+BEGIN_PROLOG
+
+validatetracks_sbnd:
+{
+	module_type: "TrackValidation" # name of the module, without 'module'
+
+	PFParticleLabel:"pandora"
+	SpacePointLabel:"pandora"
+	ClusterLabel:"linecluster"
+	ShowerLabel:"pandoraShowerSBN"
+	TrackLabel:"pandoraTrack"
+	HitLabel:"linecluster"
+	G4Label:"largeant"
+	GenLabel:"generator"
+	CalLabel:"pandoraCalo"
+	PIDLabel:"pandoraPid"
+
+	Verbose:true
+}
+
+END_PROLOG

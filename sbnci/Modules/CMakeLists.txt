@@ -3,6 +3,7 @@ add_subdirectory(MCRecoUtils)
 add_subdirectory(NoiseTest)
 add_subdirectory(dEdx)
 add_subdirectory(ShowerValidation)
+add_subdirectory(TrackValidation)
 add_subdirectory(RecoEff)
 add_subdirectory(PFPValidation)
 
