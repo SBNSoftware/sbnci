@@ -1,0 +1,32 @@
+#include "simulationservices_sbnd.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+#include "trackvalidation.fcl"
+
+process_name: AnaCI
+
+services:
+{
+  @table::sbnd_services
+  TFileService:		    { fileName: "trackvalidationGraphs.root" }
+  ParticleInventoryService: @local::standard_particleinventoryservice
+  BackTrackerService:  	    @local::standard_backtrackerservice
+}
+
+source:
+{
+  module_type: RootInput
+}
+
+
+physics:
+{
+  analyzers:
+  {
+    trackvalidation: @local::sbnd_trackvalidation_ci
+  }
+
+  end_paths: [ ana ]
+
+}
