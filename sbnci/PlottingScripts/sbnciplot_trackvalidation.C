@@ -96,7 +96,7 @@ void PlotHists(TFile *inFile, TFile *outFile, TString histName, TString histTitl
   TH1F* hist = new TH1F(histName, histTitle+";"+histXaxis+";"+histYaxis, nBins, xMin, xMax); 
 
   TTree* metricTree; 
-  inFile->GetObject("trackvalidation", metricTree);
+  inFile->GetObject("trackvalidation/MetricTree", metricTree);
   std::cout<<"histName: " << histName << std::endl;
   metricTree->Draw(metricToPlot + " >> " + histName);
   gStyle->SetOptStat(0);
