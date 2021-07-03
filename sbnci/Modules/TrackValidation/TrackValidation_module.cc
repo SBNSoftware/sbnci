@@ -684,7 +684,7 @@ void sbnd::TrackValidation::beginJob()
   // Implementation of optional member function here.
   // The TFileService is used to define the TTree and writing it to the output file
   art::ServiceHandle<art::TFileService> tfs;
-  fTree = tfs->make<TTree>("MetricTree", "Tree holding track variables for validation");
+  fTree = tfs->make<TTree>("TrackTree", "Tree holding track variables for validation");
 
   //Add branches to out tree
   fTree->Branch("eventID",      &fEventID, "eventID/i");

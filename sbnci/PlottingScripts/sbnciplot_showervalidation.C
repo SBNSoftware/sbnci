@@ -17,18 +17,18 @@
 
 void PlotHists(TFile *inFile, TFile *outFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString dirName);
 
-void sbnciplot_trackvalidation(TString inputFile = "ci_trackvalidation_specs.root")
+void sbnciplot_showervalidation(TString inputFile)
 {
   
   TFile *inFile = TFile::Open(inputFile.Data());
-  TFile *outFile = new TFile("ci_trackvalidation_plots.root", "RECREATE");
+  TFile *outFile = new TFile("ci_validation_histos.root", "RECREATE");
 
   TString histName, histTitle, histXaxis, metricToPlot;
   int xMin, xMax;
   TString histYaxis = "Counts";
   int nBins = 100;
 
-  TString dirName = "pandoraTrack";
+  TString dirName = "pandoraShower";
 
   outFile->cd();
   gDirectory->mkdir(dirName);
