@@ -38,12 +38,14 @@
 #include "larsim/MCCheater/ParticleInventoryService.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "sbnci/Modules/MCRecoUtils/RecoUtils.h"
+#include "lardataobj/RecoBase/OpFlash.h"
+#include "sbndcode/RecoUtils/RecoUtils.h"
 
 //Root Includes
 #include "TMath.h"
 #include "TTree.h"
 #include "TSystem.h"
+#include "TH1F.h"
 
 //C++ Includes
 #include <vector>
@@ -79,10 +81,12 @@ class ana::PDSValidation : public art::EDAnalyzer {
     //fcl parameters
     string fGenieGenModuleLabel;
     string fLArGeantModuleLabel;
+    string fOpFlashTPC1Label;
     bool   fVerbose;
 
     //TTree
-    TTree* Tree;
+    TTree* fTree;
+    TH1F* fTimeHist;
 
     //Service handlesacktracker
     art::ServiceHandle<cheat::BackTrackerService> backtracker;
@@ -97,6 +101,15 @@ class ana::PDSValidation : public art::EDAnalyzer {
     int fSubRun; ///< art subrun number
     int fEvent;  ///< art event number
 
+    int fNFlash; ///< number of OpFlashes in the event
+    vector<double> fFlashTotalPE; ///< total PE associated with single OpFlash
+    vector<double> fFlashTime; ///< time of flash
+    vector<double> fFlashTimeWidth;
+    vector<double> fYCenter;
+    vector<double> fZCenter;
+    vector<double> fYWidth;
+    vector<double> fZWidth;
+
 }; //end def class PDSValidation
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -107,20 +120,30 @@ ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
 
   fGenieGenModuleLabel = pset.get<string>("GenieGenModuleLabel","generator");
   fLArGeantModuleLabel = pset.get<string>("LArGeantModuleLabel","largeant");
+  fOpFlashTPC1Label    = pset.get<string>("OpFlashTPC1Label","opflashtpc1");
   fVerbose             = pset.get<bool>("Verbose",false); 
 
 } //end constructor
 
 ///////////////////////////////////////////////////////////////////////////////
 void ana::PDSValidation::beginJob() {
-
-  Tree = tfs->make<TTree>("pdsTree", "Tree with PDS validation information");
+  
+  fTree = tfs->make<TTree>("pdsTree", "Tree with PDS validation information");
   //gInterpreter->GenerateDictionary("vector<vector<float> > ","vector");
 
-  Tree->Branch("Run",    &fRun,    "Run/I");
-  Tree->Branch("SubRun", &fSubRun, "SubRun/I");
-  Tree->Branch("Event",  &fEvent,  "Event/I");
+  fTree->Branch("Run",          &fRun,          "Run/I");
+  fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
+  fTree->Branch("Event",        &fEvent,        "Event/I");
+  fTree->Branch("NFlash",       &fNFlash,       "NFlash/I");
+  fTree->Branch("TotalFlashPE", &fFlashTotalPE);
+  fTree->Branch("FlashTime", &fFlashTime);
+  fTree->Branch("FlashTimeWidth", &fFlashTimeWidth);
+  fTree->Branch("YCenter", &fYCenter);
+  fTree->Branch("ZCenter", &fZCenter);
+  fTree->Branch("YWidth", &fYWidth);
+  fTree->Branch("ZWidth", &fZWidth);
 
+  fTimeHist=tfs->make<TH1F>("fTimeHist", ";FlashTime (ns)", 20, 0, 100);
 }// end beginJob
 
 ////////////////////////////////////////////////////////////////////
@@ -173,8 +196,37 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
   } // for MCParticles
 
 
+  //###############################################
+  //### Get PDS reco info for the event         ###
+  //###############################################
+  //Getting  OpFlash information
+  art::Handle< vector<recob::OpFlash> > opFlashListHandle;
+  vector<art::Ptr<recob::OpFlash> > opFlashList;
+  if(evt.getByLabel(fOpFlashTPC1Label, opFlashListHandle)){
+      art::fill_ptr_vector(opFlashList, opFlashListHandle);
+  }
+
+  fNFlash = opFlashList.size();
+  for(auto const& flash : opFlashList) {
+    fFlashTotalPE.push_back(flash->TotalPE());
+    fFlashTime.push_back(flash->Time());
+    fFlashTimeWidth.push_back(flash->TimeWidth());
+    fYCenter.push_back(flash->YCenter());
+    fZCenter.push_back(flash->ZCenter());
+    fYWidth.push_back(flash->YWidth());
+    fZWidth.push_back(flash->ZWidth());
+    fTimeHist->Fill(flash->Time());
+  }
+
   //Fill the tree
-  Tree->Fill();
+  fTree->Fill();
+  fFlashTotalPE.clear();
+  fFlashTime.clear();
+  fFlashTimeWidth.clear();
+  fYCenter.clear();
+  fZCenter.clear();
+  fYWidth.clear();
+  fZWidth.clear();
 
   return;
 }// end analyze
