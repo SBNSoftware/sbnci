@@ -39,7 +39,7 @@
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
 #include "lardataobj/RecoBase/OpFlash.h"
-#include "sbndcode/RecoUtils/RecoUtils.h"
+#include "sbnci/Modules/MCRecoUtils/RecoUtils.h"
 
 //Root Includes
 #include "TMath.h"
@@ -127,7 +127,6 @@ ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
 
 ///////////////////////////////////////////////////////////////////////////////
 void ana::PDSValidation::beginJob() {
-  
   fTree = tfs->make<TTree>("pdsTree", "Tree with PDS validation information");
   //gInterpreter->GenerateDictionary("vector<vector<float> > ","vector");
 
