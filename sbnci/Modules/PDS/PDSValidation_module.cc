@@ -39,7 +39,8 @@
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
 #include "lardataobj/RecoBase/OpFlash.h"
-#include "sbnci/Modules/MCRecoUtils/RecoUtils.h"
+#include "lardataobj/RecoBase/OpHit.h"
+#include "sbndcode/RecoUtils/RecoUtils.h"
 
 //Root Includes
 #include "TMath.h"
@@ -82,11 +83,13 @@ class ana::PDSValidation : public art::EDAnalyzer {
     string fGenieGenModuleLabel;
     string fLArGeantModuleLabel;
     string fOpFlashTPC1Label;
+    string fOpHitPMTLabel;
+    string fOpHitArapucaLabel;
     bool   fVerbose;
 
     //TTree
     TTree* fTree;
-    TH1F* fTimeHist;
+//    TH1F* fTimeHist;
 
     //Service handlesacktracker
     art::ServiceHandle<cheat::BackTrackerService> backtracker;
@@ -110,6 +113,26 @@ class ana::PDSValidation : public art::EDAnalyzer {
     vector<double> fYWidth;
     vector<double> fZWidth;
 
+    int fPMTNHit;
+    vector<int> fPMTOpChannel;
+    vector<double> fPMTPeakTimeAbs;
+    vector<double> fPMTPeakTime;
+    vector<double> fPMTWidth;
+    vector<double> fPMTArea;
+    vector<double> fPMTAmplitude;
+    vector<double> fPMTPE;
+    vector<double> fPMTFastToTotal;
+
+    int fArapucaNHit;
+    vector<int> fArapucaOpChannel;
+    vector<double> fArapucaPeakTimeAbs;
+    vector<double> fArapucaPeakTime;
+    vector<double> fArapucaWidth;
+    vector<double> fArapucaArea;
+    vector<double> fArapucaAmplitude;
+    vector<double> fArapucaPE;
+    vector<double> fArapucaFastToTotal;
+
 }; //end def class PDSValidation
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -121,19 +144,25 @@ ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
   fGenieGenModuleLabel = pset.get<string>("GenieGenModuleLabel","generator");
   fLArGeantModuleLabel = pset.get<string>("LArGeantModuleLabel","largeant");
   fOpFlashTPC1Label    = pset.get<string>("OpFlashTPC1Label","opflashtpc1");
+  fOpHitArapucaLabel   = pset.get<string>("OpHitArapucaLabel", "ophitarapuca");
+  fOpHitPMTLabel       = pset.get<string>("OpHitPMTLabel", "ophitpmt");
   fVerbose             = pset.get<bool>("Verbose",false); 
 
 } //end constructor
 
 ///////////////////////////////////////////////////////////////////////////////
 void ana::PDSValidation::beginJob() {
+  
   fTree = tfs->make<TTree>("pdsTree", "Tree with PDS validation information");
   //gInterpreter->GenerateDictionary("vector<vector<float> > ","vector");
 
   fTree->Branch("Run",          &fRun,          "Run/I");
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
   fTree->Branch("Event",        &fEvent,        "Event/I");
-  fTree->Branch("NFlash",       &fNFlash,       "NFlash/I");
+  fTree->Branch("NFlash",       &fNFlash,       "NFlash/I"); 
+  fTree->Branch("PMTNHit",         &fPMTNHit,         "PMTNHit/I");
+  fTree->Branch("ArapucaNHit",         &fArapucaNHit,         "ArapucaNHit/I");
+
   fTree->Branch("TotalFlashPE", &fFlashTotalPE);
   fTree->Branch("FlashTime", &fFlashTime);
   fTree->Branch("FlashTimeWidth", &fFlashTimeWidth);
@@ -141,8 +170,27 @@ void ana::PDSValidation::beginJob() {
   fTree->Branch("ZCenter", &fZCenter);
   fTree->Branch("YWidth", &fYWidth);
   fTree->Branch("ZWidth", &fZWidth);
+ 
+  fTree->Branch("PMTOpChannel",&fPMTOpChannel);
+  fTree->Branch("PMTPeakTime",&fPMTPeakTime);
+  fTree->Branch("PMTPeakTimeAbs",&fPMTPeakTimeAbs);
+  fTree->Branch("PMTWidth",&fPMTWidth);
+  fTree->Branch("PMTArea",&fPMTArea);
+  fTree->Branch("PMTAmplitude",&fPMTAmplitude);
+  fTree->Branch("PMTPE",&fPMTPE);
+  fTree->Branch("PMTFastToTotal",&fPMTFastToTotal);
 
-  fTimeHist=tfs->make<TH1F>("fTimeHist", ";FlashTime (ns)", 20, 0, 100);
+  fTree->Branch("ArapucaOpChannel",&fArapucaOpChannel);
+  fTree->Branch("ArapucaPeakTime",&fArapucaPeakTime);
+  fTree->Branch("ArapucaPeakTimeAbs",&fArapucaPeakTimeAbs);
+  fTree->Branch("ArapucaWidth",&fArapucaWidth);
+  fTree->Branch("ArapucaArea",&fArapucaArea);
+  fTree->Branch("ArapucaAmplitude",&fArapucaAmplitude);
+  fTree->Branch("ArapucaPE",&fArapucaPE);
+  fTree->Branch("ArapucaFastToTotal",&fArapucaFastToTotal);
+
+
+//  fTimeHist=tfs->make<TH1F>("fTimeHist", ";FlashTime (ns)", 20, 0, 100);
 }// end beginJob
 
 ////////////////////////////////////////////////////////////////////
@@ -206,6 +254,7 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
   }
 
   fNFlash = opFlashList.size();
+
   for(auto const& flash : opFlashList) {
     fFlashTotalPE.push_back(flash->TotalPE());
     fFlashTime.push_back(flash->Time());
@@ -214,8 +263,46 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
     fZCenter.push_back(flash->ZCenter());
     fYWidth.push_back(flash->YWidth());
     fZWidth.push_back(flash->ZWidth());
-    fTimeHist->Fill(flash->Time());
+//    fTimeHist->Fill(flash->Time());
   }
+
+  art::Handle< vector<recob::OpHit> > opHitPMTListHandle;
+  vector<art::Ptr<recob::OpHit> > opHitPMTList;
+  if(evt.getByLabel(fOpHitPMTLabel, opHitPMTListHandle)){
+      art::fill_ptr_vector(opHitPMTList, opHitPMTListHandle);
+  }
+
+  fPMTNHit =opHitPMTList.size();
+
+  for(auto const& hit : opHitPMTList) {
+    fPMTOpChannel.push_back(hit->OpChannel());
+    fPMTPeakTimeAbs.push_back(hit->PeakTimeAbs());
+    fPMTPeakTime.push_back(hit->PeakTime());
+    fPMTWidth.push_back(hit->Width());
+    fPMTArea.push_back(hit->Area());
+    fPMTAmplitude.push_back(hit->Amplitude());
+    fPMTPE.push_back(hit->PE());
+    fPMTFastToTotal.push_back(hit->FastToTotal());
+}
+
+  art::Handle< vector<recob::OpHit> > opHitArapucaListHandle;
+  vector<art::Ptr<recob::OpHit> > opHitArapucaList;
+  if(evt.getByLabel(fOpHitArapucaLabel, opHitArapucaListHandle)){
+      art::fill_ptr_vector(opHitArapucaList, opHitArapucaListHandle);
+  }
+
+  fArapucaNHit =opHitArapucaList.size();
+
+  for(auto const& hit : opHitArapucaList) {
+    fArapucaOpChannel.push_back(hit->OpChannel());
+    fArapucaPeakTimeAbs.push_back(hit->PeakTimeAbs());
+    fArapucaPeakTime.push_back(hit->PeakTime());
+    fArapucaWidth.push_back(hit->Width());
+    fArapucaArea.push_back(hit->Area());
+    fArapucaAmplitude.push_back(hit->Amplitude());
+    fArapucaPE.push_back(hit->PE());
+    fArapucaFastToTotal.push_back(hit->FastToTotal());
+}
 
   //Fill the tree
   fTree->Fill();
@@ -226,6 +313,24 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
   fZCenter.clear();
   fYWidth.clear();
   fZWidth.clear();
+
+  fPMTOpChannel.clear();
+  fPMTPeakTimeAbs.clear();
+  fPMTPeakTime.clear();
+  fPMTWidth.clear();
+  fPMTArea.clear();
+  fPMTAmplitude.clear();
+  fPMTPE.clear();
+  fPMTFastToTotal.clear();
+
+  fArapucaOpChannel.clear();
+  fArapucaPeakTimeAbs.clear();
+  fArapucaPeakTime.clear();
+  fArapucaWidth.clear();
+  fArapucaArea.clear();
+  fArapucaAmplitude.clear();
+  fArapucaPE.clear();
+  fArapucaFastToTotal.clear();
 
   return;
 }// end analyze
