@@ -84,6 +84,7 @@ find_ups_product( pandora )
 find_ups_product( eigen )
 find_ups_product( larreco )
 
+find_ups_product( sbnobj )
 find_ups_product( sbndcode )
 
 # macros for dictionary and simple_plugin
