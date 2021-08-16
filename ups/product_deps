@@ -2,7 +2,7 @@
 # The *parent* line must the first non-commented line and defines this product and version
 # The version should be of the form vxx_yy_zz (e.g. v01_02_03)
 
-parent sbnci v09_27_00_02
+parent sbnci v09_28_00
 defaultqual e20
 
 # These optional lines define the installed directories where headers,
@@ -27,7 +27,7 @@ defaultqual e20
 # With "product  version" table below, we now define dependencies
 # Add the dependent product and version
 product          version
-sbndcode            v09_27_00_02
+sbndcode            v09_28_00
 ## icaruscode       v08_43_00
 
 # list products required ONLY for the build
