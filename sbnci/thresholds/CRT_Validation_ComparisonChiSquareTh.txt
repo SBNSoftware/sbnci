@@ -1,0 +1,34 @@
+# this threshold file uses # as field separator
+# the format is
+# parameter#warning_threshold#failure_threshold
+# the first # separator needs to be appended to the parameter without any space
+
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_crtvalidation.C
+# ================================
+crtvalidation/HitPESHit#0.25#0.5
+crtvalidation/x_pos#0.25#0.5
+crtvalidation/x_err#0.25#0.5
+crtvalidation/y_pos#0.25#0.5
+crtvalidation/y_err#0.25#0.5
+crtvalidation/z_pos#0.25#0.5
+crtvalidation/z_err#0.25#0.5
+
+crtvalidation/TrackPESHit#0.25#0.5
+crtvalidation/x1_pos#0.25#0.5
+crtvalidation/x1_err#0.25#0.5
+crtvalidation/y1_pos#0.25#0.5
+crtvalidation/y1_err#0.25#0.5
+crtvalidation/z1_pos#0.25#0.5
+crtvalidation/z1_err#0.25#0.5
+crtvalidation/x2_pos#0.25#0.5
+crtvalidation/x2_err#0.25#0.5
+crtvalidation/y2_pos#0.25#0.5
+crtvalidation/y2_err#0.25#0.5
+crtvalidation/z2_pos#0.25#0.5
+crtvalidation/z2_err#0.25#0.5
+crtvalidation/Length#0.25#0.5
+crtvalidation/Thetaxy#0.25#0.5
+crtvalidation/Phizy#0.25#0.5
