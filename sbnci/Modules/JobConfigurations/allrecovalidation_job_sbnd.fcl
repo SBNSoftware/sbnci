@@ -29,9 +29,8 @@ physics:
     pfpslicevalidation: @local::sbnd_pfpslicevalidation_ci
     showervalidation:   @local::sbnd_showervalidation_ci
     recoeff:		@local::sbnd_recoeff_ci
-    pdsvalidation:      @local::sbnd_pdsvalidation_ci
   }
 
-  ana:       [ pfpvalidation, pfpslicevalidation, showervalidation, recoeff, pdsvalidation ]
+  ana:       [ pfpvalidation, pfpslicevalidation, showervalidation, recoeff ]
   end_paths: [ ana ]
 }

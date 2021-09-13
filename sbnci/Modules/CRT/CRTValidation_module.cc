@@ -149,7 +149,6 @@ ana::CRTValidation::CRTValidation(const fhicl::ParameterSet& pset) :
 void ana::CRTValidation::beginJob() {
   
   fTree = tfs->make<TTree>("crtTree", "Tree with CRT validation information");
-  //gInterpreter->GenerateDictionary("vector<vector<float> > ","vector");
 
   fTree->Branch("Run",          &fRun,          "Run/I");
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
@@ -214,8 +213,6 @@ void ana::CRTValidation::analyze(const art::Event& evt) {
   map<int,const simb::MCParticle*> trueParticles;
   map<int,bool> mcparticlescontained;
   map<int,float> trueParticleEnergy;
-
-  //auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService const>()->DataFor(evt);
 
   //Make a map of Track id and pdgcode
   for (const auto& particleIt: particles) {

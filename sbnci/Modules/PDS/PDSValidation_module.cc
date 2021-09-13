@@ -154,7 +154,6 @@ ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
 void ana::PDSValidation::beginJob() {
   
   fTree = tfs->make<TTree>("pdsTree", "Tree with PDS validation information");
-  //gInterpreter->GenerateDictionary("vector<vector<float> > ","vector");
 
   fTree->Branch("Run",          &fRun,          "Run/I");
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
@@ -204,44 +203,6 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
       cout << "Analysing run " << fRun << ", subrun " << fSubRun << ", event: " << fEvent << endl;
   }
   numevents++;
-
-  //Getting  MC truth information
-  art::Handle< vector<simb::MCTruth> > mctruthListHandle;
-  vector<art::Ptr<simb::MCTruth> > mclist;
-  if(evt.getByLabel(fGenieGenModuleLabel,mctruthListHandle)){
-      art::fill_ptr_vector(mclist, mctruthListHandle);
-  }
-
-  //###############################################
-  //### Get the Truth information for the event ###
-  //###############################################
-
-  //List the particles in the event
-  const sim::ParticleList& particles = particleInventory->ParticleList();
-
-  //Loop over the particles
-  map<int,const simb::MCParticle*> trueParticles;
-  map<int,bool> mcparticlescontained;
-  map<int,float> trueParticleEnergy;
-
-  //auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService const>()->DataFor(evt);
-
-  //Make a map of Track id and pdgcode
-  for (const auto& particleIt: particles) {
-
-      const simb::MCParticle* particle = particleIt.second;
-      trueParticles[particle->TrackId()] = particle;
-
-      if(fVerbose){
-          cout << "True Particle with track ID: " << particle->TrackId() << " Has code of: " 
-               << particle->PdgCode() << " and Energy of: " << particle->E() << " With Mother: " 
-               << particle->Mother() << " Proccess: " << particle->Process() << " End Process: "  
-               << particle->EndProcess() 
-          << endl;
-      }// if verbose
-
-  } // for MCParticles
-
 
   //###############################################
   //### Get PDS reco info for the event         ###
