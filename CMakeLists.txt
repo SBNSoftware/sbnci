@@ -85,7 +85,28 @@ find_ups_product( eigen )
 find_ups_product( larreco )
 
 find_ups_product( sbnobj )
-find_ups_product( sbndcode )
+
+execute_process(
+  COMMAND bash -c "ups list -aK+ sbndcode | wc -l"
+  OUTPUT_VARIABLE nsbnd
+)
+
+execute_process(
+  COMMAND bash -c "ups list -aK+ icaruscode | wc -l"
+  OUTPUT_VARIABLE nicarus
+)
+
+if(nsbnd GREATER 0)
+  find_ups_product( sbndcode )
+endif()
+
+if(nicarus GREATER 0)
+  find_ups_product( icaruscode )
+endif()
+
+if(nsbnd EQUAL 0 AND nicaruscode EQUAL 0)
+message("neither sbndcode nor icarus code found in UPS!")
+endif()
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
