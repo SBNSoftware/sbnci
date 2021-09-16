@@ -87,25 +87,27 @@ find_ups_product( larreco )
 find_ups_product( sbnobj )
 
 execute_process(
-  COMMAND bash -c "ups list -aK+ sbndcode | wc -l"
+  COMMAND bash -c "ups active | grep sbndcode | wc -l"
   OUTPUT_VARIABLE nsbnd
 )
 
 execute_process(
-  COMMAND bash -c "ups list -aK+ icaruscode | wc -l"
+  COMMAND bash -c "ups active | grep icaruscode | wc -l"
   OUTPUT_VARIABLE nicarus
 )
+message(STATUS "found ${nsbnd} and ${nicarus} active instances of sbndcode and icaruscode respectively.")
+if(${nsbnd} EQUAL 0 AND ${nicarus} EQUAL 0)
+  message(FATAL_ERROR "you must setup a UPS bundle with either icarucode or sbndcode! abort build.")
+endif()
 
-if(nsbnd GREATER 0)
+if(${nsbnd} EQUAL 1)
+  message(STATUS "setting up sbndcode")
   find_ups_product( sbndcode )
 endif()
 
-if(nicarus GREATER 0)
+if(${nicarus} EQUAL 1)
+  message(STATUS "setting up icaruscode")
   find_ups_product( icaruscode )
-endif()
-
-if(nsbnd EQUAL 0 AND nicaruscode EQUAL 0)
-message("neither sbndcode nor icarus code found in UPS!")
 endif()
 
 # macros for dictionary and simple_plugin
