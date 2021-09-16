@@ -11,10 +11,10 @@ sbnd_pfpslicevalidation_ci:
 
 sbnd_pfpvalidation_ci:
 {
-    module_type:    PFPValidationCI
-    LArGeantLabel:  "largeant"
-    PFPLabels:      ["pandora"]
-    HitLabel:       "gaushit"
+    module_type:      PFPValidationCI
+    SimChannelLabel:  "simdrift"
+    PFPLabels:        ["pandora"]
+    HitLabel:         "gaushit"
 }
 
 END_PROLOG

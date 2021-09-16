@@ -132,7 +132,7 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
   };
 
   private:
-  std::string fHitLabel, fLArGeantLabel;
+  std::string fHitLabel, fSimChannelLabel;
   std::vector<std::string> fPFPLabels;
   art::ServiceHandle<art::TFileService> tfs;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
@@ -162,7 +162,7 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
 sbnci::PFPValidationCI::PFPValidationCI(fhicl::ParameterSet const& pset)
     : EDAnalyzer { pset }
     , fHitLabel(pset.get<std::string>("HitLabel"))
-    , fLArGeantLabel(pset.get<std::string>("LArGeantLabel"))
+    , fSimChannelLabel(pset.get<std::string>("SimChannelLabel"))
     , fPFPLabels(pset.get<std::vector<std::string>>("PFPLabels"))
     , maxLabelLength(0)
 {
@@ -249,7 +249,7 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
 
   // Initialse some stuff???
   auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
-  auto const simChannelHandle(evt.getValidHandle<std::vector<sim::SimChannel>>(fLArGeantLabel));
+  auto const simChannelHandle(evt.getValidHandle<std::vector<sim::SimChannel>>(fSimChannelLabel));
 
   // Get all the hits
   std::vector<art::Ptr<recob::Hit>> allHits;

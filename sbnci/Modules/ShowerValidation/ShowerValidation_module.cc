@@ -109,7 +109,7 @@ class ana::ShowerValidation : public art::EDAnalyzer {
 
     //fcl parameters
     std::string fGenieGenModuleLabel;
-    std::string fLArGeantModuleLabel;
+    std::string fSimChannelModuleLabel;
     std::string fHitsModuleLabel;
     std::string fTrackModuleLabel;
     std::string fPFParticleLabel;
@@ -245,7 +245,7 @@ class ana::ShowerValidation : public art::EDAnalyzer {
 ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAnalyzer(pset){
 
   fGenieGenModuleLabel         = pset.get<std::string>("GenieGenModuleLabel");
-  fLArGeantModuleLabel         = pset.get<std::string>("LArGeantModuleLabel");
+  fSimChannelModuleLabel         = pset.get<std::string>("SimChannelModuleLabel");
   fHitsModuleLabel             = pset.get<std::string>("HitsModuleLabel");
   fTrackModuleLabel            = pset.get<std::string>("TrackModuleLabel");
   fPFParticleLabel             = pset.get<std::string>("PFParticleLabel");
@@ -446,7 +446,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //Get the SimChannels so that we can find the IDEs deposited on them.
   art::Handle<std::vector<sim::SimChannel> > simChannelHandle;
   std::vector<art::Ptr<sim::SimChannel> > simchannels;
-  if(evt.getByLabel(fLArGeantModuleLabel,simChannelHandle))
+  if(evt.getByLabel(fSimChannelModuleLabel,simChannelHandle))
   {art::fill_ptr_vector(simchannels, simChannelHandle);}
 
   //Getting the Hit Information
