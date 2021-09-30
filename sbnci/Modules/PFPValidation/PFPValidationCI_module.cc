@@ -40,6 +40,7 @@
 #include "TTree.h"
 #include <iostream>
 #include <vector>
+#include <numeric>
 
 namespace sbnci {
 class PFPValidationCI;
