@@ -34,3 +34,5 @@ physics:
   ana:       [ pfpvalidation, pfpslicevalidation, showervalidation, recoeff ]
   end_paths: [ ana ]
 }
+
+services.BackTrackerService.BackTracker.SimChannelModuleLabel: "simdrift"
