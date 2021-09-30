@@ -1,10 +1,11 @@
 ////////////////////////////////////////////////////////////////////////
-// Class:       PFPValidationCI
+// Class:       PFPValidationCIICARUS
 // Plugin Type: analyzer (art v3_02_06)
-// File:        PFPValidationCI_module.cc
+// File:        PFPValidationCIICARUS_module.cc
 //
 // Generated at Wed Oct  2 03:27:09 2019 by Edward Tyley using cetskelgen
 // from cetlib version v3_07_02.
+// 09/10/2021 Adopted for ICARUS (Sergey Martynenko smartynen@bnl.gov)  
 ////////////////////////////////////////////////////////////////////////
 
 #include "art/Framework/Core/EDAnalyzer.h"
@@ -40,23 +41,22 @@
 #include "TTree.h"
 #include <iostream>
 #include <vector>
-#include <numeric>
 
 namespace sbnci {
-class PFPValidationCI;
+class PFPValidationCIICARUS;
 }
 
-class sbnci::PFPValidationCI : public art::EDAnalyzer {
+class sbnci::PFPValidationCIICARUS : public art::EDAnalyzer {
   public:
-  explicit PFPValidationCI(fhicl::ParameterSet const& pset);
+  explicit PFPValidationCIICARUS(fhicl::ParameterSet const& pset);
   // The compiler-generated destructor is fine for non-base
   // classes without bare pointers or other resource use.
 
   // Plugins should not be copied or assigned.
-  PFPValidationCI(PFPValidationCI const&) = delete;
-  PFPValidationCI(PFPValidationCI&&) = delete;
-  PFPValidationCI& operator=(PFPValidationCI const&) = delete;
-  PFPValidationCI& operator=(PFPValidationCI&&) = delete;
+  PFPValidationCIICARUS(PFPValidationCIICARUS const&) = delete;
+  PFPValidationCIICARUS(PFPValidationCIICARUS&&) = delete;
+  PFPValidationCIICARUS& operator=(PFPValidationCIICARUS const&) = delete;
+  PFPValidationCIICARUS& operator=(PFPValidationCIICARUS&&) = delete;
 
   // Required functions.
   void analyze(art::Event const& evt) override;
@@ -133,7 +133,8 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
 
   private:
   std::string fHitLabel, fLArGeantLabel;
-  std::vector<std::string> fPFPLabels;
+  std::vector<std::string> fPFPLabels; 
+  std::vector<std::string> fHitLabels;
   art::ServiceHandle<art::TFileService> tfs;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
 
@@ -159,11 +160,12 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
   std::map<std::string, int> eventNumPFP, eventNumPFPNu, eventNumPFPShower, eventNumPFPTrack;
 };
 
-sbnci::PFPValidationCI::PFPValidationCI(fhicl::ParameterSet const& pset)
+sbnci::PFPValidationCIICARUS::PFPValidationCIICARUS(fhicl::ParameterSet const& pset)
     : EDAnalyzer { pset }
     , fHitLabel(pset.get<std::string>("HitLabel"))
     , fLArGeantLabel(pset.get<std::string>("LArGeantLabel"))
     , fPFPLabels(pset.get<std::vector<std::string>>("PFPLabels"))
+    , fHitLabels(pset.get<std::vector<std::string>>("HitLabels"))
     , maxLabelLength(0)
 {
   for (std::string const& fPFPLabel : fPFPLabels) {
@@ -173,7 +175,7 @@ sbnci::PFPValidationCI::PFPValidationCI(fhicl::ParameterSet const& pset)
   }
 }
 
-void sbnci::PFPValidationCI::beginJob()
+void sbnci::PFPValidationCIICARUS::beginJob()
 {
 
   pfpTree = tfs->make<TTree>("pfpTree", "Tree with metrics for each pfp");
@@ -220,7 +222,7 @@ void sbnci::PFPValidationCI::beginJob()
   initTree(eventTree, "numPFPTrack", eventNumPFPTrack, fPFPLabels);
 }
 
-void sbnci::PFPValidationCI::analyze(art::Event const& evt)
+void sbnci::PFPValidationCIICARUS::analyze(art::Event const& evt)
 {
 
   std::cout << std::setprecision(2) << std::fixed;
@@ -248,12 +250,19 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
   }
 
   // Initialse some stuff???
-  auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
+ // auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
   auto const simChannelHandle(evt.getValidHandle<std::vector<sim::SimChannel>>(fLArGeantLabel));
 
   // Get all the hits
-  std::vector<art::Ptr<recob::Hit>> allHits;
-  art::fill_ptr_vector(allHits, hitHandle);
+  //std::vector<art::Ptr<recob::Hit>> allHits;
+  //art::fill_ptr_vector(allHits, hitHandle);
+  art::Handle<std::vector<recob::Hit> > hitListHandle;
+  std::vector<art::Ptr<recob::Hit> > allHits;
+  for(auto const& fHitModuleLabel: fHitLabels){
+
+  if(evt.getByLabel(fHitModuleLabel,hitListHandle))
+  {art::fill_ptr_vector(allHits, hitListHandle);}
+  }
 
   std::vector<art::Ptr<sim::SimChannel>> simChannels;
   art::fill_ptr_vector(simChannels, simChannelHandle);
@@ -468,7 +477,7 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
             << std::endl;
 }
 
-std::map<int, int> sbnci::PFPValidationCI::GetTruePrimaryHits(
+std::map<int, int> sbnci::PFPValidationCIICARUS::GetTruePrimaryHits(
     const detinfo::DetectorClocksData& clockData,
     const std::map<int, const simb::MCParticle*>& trueParticles,
     const std::map<int, std::vector<int>>& truePrimaries,
@@ -490,7 +499,7 @@ std::map<int, int> sbnci::PFPValidationCI::GetTruePrimaryHits(
   return truePrimaryHits;
 }
 
-std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryEnergies(
+std::map<int, float> sbnci::PFPValidationCIICARUS::GetTruePrimaryEnergies(
     const std::map<int, const simb::MCParticle*>& trueParticles,
     const std::map<int, std::vector<int>>& truePrimaries,
     const std::vector<art::Ptr<sim::SimChannel>>& simChannels) const
@@ -515,7 +524,7 @@ std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryEnergies(
   return truePrimaryEnergies;
 }
 
-std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryHitEnergies(
+std::map<int, float> sbnci::PFPValidationCIICARUS::GetTruePrimaryHitEnergies(
     const detinfo::DetectorClocksData& clockData,
     const std::map<int, const simb::MCParticle*>& trueParticles,
     const std::map<int, std::vector<int>>& truePrimaries,
@@ -535,7 +544,7 @@ std::map<int, float> sbnci::PFPValidationCI::GetTruePrimaryHitEnergies(
   return truePrimaryHitEnergies;
 }
 
-float sbnci::PFPValidationCI::GetTotalEnergyInHits(
+float sbnci::PFPValidationCIICARUS::GetTotalEnergyInHits(
     const detinfo::DetectorClocksData& clockData,
     const std::vector<art::Ptr<recob::Hit>>& hits) const
 {
@@ -549,7 +558,7 @@ float sbnci::PFPValidationCI::GetTotalEnergyInHits(
 }
 
 template <class T>
-void sbnci::PFPValidationCI::initTree(TTree* Tree,
+void sbnci::PFPValidationCIICARUS::initTree(TTree* Tree,
     const std::string& branchName,
     std::map<std::string, T>& Metric,
     const std::vector<std::string>& fPFPLabels)
@@ -561,7 +570,7 @@ void sbnci::PFPValidationCI::initTree(TTree* Tree,
   }
 }
 
-void sbnci::PFPValidationCI::clearPFPTree(const std::string& PFParticleLabel)
+void sbnci::PFPValidationCIICARUS::clearPFPTree(const std::string& PFParticleLabel)
 {
   pfpPdg[PFParticleLabel] = -999;
   pfpTruePdg[PFParticleLabel] = -999;
@@ -577,7 +586,7 @@ void sbnci::PFPValidationCI::clearPFPTree(const std::string& PFParticleLabel)
   pfpHitSPRatio[PFParticleLabel] = -999;
 }
 
-void sbnci::PFPValidationCI::clearTrueTree()
+void sbnci::PFPValidationCIICARUS::clearTrueTree()
 {
   truePdg = -999;
   motherPdg = -999;
@@ -602,7 +611,7 @@ void sbnci::PFPValidationCI::clearTrueTree()
   }
 }
 
-void sbnci::PFPValidationCI::clearEventTree()
+void sbnci::PFPValidationCIICARUS::clearEventTree()
 {
   for (auto const& fPFPLabel : fPFPLabels) {
     eventNumPFP[fPFPLabel] = 0;
@@ -612,4 +621,4 @@ void sbnci::PFPValidationCI::clearEventTree()
   }
 }
 
-DEFINE_ART_MODULE(sbnci::PFPValidationCI)
+DEFINE_ART_MODULE(sbnci::PFPValidationCIICARUS)

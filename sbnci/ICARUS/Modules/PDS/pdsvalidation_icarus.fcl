@@ -1,0 +1,12 @@
+BEGIN_PROLOG
+
+icarus_pdsvalidation_ci: 
+{
+   module_type:			"PDSValidationICARUS"
+   GenieGenModuleLabel:		"generator"
+   LArGeantModuleLabel:		"largeant"
+   OpFlashTPC1Label:            "opflashTPC1"
+   OpHitPMTLabel:               "ophit"
+}
+
+END_PROLOG

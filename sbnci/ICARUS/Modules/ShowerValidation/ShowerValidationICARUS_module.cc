@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Class:       ShowerValidation                                                                          //
+// Class:       ShowerValidationICARUS                                                                          //
 // Modlue Type: Analyser                                                                                  //
-// File         ShowerValidation_module.cc                                                                //
+// File         ShowerValidationICARUS_module.cc                                                                //
 // Author:      Dominic Barker dominic.barker@sheffield.ac.uk                                             //
 //              Edward Tyley e.tyley@sheffield.ac.uk                                                      //
 //                                                                                                        //
@@ -16,7 +16,7 @@
 //              13.11.2018  Hit Validation, 2D Histograms and refactoring of the code                     //
 //              22.01.2019  TTree output added                                                            //
 //              18.03.2019  Added PFParticle Validation                                                   //
-//                                                                                                        //
+//              09.01.2021 Adoped fo icaruscode [Sergey Martynenko smartynen@bnl.gov]                     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -66,13 +66,13 @@
 #include <fstream>
 
 namespace ana {
-  class ShowerValidation;
+  class ShowerValidationICARUS;
 }
 
-class ana::ShowerValidation : public art::EDAnalyzer {
+class ana::ShowerValidationICARUS : public art::EDAnalyzer {
   public:
 
-    ShowerValidation(const fhicl::ParameterSet& pset);
+    ShowerValidationICARUS(const fhicl::ParameterSet& pset);
 
     void analyze(const art::Event& evt);
     void endJob();
@@ -132,6 +132,8 @@ class ana::ShowerValidation : public art::EDAnalyzer {
 
     std::vector<std::string> fShowerModuleLabels;
     std::vector<std::string> fHitModuleLabels;
+    std::vector<std::string> fTrackModuleLabels;
+    std::vector<std::string> fPFParticleLabels;
 
     std::map<std::string,std::vector<float> > sDirX_TreeVal;
     std::map<std::string,std::vector<float> > sDirY_TreeVal;
@@ -242,7 +244,7 @@ class ana::ShowerValidation : public art::EDAnalyzer {
 
 };
 
-ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAnalyzer(pset){
+ana::ShowerValidationICARUS::ShowerValidationICARUS(const fhicl::ParameterSet& pset) : EDAnalyzer(pset){
 
   fGenieGenModuleLabel         = pset.get<std::string>("GenieGenModuleLabel");
   fLArGeantModuleLabel         = pset.get<std::string>("LArGeantModuleLabel");
@@ -251,6 +253,8 @@ ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAna
   fPFParticleLabel             = pset.get<std::string>("PFParticleLabel");
   fShowerModuleLabels          = pset.get<std::vector<std::string> >("ShowerModuleLabels");
   fHitModuleLabels             = pset.get<std::vector<std::string> >("HitModuleLabels");
+  fTrackModuleLabels           = pset.get<std::vector<std::string> >("TrackModuleLabels");
+  fPFParticleLabels            = pset.get<std::vector<std::string> >("PFParticleLabels");
   fUseBiggestShower            = pset.get<bool>("UseBiggestShower");
   fFillOnlyClosestShower       = pset.get<bool>("FillOnlyClosestShower");
   fRemoveNonContainedParticles = pset.get<bool>("RemoveNonContainedParticles");
@@ -268,21 +272,21 @@ ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAna
   fMatchedCut                  = pset.get<float>("MatchedCut");
 
   if (fFillOnlyClosestShower && fUseBiggestShower) {
-    throw cet::exception("ShowerValidation") << "Both fFillOnlyClosestShower and fUseBiggestShower are set. Please choose one of them" << std::endl;
+    throw cet::exception("ShowerValidationICARUS") << "Both fFillOnlyClosestShower and fUseBiggestShower are set. Please choose one of them" << std::endl;
   }
 }
 
-void ana::ShowerValidation::initTree(TTree* Tree, std::string branchName, std::vector<float>& Metric){
+void ana::ShowerValidationICARUS::initTree(TTree* Tree, std::string branchName, std::vector<float>& Metric){
   const char* branchChar   = branchName.c_str();
   Tree->Branch(branchChar,"std::vector<float>", &Metric, 32000, 0);
 }
 
-void ana::ShowerValidation::initTree(TTree* Tree, std::string branchName, float& Metric){
+void ana::ShowerValidationICARUS::initTree(TTree* Tree, std::string branchName, float& Metric){
   const char* branchChar   = branchName.c_str();
   Tree->Branch(branchChar, &Metric, 32000, 0);
 }
 
-void ana::ShowerValidation::initTree(TTree* Tree, std::string branchName, std::map<std::string,std::vector<float> >& Metric,   std::vector<std::string> fShowerModuleLabels){
+void ana::ShowerValidationICARUS::initTree(TTree* Tree, std::string branchName, std::map<std::string,std::vector<float> >& Metric,   std::vector<std::string> fShowerModuleLabels){
   for (auto const& fShowerModuleLabel: fShowerModuleLabels){
     std::string branchString = branchName + "_" + fShowerModuleLabel;
     const char* branchChar   = branchString.c_str();
@@ -290,7 +294,7 @@ void ana::ShowerValidation::initTree(TTree* Tree, std::string branchName, std::m
   }
 }
 
-void ana::ShowerValidation::initClusterTree(TTree* Tree, std::string branchName,  std::map<std::string,std::vector<std::vector<std::vector<float> > > >& Metric, std::vector<std::string> fShowerModuleLabels){
+void ana::ShowerValidationICARUS::initClusterTree(TTree* Tree, std::string branchName,  std::map<std::string,std::vector<std::vector<std::vector<float> > > >& Metric, std::vector<std::string> fShowerModuleLabels){
   for (auto const& fShowerModuleLabel: fShowerModuleLabels){
     unsigned int numPlanes = geom->Nplanes();
     Metric[fShowerModuleLabel].resize(numPlanes);
@@ -303,7 +307,7 @@ void ana::ShowerValidation::initClusterTree(TTree* Tree, std::string branchName,
 }
 
 
-void ana::ShowerValidation::beginJob() {
+void ana::ShowerValidationICARUS::beginJob() {
 
   numevents = 0;
   containmentCutNum = 0;
@@ -422,11 +426,11 @@ void ana::ShowerValidation::beginJob() {
     Tree->Branch(processChar,"<std::string,std::vector<std::string>", &sStartEndProcess_TreeVal[fShowerModuleLabel], 32000, 0);
   }
 
-  Tree->Print();
+ // Tree->Print();
 }
 
 
-void ana::ShowerValidation::analyze(const art::Event& evt) {
+void ana::ShowerValidationICARUS::analyze(const art::Event& evt) {
 
   EventRun_TreeVal = evt.run();
   EventSubrun_TreeVal = evt.subRun();
@@ -452,8 +456,11 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //Getting the Hit Information
   art::Handle<std::vector<recob::Hit> > hitListHandle;
   std::vector<art::Ptr<recob::Hit> > hits;
-  if(evt.getByLabel(fHitsModuleLabel,hitListHandle))
+  for(auto const& fHitModuleLabel: fHitModuleLabels){
+  
+  if(evt.getByLabel(fHitModuleLabel,hitListHandle))
   {art::fill_ptr_vector(hits, hitListHandle);}
+  }
 
   //Get the track Information (hopfully you have pandora track)
   art::Handle<std::vector<recob::Track> > trackListHandle;
@@ -464,13 +471,17 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //I think that doing getManyByType kind of initalises the handles giving every particle product id. Doing this allows us to find handles for the individal hits later.
 
   //Get all the hits
-  auto hitHandles = evt.getMany<std::vector<recob::Hit> >();
+  std::vector<art::Handle<std::vector<recob::Hit> > > hitHandles;
+  evt.getManyByType(hitHandles);
 
   //Get all the clusters
-  auto clusterHandles = evt.getMany<std::vector<recob::Cluster> >();
+  std::vector<art::Handle<std::vector<recob::Cluster> > > clusterHandles;
+  evt.getManyByType(clusterHandles);
 
   //Get all the pfparticles
-  auto pfpHandles = evt.getMany<std::vector<recob::PFParticle> >();
+  std::vector<art::Handle<std::vector<recob::PFParticle> > > pfpHandles;
+  evt.getManyByType(pfpHandles);
+
 
   //###############################################
   //### Get the Truth information for the event ###
@@ -568,7 +579,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
     for(auto& handle : hitHandles){
 
       if(!handle.isValid()){
-        mf::LogError("ShowerValidation") << "Bad hit handle from the all the hit handles" << std::endl;
+        mf::LogError("ShowerValidationICARUS") << "Bad hit handle from the all the hit handles" << std::endl;
         continue;
       }
 
@@ -646,8 +657,12 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
 
     art::Handle<std::vector<recob::PFParticle> > pfpListHandle;
     std::vector<art::Ptr<recob::PFParticle> > pfps;
+    
+   // for (auto const& fPFPLabel: fPFParticleLabels){
     if(evt.getByLabel(fPFParticleLabel,pfpListHandle))
-    {art::fill_ptr_vector(pfps,pfpListHandle);}
+    {art::fill_ptr_vector(pfps,pfpListHandle);
+    }
+ //   }
 
     art::Handle<std::vector<recob::Track> > showertrackHandle;
     std::vector<art::Ptr<recob::Track> > showertrack;
@@ -715,7 +730,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
               evt.get(fmpfc.at(0).front().id(),clusterHandle);
               if(clusterHandle.isValid()){
                 std::vector<art::Ptr<recob::Cluster> > pfpClusters = fmpfc.at(daughter.key());
-                ana::ShowerValidation::PFPValidation(pfpClusters,daughter,evt,clockData, clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,fShowerModuleLabel);
+                ana::ShowerValidationICARUS::PFPValidation(pfpClusters,daughter,evt,clockData, clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,fShowerModuleLabel);
               }
             }
           }
@@ -976,7 +991,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
           try{
             std::vector< art::Ptr<recob::Track> > initialTracks = fmit.at(shower.key());
             if(initialTracks.size() != 1){
-              mf::LogError("ShowerValidation") << "Number of initial tracks: "<<initialTracks.size()
+              mf::LogError("ShowerValidationICARUS") << "Number of initial tracks: "<<initialTracks.size()
                 <<". Skipping." << std::endl;
               doInitialTrackValidation = false;
             } else {
@@ -1316,10 +1331,10 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
           evt.get(fmch.at(shower.key()).front().id(),clusterHandle);
           if(clusterHandle.isValid()){
             std::vector<art::Ptr<recob::Cluster> > showerclusters = fmch.at(shower.key());
-            ana::ShowerValidation::ClusterValidation(showerclusters,evt,clockData,clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,ShowerTrackID,trueShowerEnergy,fShowerModuleLabel);
+            ana::ShowerValidationICARUS::ClusterValidation(showerclusters,evt,clockData,clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,ShowerTrackID,trueShowerEnergy,fShowerModuleLabel);
           }
           else{
-            mf::LogError("ShowerValidation") << "Cluster handle is stale. No clustering validation done" << std::endl;
+            mf::LogError("ShowerValidationICARUS") << "Cluster handle is stale. No clustering validation done" << std::endl;
           }
         }
         else if(fmpf.isValid()){
@@ -1333,22 +1348,22 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
               evt.get(fmcpf.at(0).front().id(),clusterHandle);
               if(clusterHandle.isValid()){
                 std::vector< art::Ptr<recob::Cluster> > showerclusters = fmcpf.at(shower.key());
-                ana::ShowerValidation::ClusterValidation(showerclusters,evt,clockData,clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,ShowerTrackID,trueShowerEnergy,fShowerModuleLabel);
+                ana::ShowerValidationICARUS::ClusterValidation(showerclusters,evt,clockData,clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,ShowerTrackID,trueShowerEnergy,fShowerModuleLabel);
               }
               else{
-                mf::LogError("ShowerValidation") << "Cluster handle is stale. No clustering validation done" << std::endl;
+                mf::LogError("ShowerValidationICARUS") << "Cluster handle is stale. No clustering validation done" << std::endl;
               }
             }
             else{
-              mf::LogError("ShowerValidation") << "No Assosoication between pf particles and clusters was found for shower made from a pf particle. No clustering validation was done." << std::endl;
+              mf::LogError("ShowerValidationICARUS") << "No Assosoication between pf particles and clusters was found for shower made from a pf particle. No clustering validation was done." << std::endl;
             }
           }
           else{
-            mf::LogError("ShowerValidation") << "pf particle handle is stale" << std::endl;
+            mf::LogError("ShowerValidationICARUS") << "pf particle handle is stale" << std::endl;
           }
         }
         else{
-          mf::LogError("ShowerValidation") << "No cluster or pandora association" << std::endl;
+          mf::LogError("ShowerValidationICARUS") << "No cluster or pandora association" << std::endl;
         }
 
         if(fVerbose > 1){std::cout << "Cluster Validation Complete" << std::endl;}
@@ -1486,7 +1501,7 @@ return;
 }
 
 
-void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Cluster> >& clusters,
+void ana::ShowerValidationICARUS::ClusterValidation(std::vector< art::Ptr<recob::Cluster> >& clusters,
     const art::Event& evt,
     const detinfo::DetectorClocksData& clockData,
     art::Handle<std::vector<recob::Cluster> >& clusterHandle,
@@ -1515,7 +1530,7 @@ void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Clust
   // std::cout<<"Clusters size: "<<clusters.size()<<" and "<<fmhc.at(clusters.at(0).key()).size()<<" and "<<clusterHandle.provenance()->moduleLabel()<<std::endl;
 
   if (fmhc.at(clusters.at(0).key()).size()==0) {
-    mf::LogError("ShowerValidation") << "Cluster has no hits. Trying next cluster."
+    mf::LogError("ShowerValidationICARUS") << "Cluster has no hits. Trying next cluster."
       << std::endl;
     return;
   };
@@ -1524,7 +1539,7 @@ void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Clust
   evt.get(fmhc.at(clusters.at(0).key()).front().id(),hitHandle);
 
   if(!hitHandle.isValid()){
-    mf::LogError("ShowerValidation") << "Hits handle is stale. No clustering validation done" << std::endl;
+    mf::LogError("ShowerValidationICARUS") << "Hits handle is stale. No clustering validation done" << std::endl;
     return;
   }
 
@@ -1632,7 +1647,7 @@ void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Clust
 }
 
 
-void ana::ShowerValidation::PFPValidation(std::vector<art::Ptr<recob::Cluster> >& clusters,
+void ana::ShowerValidationICARUS::PFPValidation(std::vector<art::Ptr<recob::Cluster> >& clusters,
     art::Ptr<recob::PFParticle>  pfp,
     const art::Event& evt,
     const detinfo::DetectorClocksData& clockData,
@@ -1653,7 +1668,7 @@ void ana::ShowerValidation::PFPValidation(std::vector<art::Ptr<recob::Cluster> >
   evt.get(fmhc.at(clusters.at(0).key()).front().id(),hitHandle);
 
   if(!hitHandle.isValid()){
-    mf::LogError("ShowerValidation") << "Hits handle is stale. No pfp validation done" << std::endl;
+    mf::LogError("ShowerValidationICARUS") << "Hits handle is stale. No pfp validation done" << std::endl;
     return;
   }
 
@@ -1802,8 +1817,8 @@ void ana::ShowerValidation::PFPValidation(std::vector<art::Ptr<recob::Cluster> >
   return;
 }
 
-void ana::ShowerValidation::endJob() {
-
+void ana::ShowerValidationICARUS::endJob() {
+Tree->Print();
   std::cout << "Number of events ran over: " <<  numevents  << std::endl;
   std::cout << "Number of initial MC Showers: " <<  numshowers  << std::endl;
   std::cout << "Number of reco showers: " << numrecoshowers  << std::endl;
@@ -1819,4 +1834,4 @@ void ana::ShowerValidation::endJob() {
 }
 
 
-DEFINE_ART_MODULE(ana::ShowerValidation)
+DEFINE_ART_MODULE(ana::ShowerValidationICARUS)
