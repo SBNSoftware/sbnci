@@ -13,10 +13,9 @@
 # ======================================================================
 
 
-# use cmake 2.8 or later
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(sbnci)
+project(sbnci VERSION 09.32.00 LANGUAGES CXX)
 
 message(STATUS "\n")
 message(STATUS "=================================   ${PROJECT_NAME}   =================================")
@@ -34,8 +33,6 @@ set(CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules
 
 include(CetCMakeEnv)
 cet_cmake_env()
-
-set_install_root()
 
 # The specification of the C++ standard is required because CET macros
 # set it to C++98 by default, and then override it depending on the
@@ -62,23 +59,23 @@ message(STATUS "${PROJECT_NAME} repository tag: ${GIT_REPOSITORY_TAG}")
 install_source(LIST RepositoryTag)
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( larpandora v1_00_00 )
-find_ups_product( larsim v1_00_00 )
-find_ups_product( lardata v1_00_00 )
+find_ups_product( larpandora )
+find_ups_product( larsim )
+find_ups_product( lardata )
 find_ups_product( lardataobj )
 find_ups_product( lardataalg )
 find_ups_product( larevt )
-find_ups_product( larcore v1_00_00 )
-find_ups_product( larcoreobj v1_00_00 )
-find_ups_product( nutools v1_00_00 )
+find_ups_product( larcore  )
+find_ups_product( larcoreobj )
+find_ups_product( nutools  )
 find_ups_product( nug4 )
 find_ups_product( nugen )
 find_ups_product( nuevdb )
-find_ups_product( nurandom v1_00_00 )
-find_ups_product( art v1_09_00 )
+find_ups_product( nurandom )
+find_ups_product( art )
 find_ups_product( art_root_io )
-find_ups_product( cetbuildtools v3_10_00 )
-find_ups_product( postgresql v9_1_5 )
+find_ups_product( cetbuildtools )
+find_ups_product( postgresql )
 find_ups_product( hep_concurrency )
 find_ups_product( pandora )
 find_ups_product( eigen )
@@ -109,6 +106,9 @@ if(${nicarus} EQUAL 1)
   message(STATUS "setting up icaruscode")
   find_ups_product( icaruscode )
 endif()
+
+find_ups_boost()
+find_ups_root()
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
