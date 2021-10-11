@@ -27,7 +27,7 @@ defaultqual e20
 # With "product  version" table below, we now define dependencies
 # Add the dependent product and version
 product          version
-sbndcode            v09_32_00
+sbndcode            v09_32_01
 ## icaruscode       v08_43_00
 
 # list products required ONLY for the build
