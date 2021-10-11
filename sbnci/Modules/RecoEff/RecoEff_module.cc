@@ -216,10 +216,13 @@ void RecoEff::ResetData()
 void RecoEff::SetupMaps(art::Event const &e)
 {
   std::map<int, const simb::MCParticle*> trueParticles;
+  std::map<int, bool> is_delta;
+
   const sim::ParticleList& particles = particleInventory->ParticleList();
   for (auto const& particleIt : particles) {
     const simb::MCParticle* particle = particleIt.second;
     trueParticles[particle->TrackId()] = particle;
+    is_delta[particle->TrackId()] = (particle->Process() == "muIoni");
   }
 
   std::map<int, std::vector<int>> showerMothers = ShowerUtils::GetShowerMothersCandidates(trueParticles);
@@ -228,10 +231,21 @@ void RecoEff::SetupMaps(art::Event const &e)
   for (auto const& [trackId, particle] : trueParticles) {
     if (abs(particle->PdgCode()) == 11 || abs(particle->PdgCode()) == 22) {
       auto const& showerMotherIter(showerMothers.find(trackId));
+
       if (showerMotherIter != showerMothers.end()) {
-        truePrimaries[trackId] = showerMotherIter->second;
+	auto daughters = showerMotherIter->second;                       //TEMPORARY: This section is a hacky temporary solution to the fact delta rays are not being
+	if (is_delta[trackId]) {                                         //           rolled up into muons and this is causing apparent poor purity & completeness for muon tracks
+	  daughters.push_back(trackId);                                  //           This should be removed when roll up is fixed in larg4 (Redmine issue #26294)
+	  auto const &already = truePrimaries.find(particle->Mother());
+	  if(already != truePrimaries.end()) daughters.insert(daughters.end(), already->second.begin(), already->second.end());
+	  truePrimaries[particle->Mother()] = daughters;
+	}
+	else {
+	  truePrimaries[trackId] = daughters;
+	}
       }
-    } else {
+    }
+    else {
       truePrimaries[trackId] = { trackId };
     }
   }
@@ -439,9 +453,10 @@ float RecoEff::Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int
   std::map<int,int> objectHitsMap;
 
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
-    int trackID = fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)];
-    objectHitsMap[trackID]++;
+    int primaryID = fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)];
+    objectHitsMap[primaryID]++;
   }
+
   return (objectHits.size() == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(objectHits.size());
 }
 
@@ -450,8 +465,8 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
   std::map<int,int> objectHitsMap;
 
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
-    int trackID = fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)];
-    objectHitsMap[trackID]++;
+    int primaryID = fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)];
+    objectHitsMap[primaryID]++;
   }
   return (fHitsMap[trackID] == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(fHitsMap[trackID]);
 }
