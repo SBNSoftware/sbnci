@@ -90,19 +90,19 @@ void PlotHists(TFile *inFile, TFile *outFile, TString histName, TString histTitl
       BranchTree->Draw(metricToPlot + " >> " + BraHisName);
     }
     if(trkpar == "Muon"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack==13");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack==13");
       BranchTree->Draw(metricToPlot + " >> " + BraHisName);
     }
     if(trkpar == "Pion"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack==211");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack==211");
       BranchTree->Draw(metricToPlot + " >> " + BraHisName);
     }
     if(trkpar == "Proton"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack==2221");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack==2221");
       BranchTree->Draw(metricToPlot + " >> " + BraHisName);
     }
     if(trkpar == "Other"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack!=13 && trkPdgcode_pandoraTrack!=211 && trkPdgcode_pandoraTrack!=2212");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack!=13 && trkPDG_pandoraTrack!=211 && trkPDG_pandoraTrack!=2212");
       BranchTree->Draw(metricToPlot + " >> " + BraHisName);
     }
 
@@ -144,19 +144,19 @@ void Plot2DHists(TFile *inFile, TFile *outFile, TString histName, TString histTi
       BranchTree->Draw(metricToPlotonY + ":" + metricToPlotonX + " >> " + BraHisName);
     }
     if(trkpar == "Muon"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack==13");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack==13");
       BranchTree->Draw(metricToPlotonY + ":" + metricToPlotonX + " >> " + BraHisName);
     }
     if(trkpar == "Pion"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack==211");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack==211");
       BranchTree->Draw(metricToPlotonY + ":" + metricToPlotonX + " >> " + BraHisName);
     }
     if(trkpar == "Proton"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack==2221");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack==2221");
       BranchTree->Draw(metricToPlotonY + ":" + metricToPlotonX + " >> " + BraHisName);
     }
     if(trkpar == "Other"){
-      BranchTree = metricTree->CopyTree("trkPdgcode_pandoraTrack!=13 && trkPdgcode_pandoraTrack!=211 && trkPdgcode_pandoraTrack!=2212");
+      BranchTree = metricTree->CopyTree("trkPDG_pandoraTrack!=13 && trkPDG_pandoraTrack!=211 && trkPDG_pandoraTrack!=2212");
       BranchTree->Draw(metricToPlotonY + ":" + metricToPlotonX + " >> " + BraHisName);
     }
     
