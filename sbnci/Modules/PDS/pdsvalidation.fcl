@@ -17,11 +17,11 @@ sbnd_pdsvalidation_ci:
    ArapucaMapLabel: ["xarapuca_vuv", "xarapuca_vis"]
 
    ###Analyzer configuration
-   Verbose: true
+   Verbose: false
    UseReflectedLight: true
    SaveByPDType: true
-   UseArapucas: true
-   PECut: 10
+   UseArapucas: false
+   PECut: 25
    PDSResponseDelay: 0.2 #in us
 }
 

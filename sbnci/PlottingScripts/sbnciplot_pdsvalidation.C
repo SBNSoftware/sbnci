@@ -52,18 +52,18 @@ void sbnciplot_pdsvalidation(TString inputFile)
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "PMTPEResolutionVec","", "(PMTPE-PMTSimPhot)/PMTSimPhot (per OpCh)", histYaxis, nBins, -1, 1.5, "PMTPEResolutionVec", "", dirName);
 
 
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaNHit","", "ArapucaNHit", histYaxis, nBins, 0, 500, "ArapucaNHit", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPeakTime","", "ArapucaPeakTime", histYaxis, nBins, 0, 10, "ArapucaPeakTime", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaWidth","", "ArapucaWidth", histYaxis, nBins, 0, 5, "ArapucaWidth", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaAmplitude","", "ArapucaAmplitude", histYaxis, nBins, 0, 4000, "ArapucaAmplitude", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPE","", "ArapucaPE", histYaxis, nBinsPEOpCh, 0, 500, "ArapucaPE", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPEResolutionVec","", "(ArapucaPE-ArapucaSimPhot)/ArapucaSimPhot", histYaxis, nBins, -1, 1.5, "ArapucaPEResolutionVec", "", dirName);
+  //PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaNHit","", "ArapucaNHit", histYaxis, nBins, 0, 500, "ArapucaNHit", "", dirName);
+  //PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPeakTime","", "ArapucaPeakTime", histYaxis, nBins, 0, 10, "ArapucaPeakTime", "", dirName);
+  //PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaWidth","", "ArapucaWidth", histYaxis, nBins, 0, 5, "ArapucaWidth", "", dirName);
+  //PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaAmplitude","", "ArapucaAmplitude", histYaxis, nBins, 0, 4000, "ArapucaAmplitude", "", dirName);
+  //PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPE","", "ArapucaPE", histYaxis, nBinsPEOpCh, 0, 500, "ArapucaPE", "", dirName);
+  //PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPEResolutionVec","", "(ArapucaPE-ArapucaSimPhot)/ArapucaSimPhot", histYaxis, nBins, -1, 1.5, "ArapucaPEResolutionVec", "", dirName);
 
 
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "NFlash","", "NFlash", histYaxis, 10, 0, 10, "NFlash", "", dirName);
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "TotalFlashPE","", "TotalFlashPE", histYaxis, nBinsPE, 0,50000, "TotalFlashPE", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "FlashTime","", "FlashTime [#mus]", histYaxis, nBins, 0, 2, "FlashTime", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "FlashTimeResolution","", "FlashTime-NuG4Time [ns]", histYaxis, nBins, -0.05, 0.1, "FlashTimeResolution", "", dirName);
+  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "FlashTime","", "FlashTime [#mus]", histYaxis, 20, 0, 2, "FlashTime", "", dirName);
+  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "FlashTimeResolution","", "FlashTime-NuG4Time [ns]", histYaxis, nBins, -0.05, 0.1, "FlashTimeResolution", "", dirName);
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "YCenter","", "YCenter [cm]", histYaxis, 20, -200, 200, "YCenter", "", dirName);
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ZCenter","", "ZCenter [cm]", histYaxis, 25, 0, 500, "ZCenter", "", dirName);
 
