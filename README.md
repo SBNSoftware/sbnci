@@ -11,4 +11,4 @@ This package is designed to work alongside the `lar_ci` continuous integration p
 - `sbnci/scripts`: This contains the bash scripts that are sourced by `lar_ci` to run the ROOT macros.
 - `sbnci/thresholds`: This contains text files with the threshold values for the chi2 comparisons made for each plot. The threshold values are used to determine the red-yellow-white colouring of the plots.
 
-For more information see the Wiki page [here](https://sbnsoftware.github.io/sbndcode_wiki/CI_Validation.html).
+For more information see the Wiki page [here](https://sbnsoftware.github.io/sbndcode_wiki/ContinuousIntegration/CI_Validation.html).
