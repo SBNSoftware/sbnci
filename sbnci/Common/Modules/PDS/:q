@@ -1,0 +1,12 @@
+BEGIN_PROLOG
+
+common_pdsvalidation_ci: 
+{
+   module_type:			"PDSValidation"
+   GenieGenModuleLabel:		"generator"
+   LArGeantModuleLabel:		"largeant"
+   OpFlashTPC1Label:            "opflashtpc1"
+
+}
+
+END_PROLOG

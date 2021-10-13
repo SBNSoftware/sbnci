@@ -1,0 +1,10 @@
+add_subdirectory(JobConfigurations)
+add_subdirectory(ShowerValidation)
+add_subdirectory(PFPValidation)
+add_subdirectory(PDS)
+add_subdirectory(CRT)
+add_subdirectory(TPCSim)
+
+install_headers()
+install_fhicl()
+install_source()

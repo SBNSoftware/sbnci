@@ -1,0 +1,12 @@
+BEGIN_PROLOG
+
+common_tpcsimvalidation_ci: 
+{
+   module_type:			"TPCSimValidation"
+   GenieGenModuleLabel:		"generator"
+   LArGeantModuleLabel:		"largeant"
+   RawDigitLabel:               ["daq"]
+
+}
+
+END_PROLOG
