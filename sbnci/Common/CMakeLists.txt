@@ -1,3 +1,3 @@
 add_subdirectory(Modules)
 add_subdirectory(PlottingScripts)
-add_subdirectory(Scripts)
+add_subdirectory(scripts)
