@@ -1,4 +1,3 @@
-
 set( ${product}_script_dir "${product}/${version}/scripts" )
-FILE( GLOB plot_scripts sbnciplot*.C  )
+FILE( GLOB plot_scripts CompareDataDistributions.C )
 install( FILES ${plot_scripts} DESTINATION ${${product}_script_dir} )
