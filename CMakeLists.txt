@@ -80,6 +80,7 @@ find_ups_product( hep_concurrency )
 find_ups_product( pandora )
 find_ups_product( eigen )
 find_ups_product( larreco )
+find_ups_product( sbncode )
 
 find_ups_product( sbnobj )
 
