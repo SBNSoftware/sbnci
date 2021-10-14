@@ -52,8 +52,8 @@
 #include "lardataobj/RecoBase/PFParticle.h"
 #include "lardataobj/RecoBase/Vertex.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "sbnci/Modules/MCRecoUtils/RecoUtils.h"
-#include "sbnci/Modules/MCRecoUtils/ShowerUtils.h"
+#include "sbnci/Common/Modules/MCRecoUtils/RecoUtils.h"
+#include "sbnci/Common/Modules/MCRecoUtils/ShowerUtils.h"
 
 //Root Includes
 #include "TMath.h"
@@ -469,17 +469,13 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //I think that doing getManyByType kind of initalises the handles giving every particle product id. Doing this allows us to find handles for the individal hits later.
 
   //Get all the hits
-  std::vector<art::Handle<std::vector<recob::Hit> > > hitHandles;
-  evt.getManyByType(hitHandles);
+  auto hitHandles = evt.getMany<std::vector<recob::Hit> >();
 
   //Get all the clusters
-  std::vector<art::Handle<std::vector<recob::Cluster> > > clusterHandles;
-  evt.getManyByType(clusterHandles);
+  auto clusterHandles = evt.getMany<std::vector<recob::Cluster> >();
 
   //Get all the pfparticles
-  std::vector<art::Handle<std::vector<recob::PFParticle> > > pfpHandles;
-  evt.getManyByType(pfpHandles);
-
+  auto pfpHandles = evt.getMany<std::vector<recob::PFParticle> >();
 
   //###############################################
   //### Get the Truth information for the event ###
