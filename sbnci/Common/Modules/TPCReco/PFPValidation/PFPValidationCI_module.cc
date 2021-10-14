@@ -35,7 +35,7 @@
 #include "larsim/MCCheater/ParticleInventoryService.h"
 #include "larsim/Utils/TruthMatchUtils.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
-#include "sbnci/Modules/MCRecoUtils/ShowerUtils.h"
+#include "sbnci/Common/Modules/MCRecoUtils/ShowerUtils.h"
 
 //Root Includes
 #include "TTree.h"

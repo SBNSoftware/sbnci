@@ -33,7 +33,6 @@
 #include "larsim/MCCheater/ParticleInventoryService.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "icaruscode/RecoUtils/RecoUtils.h"
 #include "lardataobj/RawData/RawDigit.h"
 
 //Root Includes
@@ -177,7 +176,7 @@ void ana::TPCSimValidation::analyze(const art::Event& evt) {
       trueParticles[particle->TrackId()] = particle;
 
       if(fVerbose){
-          MF_LOGINFO("TPCSimValidation")
+          MF_LOG_INFO("TPCSimValidation")
                << "True Particle with track ID: " << particle->TrackId() << " Has code of: " 
                << particle->PdgCode() << " and Energy of: " << particle->E() << " With Mother: " 
                << particle->Mother() << " Proccess: " << particle->Process() << " End Process: "  
