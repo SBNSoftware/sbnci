@@ -5,7 +5,7 @@ common_crtvalidation_ci:
    module_type:			"CRTValidation"
    GenieGenModuleLabel:		"generator"
    LArGeantModuleLabel:		"largeant"
-   CRTHitLabel:                 "CRTHit"
+   CRTHitLabel:                 "crthit"
 
 }
 
