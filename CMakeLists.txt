@@ -83,6 +83,9 @@ find_ups_product( larreco )
 
 find_ups_product( sbnobj )
 
+########################################################
+# this doesn't work when exp code has not been built yet
+########################################################
 # mrbsetenv reads from ups/product_deps and sets up 
 # sbndcode and/or icaruscode if available.
 # check for active instances of each and enforce the 
@@ -90,33 +93,33 @@ find_ups_product( sbnobj )
 # in order to avoid dependency clashes, require
 # that only one instance of sbndcode or icaruscode
 # is active (any cases where both needed?).
-execute_process(
-  COMMAND bash -c "ups active | grep sbndcode | wc -l"
-  OUTPUT_VARIABLE nsbnd
-)
-
-execute_process(
-  COMMAND bash -c "ups active | grep icaruscode | wc -l"
-  OUTPUT_VARIABLE nicarus
-)
-message(STATUS "found ${nsbnd} and ${nicarus} active instances of sbndcode and icaruscode respectively.")
-
-if(${nsbnd} EQUAL 0 AND ${nicarus} EQUAL 0)
-  message(FATAL_ERROR "you must setup a UPS bundle with either icarucode or sbndcode! abort build.")
-endif()
-if(${nsbnd} GREATER 0 AND ${nicarus} GREATER 0)
-  message(FATAL_ERROR "icaruscode and sbndcode are both active - this is not supported. please ensure only one is active.")
-endif()
-
-if(${nsbnd} EQUAL 1)
-  message(STATUS "setting up sbndcode")
-  find_ups_product( sbndcode )
-endif()
-
-if(${nicarus} EQUAL 1)
-  message(STATUS "setting up icaruscode")
-  find_ups_product( icaruscode )
-endif()
+#execute_process(
+#  COMMAND bash -c "ups active | grep sbndcode | wc -l"
+#  OUTPUT_VARIABLE nsbnd
+#)
+#
+#execute_process(
+#  COMMAND bash -c "ups active | grep icaruscode | wc -l"
+#  OUTPUT_VARIABLE nicarus
+#)
+#message(STATUS "found ${nsbnd} and ${nicarus} active instances of sbndcode and icaruscode respectively.")
+#
+#if(${nsbnd} EQUAL 0 AND ${nicarus} EQUAL 0)
+#  message(FATAL_ERROR "you must setup a UPS bundle with either icarucode or sbndcode! abort build.")
+#endif()
+#if(${nsbnd} GREATER 0 AND ${nicarus} GREATER 0)
+#  message(FATAL_ERROR "icaruscode and sbndcode are both active - this is not supported. please ensure only one is active.")
+#endif()
+#
+#if(${nsbnd} EQUAL 1)
+#  message(STATUS "setting up sbndcode")
+#  find_ups_product( sbndcode )
+#endif()
+#
+#if(${nicarus} EQUAL 1)
+#  message(STATUS "setting up icaruscode")
+#  find_ups_product( icaruscode )
+#endif()
 # done. now on to the normal CMake stuff...
 
 find_ups_boost()
