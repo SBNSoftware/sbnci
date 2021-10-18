@@ -24,7 +24,7 @@ physics:
 {
   analyzers:
   {
-    pdsvalidation: @local::sbnd_pdsvalidation_ci
+    pdsvalidation: @local::common_pdsvalidation_ci
   }
 
   ana:       [ pdsvalidation ]
