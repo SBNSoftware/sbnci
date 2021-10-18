@@ -1,24 +1,16 @@
 cet_find_library( BOOST_SERIALIZATION NAMES boost_serialization PATHS ENV BOOST_LIB NO_DEFAULT_PATH )
 cet_find_library( BOOST_DATE_TIME     NAMES boost_date_time     PATHS ENV BOOST_LIB NO_DEFAULT_PATH )
 
-execute_process(
-    COMMAND bash "
-        if [[ ${ref_pfp_hist} == *sbnd* ]]
-         then
-            echo 'sbnd'
-        elif [[ ${ref_pfp_hist} == *icarus* ]]
-         then
-            echo 'icarus'
-        fi"
-    OUTPUT_VARIABLE expName
-)
+if(NOT ICARUS AND NOT SBND)
+  message(WARNING "attempting to build sbnci without experiment! pass -DSBND=true or -DICARUS=true as build option.")
+elseif(ICARUS AND SBND)
+  message(FATAL_ERROR "attempting to build sbnci with multiple experiement code repos enabled - this is not supported.")
+endif()
 
 add_subdirectory(Common)
-#if(${nsbnd} EQUAL 1)
-if("${expName}" EQUAL "sbnd")
+if(SBND)
   add_subdirectory(SBND)
 endif()
-#if(${nicarus} EQUAL 1)
-if("${expName}" EQUAL "icarus")
+if(ICARUS)
   add_subdirectory(ICARUS)
 endif()
