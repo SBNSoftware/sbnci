@@ -17,7 +17,7 @@
 
 void PlotHists(TFile *inFile, TFile *outFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString dirName);
 
-void sbnciplot_showervalidation(TString inputFile="showervalidationGraphs.root")
+void sbnciplot_showervalidation_sbnd(TString inputFile="showervalidationGraphs.root")
 {
   
   TFile *inFile = TFile::Open(inputFile.Data());

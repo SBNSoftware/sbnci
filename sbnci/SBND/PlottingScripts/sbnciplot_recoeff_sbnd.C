@@ -9,7 +9,7 @@ void EffPlot(TTree *tree, TFile* outputFile, TString directoryName, TString PDG,
 void Plot(TTree* tree, TFile* outputFile, TString directoryName, TString PDG, TString variable, 
           int nBins, float xMin, float xMax, TString title, TString variableName);
 
-void sbnciplot_recoeff(TString inputFileName)
+void sbnciplot_recoeff_sbnd(TString inputFileName)
  {
   TFile *inputFile = TFile::Open(inputFileName.Data());
   TTree *tree = (TTree*) inputFile->Get("recoeff/ParticleTree");

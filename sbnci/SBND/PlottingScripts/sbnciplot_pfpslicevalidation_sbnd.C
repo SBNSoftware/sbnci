@@ -17,7 +17,7 @@
 
 void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString dirName);
 
-void sbnciplot_pfpslicevalidation(TString inputFile)
+void sbnciplot_pfpslicevalidation_sbnd(TString inputFile)
 {
   
   TFile *inFile = TFile::Open(inputFile.Data());
