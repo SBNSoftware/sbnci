@@ -9,7 +9,7 @@ export ref_ana_hist=${ref_pfp_hist}
 export normalise_plots=${normalise_plots_pfp}
 
 ## Name of plotting script. This should be the only line that needs changing for other CI chains.
-plotScript="${expCIDir}/scripts/sbnciplot_pfpvalidation.C"
+plotScript="${SBNCI_Dir}/scripts/sbnciplot_pfpvalidation_${expName}.C"
 
 ## Passing the plotting script name and the input file name to sbnciplots.sh
 source sbnciplots.sh $plotScript ${1}
