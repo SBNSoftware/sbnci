@@ -19,7 +19,7 @@ physics:
 {
   analyzers:
   {
-    dEdx: @local::sbnd_dEdxvalidation_ci
+    dEdx: @local::common_dEdxvalidation_ci
   }
 
   ana:       [ dEdx ]

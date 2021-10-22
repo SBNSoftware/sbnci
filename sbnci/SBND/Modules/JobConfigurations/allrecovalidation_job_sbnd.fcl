@@ -25,10 +25,10 @@ physics:
 {
   analyzers:
   {
-    pfpvalidation:	@local::sbnd_pfpvalidation_ci
-    pfpslicevalidation: @local::sbnd_pfpslicevalidation_ci
-    showervalidation:   @local::sbnd_showervalidation_ci
-    recoeff:		@local::sbnd_recoeff_ci
+    pfpvalidation:	@local::common_pfpvalidation_ci
+    pfpslicevalidation: @local::common_pfpslicevalidation_ci
+    showervalidation:   @local::common_showervalidation_ci
+    recoeff:		@local::common_recoeff_ci
   }
 
   ana:       [ pfpvalidation, pfpslicevalidation, showervalidation, recoeff ]

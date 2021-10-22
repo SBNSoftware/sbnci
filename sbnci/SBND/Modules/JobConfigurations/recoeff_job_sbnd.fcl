@@ -23,7 +23,7 @@ physics:
 {
   analyzers:
   {
-    recoeff: @local::sbnd_recoeff_ci
+    recoeff: @local::common_recoeff_ci
   }
 
   ana:       [ recoeff ] 

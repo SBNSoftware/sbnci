@@ -23,7 +23,7 @@ physics:
 {
   analyzers:
   {
-    pfpslicevalidation: @local::sbnd_pfpslicevalidation_ci
+    pfpslicevalidation: @local::common_pfpslicevalidation_ci
   }
 
   ana:       [ pfpslicevalidation ]

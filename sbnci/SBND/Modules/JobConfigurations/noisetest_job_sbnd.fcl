@@ -19,7 +19,7 @@ physics:
 {
   analyzers:
   {
-    noise: @local::sbnd_noisetest_ci
+    noise: @local::common_noisetest_ci
   }
 
   ana:       [ noise ]

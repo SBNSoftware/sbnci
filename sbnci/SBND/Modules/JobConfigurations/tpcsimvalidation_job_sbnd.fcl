@@ -24,7 +24,7 @@ physics:
 {
   analyzers:
   {
-    tpcsimvalidation: @local::sbnd_tpcsimvalidation_ci
+    tpcsimvalidation: @local::common_tpcsimvalidation_ci
   }
 
   ana:       [ tpcsimvalidation ]
