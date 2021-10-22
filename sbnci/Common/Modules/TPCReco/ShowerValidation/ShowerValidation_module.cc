@@ -132,7 +132,7 @@ class ana::ShowerValidation : public art::EDAnalyzer {
 
     std::vector<std::string> fShowerModuleLabels;
     std::vector<std::string> fHitModuleLabels;
-    std::vector<std::string> fPFParticleLabels;
+    //std::vector<std::string> fPFParticleLabels;
 
     std::map<std::string,std::vector<float> > sDirX_TreeVal;
     std::map<std::string,std::vector<float> > sDirY_TreeVal;
@@ -252,7 +252,7 @@ ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAna
   fPFParticleLabel             = pset.get<std::string>("PFParticleLabel");
   fShowerModuleLabels          = pset.get<std::vector<std::string> >("ShowerModuleLabels");
   fHitModuleLabels             = pset.get<std::vector<std::string> >("HitModuleLabels");
-  fPFParticleLabels            = pset.get<std::vector<std::string> >("PFParticleLabels");
+  //fPFParticleLabels            = pset.get<std::vector<std::string> >("PFParticleLabels");
   fUseBiggestShower            = pset.get<bool>("UseBiggestShower");
   fFillOnlyClosestShower       = pset.get<bool>("FillOnlyClosestShower");
   fRemoveNonContainedParticles = pset.get<bool>("RemoveNonContainedParticles");

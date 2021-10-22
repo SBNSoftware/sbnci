@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Set code name and version to have experiment agnostic env vars
+source sbnci_setcodename.sh
+
 ## Introduce environment variables specific to this validation
-export ref_sbndcode_ana_hist=${ref_pfpslice_hist}
+export ref_ana_hist=${ref_pfpslice_hist}
 export normalise_plots=${normalise_plots_pfpslice}
 
 ## Name of plotting script. This should be the only line that needs changing for other CI chains.
