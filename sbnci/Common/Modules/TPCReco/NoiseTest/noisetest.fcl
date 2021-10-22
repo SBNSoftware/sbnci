@@ -1,6 +1,6 @@
 BEGIN_PROLOG
 
-sbnd_noisetest_ci:
+common_noisetest_ci:
 {
   module_type:	    "NoiseTest" 
   NoiseModuleLabel: "daq"

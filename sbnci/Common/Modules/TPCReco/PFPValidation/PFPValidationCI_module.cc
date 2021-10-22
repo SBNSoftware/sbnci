@@ -133,7 +133,7 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
   };
 
   private:
-  std::string fHitLabel, fLArGeantLabel;
+  std::string fLArGeantLabel;
   std::vector<std::string> fPFPLabels; 
   std::vector<std::string> fHitLabels;
   art::ServiceHandle<art::TFileService> tfs;
@@ -163,7 +163,6 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
 
 sbnci::PFPValidationCI::PFPValidationCI(fhicl::ParameterSet const& pset)
     : EDAnalyzer { pset }
-    , fHitLabel(pset.get<std::string>("HitLabel"))
     , fLArGeantLabel(pset.get<std::string>("LArGeantLabel"))
     , fPFPLabels(pset.get<std::vector<std::string>>("PFPLabels"))
     , fHitLabels(pset.get<std::vector<std::string>>("HitLabels"))

@@ -123,11 +123,9 @@ class sbnci::PFPSliceValidationCI : public art::EDAnalyzer {
 
   private:
   int fVerbose;
-
-  std::string fHitLabel, fGenieGenModuleLabel;
+  std::string fGenieGenModuleLabel;
   std::vector<std::string> fPFParticleLabels;
   std::vector<std::string> fHitLabels;
-
 
   bool fUseBeamSpillXCorrection;
 
@@ -162,7 +160,6 @@ class sbnci::PFPSliceValidationCI : public art::EDAnalyzer {
 sbnci::PFPSliceValidationCI::PFPSliceValidationCI(fhicl::ParameterSet const& pset)
     : EDAnalyzer { pset }
     , fVerbose(pset.get<int>("Verbose", 0))
-    , fHitLabel(pset.get<std::string>("HitLabel"))
     , fGenieGenModuleLabel(pset.get<std::string>("GenieGenModuleLabel"))
     , fPFParticleLabels(pset.get<std::vector<std::string>>("PFParticleLabels"))
     , fHitLabels(pset.get<std::vector<std::string>>("HitLabels"))

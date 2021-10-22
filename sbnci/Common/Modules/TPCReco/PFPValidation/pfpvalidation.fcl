@@ -5,7 +5,7 @@ common_pfpslicevalidation_ci:
     module_type:              PFPSliceValidationCI
     GenieGenModuleLabel:      "generator"
     PFParticleLabels:         ["pandora"]
-    HitLabel:                 "gaushit"
+    HitLabels:                ["gaushit"]
     UseBeamSpillXCorrection:  true
 }
 
@@ -14,7 +14,7 @@ common_pfpvalidation_ci:
     module_type:    PFPValidationCI
     LArGeantLabel:  "largeant"
     PFPLabels:      ["pandora"]
-    HitLabel:       "gaushit"
+    HitLabels:      ["gaushit"]
 }
 
 END_PROLOG

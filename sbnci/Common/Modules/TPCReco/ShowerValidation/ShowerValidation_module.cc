@@ -132,7 +132,6 @@ class ana::ShowerValidation : public art::EDAnalyzer {
 
     std::vector<std::string> fShowerModuleLabels;
     std::vector<std::string> fHitModuleLabels;
-    std::vector<std::string> fTrackModuleLabels;
     std::vector<std::string> fPFParticleLabels;
 
     std::map<std::string,std::vector<float> > sDirX_TreeVal;
@@ -249,11 +248,10 @@ ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAna
   fGenieGenModuleLabel         = pset.get<std::string>("GenieGenModuleLabel");
   fLArGeantModuleLabel         = pset.get<std::string>("LArGeantModuleLabel");
   fHitsModuleLabel             = pset.get<std::string>("HitsModuleLabel");
-  fTrackModuleLabel            = pset.get<std::string>("TrackModuleLabel");
+  fTrackModuleLabel            = pset.get<std::vector<std::string> >("TrackModuleLabel");
   fPFParticleLabel             = pset.get<std::string>("PFParticleLabel");
   fShowerModuleLabels          = pset.get<std::vector<std::string> >("ShowerModuleLabels");
   fHitModuleLabels             = pset.get<std::vector<std::string> >("HitModuleLabels");
-  fTrackModuleLabels           = pset.get<std::vector<std::string> >("TrackModuleLabels");
   fPFParticleLabels            = pset.get<std::vector<std::string> >("PFParticleLabels");
   fUseBiggestShower            = pset.get<bool>("UseBiggestShower");
   fFillOnlyClosestShower       = pset.get<bool>("FillOnlyClosestShower");
@@ -463,7 +461,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //Get the track Information (hopfully you have pandora track)
   art::Handle<std::vector<recob::Track> > trackListHandle;
   std::vector<art::Ptr<recob::Track> > tracks;
-  if(evt.getByLabel(fTrackModuleLabel,trackListHandle))
+  if(evt.getByLabel(fTrackModuleLabels,trackListHandle))
   {art::fill_ptr_vector(tracks, trackListHandle);}
 
   //I think that doing getManyByType kind of initalises the handles giving every particle product id. Doing this allows us to find handles for the individal hits later.
