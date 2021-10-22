@@ -248,7 +248,7 @@ ana::ShowerValidation::ShowerValidation(const fhicl::ParameterSet& pset) : EDAna
   fGenieGenModuleLabel         = pset.get<std::string>("GenieGenModuleLabel");
   fLArGeantModuleLabel         = pset.get<std::string>("LArGeantModuleLabel");
   fHitsModuleLabel             = pset.get<std::string>("HitsModuleLabel");
-  fTrackModuleLabel            = pset.get<std::vector<std::string> >("TrackModuleLabel");
+  fTrackModuleLabel            = pset.get<std::string>("TrackModuleLabel");
   fPFParticleLabel             = pset.get<std::string>("PFParticleLabel");
   fShowerModuleLabels          = pset.get<std::vector<std::string> >("ShowerModuleLabels");
   fHitModuleLabels             = pset.get<std::vector<std::string> >("HitModuleLabels");
