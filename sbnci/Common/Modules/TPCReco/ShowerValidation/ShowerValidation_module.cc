@@ -461,7 +461,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //Get the track Information (hopfully you have pandora track)
   art::Handle<std::vector<recob::Track> > trackListHandle;
   std::vector<art::Ptr<recob::Track> > tracks;
-  if(evt.getByLabel(fTrackModuleLabels,trackListHandle))
+  if(evt.getByLabel(fTrackModuleLabel,trackListHandle))
   {art::fill_ptr_vector(tracks, trackListHandle);}
 
   //I think that doing getManyByType kind of initalises the handles giving every particle product id. Doing this allows us to find handles for the individal hits later.
