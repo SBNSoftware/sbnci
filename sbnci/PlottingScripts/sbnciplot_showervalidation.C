@@ -26,7 +26,7 @@ void sbnciplot_showervalidation(TString inputFile)
   TString histName, histTitle, histXaxis, metricToPlot;
   int xMin, xMax;
   TString histYaxis = "Counts";
-  int nBins = 100;
+  int nBins = 30;
 
   TString dirName = "pandoraShower";
 

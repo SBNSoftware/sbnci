@@ -10,8 +10,8 @@ services:
 {
   @table::sbnd_services
   TFileService:		    { fileName: "showervalidationGraphs.root" }
-  ParticleInventoryService: @local::standard_particleinventoryservice
-  BackTrackerService:  	    @local::standard_backtrackerservice
+  ParticleInventoryService: @local::sbnd_particleinventoryservice
+  BackTrackerService:  	    @local::sbnd_backtrackerservice
 }
 
 source:

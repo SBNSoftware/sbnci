@@ -4,7 +4,7 @@ sbnd_recoeff_ci:
 {
     module_type:                "RecoEff"
     NuGenModuleLabel:		"generator"
-    LArGeantModuleLabel:      	"largeant"
+    LArGeantModuleLabel:     	"largeant"
     TrackModuleLabel:         	"pandoraTrack"
     ShowerModuleLabel:        	"pandoraShower"
     PFParticleModuleLabel:    	"pandora"

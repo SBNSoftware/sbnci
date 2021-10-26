@@ -4,7 +4,7 @@ sbnd_showervalidation_ci:
 {
    module_type:			"ShowerValidation"
    GenieGenModuleLabel:		"generator"
-   LArGeantModuleLabel:		"largeant"
+   SimChannelModuleLabel:	"simdrift"
    HitsModuleLabel:		"gaushit"
    TrackModuleLabel:		"pandoraTrack"
    PFParticleLabel:		"pandora"
