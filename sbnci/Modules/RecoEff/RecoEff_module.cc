@@ -39,6 +39,7 @@
 //LArSoft
 #include "larsim/Utils/TruthMatchUtils.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
+#include "larsim/MCCheater/ParticleInventoryService.h"
 
 //Root
 #include "art_root_io/TFileService.h"
@@ -46,6 +47,9 @@
 
 //SBNDCODE
 #include "sbndcode/Geometry/GeometryWrappers/TPCGeoAlg.h"
+
+//SBNCI
+#include "sbnci/Modules/MCRecoUtils/ShowerUtils.h"
 
 constexpr int def_int     = -999;
 constexpr float def_float = -999.0f;
@@ -67,7 +71,7 @@ private:
 
   void ClearMaps();
   void ResetData();
-  void SetupHitsMap(art::Event const &e);
+  void SetupMaps(art::Event const &e);
   void ReconstructionProcessor(art::Event const &e);
   void TruthProcessor(art::Event const &e);
 
@@ -80,6 +84,7 @@ private:
 
 
   detinfo::DetectorClocksData clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
+  art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
 
   sbnd::TPCGeoAlg fTPCGeo;
   
@@ -108,6 +113,7 @@ private:
   std::map<int,float> fShowerCompMap, fShowerPurMap, fTrackCompMap,
     fTrackPurMap, fTrackLengthMap, fShowerdEdxMap;
   std::map<int,int> fHitsMap;
+  std::map<int,int> fTruePrimariesMap;
 };
 
 
@@ -186,6 +192,7 @@ void RecoEff::ClearMaps()
   fNShowersMap.clear(); fShowerCompMap.clear(); fShowerPurMap.clear();
   fTrackLengthMap.clear(); fShowerdEdxMap.clear();
   fHitsMap.clear();
+  fTruePrimariesMap.clear();
 }
 
 void RecoEff::ResetData()
@@ -206,14 +213,54 @@ void RecoEff::ResetData()
   fReco_isReconstructed = false;
 }
 
-void RecoEff::SetupHitsMap(art::Event const &e)
+void RecoEff::SetupMaps(art::Event const &e)
 {
+  std::map<int, const simb::MCParticle*> trueParticles;
+  std::map<int, bool> is_delta;
+
+  const sim::ParticleList& particles = particleInventory->ParticleList();
+  for (auto const& particleIt : particles) {
+    const simb::MCParticle* particle = particleIt.second;
+    trueParticles[particle->TrackId()] = particle;
+    is_delta[particle->TrackId()] = (particle->Process() == "muIoni");
+  }
+
+  std::map<int, std::vector<int>> showerMothers = ShowerUtils::GetShowerMothersCandidates(trueParticles);
+  std::map<int, std::vector<int>> truePrimaries;
+
+  for (auto const& [trackId, particle] : trueParticles) {
+    if (abs(particle->PdgCode()) == 11 || abs(particle->PdgCode()) == 22) {
+      auto const& showerMotherIter(showerMothers.find(trackId));
+
+      if (showerMotherIter != showerMothers.end()) {
+	auto daughters = showerMotherIter->second;                       //TEMPORARY: This section is a hacky temporary solution to the fact delta rays are not being
+	if (is_delta[trackId]) {                                         //           rolled up into muons and this is causing apparent poor purity & completeness for muon tracks
+	  daughters.push_back(trackId);                                  //           This should be removed when roll up is fixed in larg4 (Redmine issue #26294)
+	  auto const &already = truePrimaries.find(particle->Mother());
+	  if(already != truePrimaries.end()) daughters.insert(daughters.end(), already->second.begin(), already->second.end());
+	  truePrimaries[particle->Mother()] = daughters;
+	}
+	else {
+	  truePrimaries[trackId] = daughters;
+	}
+      }
+    }
+    else {
+      truePrimaries[trackId] = { trackId };
+    }
+  }
+  for(auto const [mother, daughters] : truePrimaries){
+    for(auto const daughter : daughters){
+      fTruePrimariesMap[daughter] = mother;
+    }
+  }
+
   art::Handle<std::vector<recob::Hit> > handleHits;
   e.getByLabel(fHitsModuleLabel,handleHits);
 
   for(unsigned hit_i = 0; hit_i < handleHits->size(); ++hit_i) {
     const art::Ptr<recob::Hit> hit(handleHits,hit_i);
-    fHitsMap[TruthMatchUtils::TrueParticleID(clockData,hit,true)]++;
+    fHitsMap[fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,hit,true)]]++;
   }
 }
 
@@ -251,7 +298,7 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	   TMath::Abs(y) > fYEdge || z < fZFrontEdge || z > fZBackEdge) continue;
 
 	std::vector<art::Ptr<recob::Hit> > trackHits = trackHitAssn.at(track.key());
-	int trackID = TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,trackHits,true);
+	int trackID = fTruePrimariesMap[TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,trackHits,true)];
 	float comp = Completeness(trackHits,trackID);
 	float pur = Purity(trackHits,trackID);
 	float length = track->Length();
@@ -280,7 +327,7 @@ void RecoEff::ReconstructionProcessor(art::Event const &e)
 	   TMath::Abs(y) > fYEdgeShowers || z < fZFrontEdgeShowers || z > fZBackEdgeShowers) continue;
 
 	std::vector<art::Ptr<recob::Hit> > showerHits = showerHitAssn.at(shower.key());
-	int trackID = TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,showerHits,true);
+	int trackID = fTruePrimariesMap[TruthMatchUtils::TrueParticleIDFromTotalRecoHits(clockData,showerHits,true)];
 	float comp = Completeness(showerHits,trackID);
 	float pur = Purity(showerHits,trackID);
 
@@ -406,8 +453,10 @@ float RecoEff::Purity(std::vector< art::Ptr<recob::Hit> > const &objectHits, int
   std::map<int,int> objectHitsMap;
 
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
-    objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
+    int primaryID = fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)];
+    objectHitsMap[primaryID]++;
   }
+
   return (objectHits.size() == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(objectHits.size());
 }
 
@@ -416,7 +465,8 @@ float RecoEff::Completeness(std::vector< art::Ptr<recob::Hit> > const &objectHit
   std::map<int,int> objectHitsMap;
 
   for(unsigned int i = 0; i < objectHits.size(); ++i) {
-    objectHitsMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)]++;
+    int primaryID = fTruePrimariesMap[TruthMatchUtils::TrueParticleID(clockData,objectHits[i],true)];
+    objectHitsMap[primaryID]++;
   }
   return (fHitsMap[trackID] == 0) ? def_float : objectHitsMap[trackID]/static_cast<float>(fHitsMap[trackID]);
 }
@@ -445,7 +495,7 @@ void RecoEff::analyze(art::Event const &e)
   clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(e);
 
   ClearMaps();
-  SetupHitsMap(e);
+  SetupMaps(e);
   ReconstructionProcessor(e);
   TruthProcessor(e);
 }

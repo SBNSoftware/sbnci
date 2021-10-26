@@ -1,0 +1,54 @@
+#
+# File:    pdsvalidation_job_icarus.fcl
+# Purpose: produces plots for validation of optical detector in simulation
+#
+# The current workflow executes the module ana::PDSValidation.
+# Preprocessing is needed to convert the format of scintillation photon
+# information from the simulation (`sim::SimPhotons` -> `sim::SimPhotonsLite`).
+#
+
+#include "geometry_icarus.fcl"
+#include "detectorclocks_icarus.fcl"
+
+#include "pdsvalidation_icarus.fcl"
+
+# ------------------------------------------------------------------------------
+process_name: AnaCI
+
+
+# ------------------------------------------------------------------------------
+services: {
+  
+  TFileService: { fileName: "pdsValidationTree.root" }
+  
+                         @table::icarus_geometry_services
+  DetectorClocksService: @local::icarus_detectorclocks
+  
+}
+
+
+# ------------------------------------------------------------------------------
+physics: {
+  
+  producers: {
+    simphotonslite: @local::icarus_litephotons_adapter
+  }
+  
+  analyzers: {
+    
+    #
+    # Note: the current version (v09_32_00) of PDSValidation module picks
+    #       *all* sim::SimPhotonsLite collections in the event;
+    #       it will automatically pick `simphotonslite` as well.
+    #
+    pdsvalidation: @local::icarus_pdsvalidation_ci
+    
+  }
+
+  preprocessing: [ simphotonslite ]
+  analysis:      [ pdsvalidation ]
+
+} # physics
+
+
+# ------------------------------------------------------------------------------
