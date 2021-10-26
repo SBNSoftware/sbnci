@@ -146,7 +146,7 @@ void getHistMaxMinWithError(TH1* hist, double &histMax, double &histMin) {
   for(int i=1; i<hist->GetNbinsX()+1; ++i)
     {
       maxi = std::max(maxi, hist->GetBinContent(i) + hist->GetBinErrorUp(i));
-      mini = std::min(mini, hist->GetBinContent(i) + hist->GetBinErrorLow(i));
+      mini = std::min(mini, hist->GetBinContent(i) - hist->GetBinErrorLow(i));
     }
   histMax = maxi;
   histMin = mini;
