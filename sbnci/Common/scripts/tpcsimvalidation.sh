@@ -4,7 +4,7 @@
 source sbnci_setcodename.sh
 
 ## Introduce environment variables specific to this validation
-export ref_ana_hist=${ref_tpcsimvalidation_hist}
+export ref_ana_hist=${ref_tpcsim_hist}
 export normalise_plots=${normalise_plots_tpcsimvalidation}
 
 ## Name of plotting script. This should be the only line that needs changing for other CI chains.
