@@ -11,10 +11,10 @@ common_pfpslicevalidation_ci:
 
 common_pfpvalidation_ci:
 {
-    module_type:    PFPValidationCI
-    LArDriftLabel:  "simdrift"
-    PFPLabels:      ["pandora"]
-    HitLabels:      ["gaushit"]
+    module_type:      PFPValidationCI
+    SimChannelLabel:  "simdrift"
+    PFPLabels:       ["pandora"]
+    HitLabels:       ["gaushit"]
 }
 
 END_PROLOG
