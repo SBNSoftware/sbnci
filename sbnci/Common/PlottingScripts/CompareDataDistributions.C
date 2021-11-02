@@ -139,6 +139,19 @@ double getMax(TH1* hData, TH1* hMC) {
     else return datamax;
 }
 
+void getHistMaxMinWithError(TH1* hist, double &histMax, double &histMin) {
+  double maxi = -std::numeric_limits<double>::max();
+  double mini = std::numeric_limits<double>::max();
+
+  for(int i=1; i<hist->GetNbinsX()+1; ++i)
+    {
+      maxi = std::max(maxi, hist->GetBinContent(i) + hist->GetBinErrorUp(i));
+      mini = std::min(mini, hist->GetBinContent(i) - hist->GetBinErrorLow(i));
+    }
+  histMax = maxi;
+  histMin = mini;
+}
+
 void setStyleRatio(TH1D* h, TString file1_label, TString file2_label){
     h->SetTitle("");
     h->SetNdivisions(510, "Y");
@@ -345,11 +358,13 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
               TH1D*hp1=(TH1D*)hCurEff_clone->GetPassedHistogram();
               TH1D*ht1=(TH1D*)hCurEff_clone->GetTotalHistogram();
               hCur=(TH1D*)hCurEff_clone->GetTotalHistogram();
+	      hCur->Sumw2();
               hCur->Divide(hp1, ht1, 1., 1., "");
 
               TH1D*hp2=(TH1D*)hRefEff_clone->GetPassedHistogram();
               TH1D*ht2=(TH1D*)hRefEff_clone->GetTotalHistogram();
               hRef=(TH1D*)hRefEff_clone->GetTotalHistogram();
+	      hRef->Sumw2();
               hRef->Divide(hp2, ht2, 1., 1., "");
 
 
@@ -407,16 +422,19 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
           bottomPad->cd();
           TH1D *ratioPlotFile2 = (TH1D*)hRef->Clone("ratioPlotFile2");
           ratioPlotFile2->Add(hRef, -1);
-          ratioPlotFile2->GetYaxis()->SetRangeUser(-10,10);
           ratioPlotFile2->Divide(hRef);
-          setStyleRatio(ratioPlotFile2, gRefVersion.Data(), gCurVersion.Data());
-          ratioPlotFile2->Draw("hist");
           TH1D* ratioPlotFile2C = (TH1D*)ratioPlotFile2->Clone("ratioPlotFile2C");
           ratioPlotFile2C->SetFillColor(0);
-          ratioPlotFile2C->Draw("histsame");
           TH1D *ratioPlotFile1 = (TH1D*)hCur->Clone("ratioPlotFile1");
           ratioPlotFile1->Add(hRef, -1);
           ratioPlotFile1->Divide(hRef);
+	  double maxvalue, minvalue;
+	  getHistMaxMinWithError(ratioPlotFile1, maxvalue, minvalue);
+	  double range = 1.2 * std::max(std::abs(maxvalue), std::abs(minvalue));
+          ratioPlotFile2->GetYaxis()->SetRangeUser(-range, range);
+          setStyleRatio(ratioPlotFile2, gRefVersion.Data(), gCurVersion.Data());
+          ratioPlotFile2->Draw("hist");
+          ratioPlotFile2C->Draw("histsame");
           ratioPlotFile1->Draw("e1same");
 
           c1->Print(Form("%s/%s.png",s_local_branch_names.Data(), s_histo_names.Data() ));

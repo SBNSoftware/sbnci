@@ -1,12 +1,6 @@
 cet_find_library( BOOST_SERIALIZATION NAMES boost_serialization PATHS ENV BOOST_LIB NO_DEFAULT_PATH )
 cet_find_library( BOOST_DATE_TIME     NAMES boost_date_time     PATHS ENV BOOST_LIB NO_DEFAULT_PATH )
 
-if(NOT ICARUS AND NOT SBND)
-  message(WARNING "attempting to build sbnci without experiment! pass -DSBND=true or -DICARUS=true as build option.")
-elseif(ICARUS AND SBND)
-  message(FATAL_ERROR "attempting to build sbnci with multiple experiement code repos enabled - this is not supported.")
-endif()
-
 add_subdirectory(Common)
 if(SBND)
   add_subdirectory(SBND)

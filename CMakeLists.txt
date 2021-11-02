@@ -15,7 +15,7 @@
 
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(sbnci VERSION 09.32.01 LANGUAGES CXX)
+project(sbnci VERSION 09.34.00 LANGUAGES CXX)
 
 message(STATUS "\n")
 message(STATUS "=================================   ${PROJECT_NAME}   =================================")
@@ -62,6 +62,13 @@ install_source(LIST RepositoryTag)
 option(SBND "build sbnci with sbndcode support" OFF)
 option(ICARUS "build sbnci with icaruscode support" OFF)
 
+# do not support building with both side-by-side to avoid dependency clashes
+if(NOT ICARUS AND NOT SBND)
+  message(WARNING "attempting to build sbnci without experiment! pass -DSBND=true or -DICARUS=true as build option.")
+elseif(ICARUS AND SBND)
+  message(FATAL_ERROR "attempting to build sbnci with multiple experiement code repos enabled - this is not supported.")
+endif()
+
 # these are minimum required versions, not the actual product versions
 find_ups_product( larpandora )
 find_ups_product( larsim )
@@ -85,12 +92,16 @@ find_ups_product( pandora )
 find_ups_product( eigen )
 find_ups_product( larreco )
 find_ups_product( sbnobj )
+find_ups_product( sbncode )
+
 find_ups_boost()
 find_ups_root()
 
 if(SBND)
+  message(STATUS "building sbnci with sbndcode support")
   find_ups_product(sbndcode)
 elseif(ICARUS)
+  message(STATUS "building sbnci with icaruscode support")
   find_ups_product(icaruscode)
 endif()
 
@@ -98,10 +109,6 @@ endif()
 include(ArtDictionary)
 include(ArtMake)
 include(BuildPlugins)
-
-# build options
-option(SBND "build sbnci with sbndcode support" OFF)
-option(ICARUS "build sbnci with icaruscode support" OFF)
 
 # ADD SOURCE CODE SUBDIRECTORIES HERE
 add_subdirectory(sbnci)

@@ -1,34 +1,54 @@
-#include "services_icarus_simulation.fcl"
-#include "backtrackerservice.fcl"
-#include "particleinventoryservice.fcl"
+#
+# File:    pdsvalidation_job_icarus.fcl
+# Purpose: produces plots for validation of optical detector in simulation
+#
+# The current workflow executes the module ana::PDSValidation.
+# Preprocessing is needed to convert the format of scintillation photon
+# information from the simulation (`sim::SimPhotons` -> `sim::SimPhotonsLite`).
+#
 
-#include "services_common_icarus.fcl"
+#include "geometry_icarus.fcl"
+#include "detectorclocks_icarus.fcl"
+
 #include "pdsvalidation_icarus.fcl"
 
+# ------------------------------------------------------------------------------
 process_name: AnaCI
 
-services:
-{
-  @table::icarus_common_services
-  TFileService:		    { fileName: "pdsValidationTreeICARUS.root" }
-  ParticleInventoryService: @local::standard_particleinventoryservice
-  BackTrackerService:  	    @local::standard_backtrackerservice
+
+# ------------------------------------------------------------------------------
+services: {
+  
+  TFileService: { fileName: "pdsValidationTree.root" }
+  
+                         @table::icarus_geometry_services
+  DetectorClocksService: @local::icarus_detectorclocks
+  
 }
 
-source:
-{
-  module_type: RootInput
-}
 
-
-physics:
-{
-  analyzers:
-  {
+# ------------------------------------------------------------------------------
+physics: {
+  
+  producers: {
+    simphotonslite: @local::icarus_litephotons_adapter
+  }
+  
+  analyzers: {
+    
+    #
+    # Note: the current version (v09_32_00) of PDSValidation module picks
+    #       *all* sim::SimPhotonsLite collections in the event;
+    #       it will automatically pick `simphotonslite` as well.
+    #
     pdsvalidation: @local::icarus_pdsvalidation_ci
+    
   }
 
-  ana:       [ pdsvalidation ]
-  end_paths: [ ana ]
+  preprocessing: [ simphotonslite ]
+  analysis:      [ pdsvalidation ]
 
-}
+} # physics
+
+
+# ------------------------------------------------------------------------------

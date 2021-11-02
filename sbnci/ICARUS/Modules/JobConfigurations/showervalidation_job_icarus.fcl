@@ -25,7 +25,7 @@ physics:
 {
   analyzers:
   {
-    showervalidation: @local::icarus_showervalidation_ci
+    showervalidation: @local::common_showervalidation_ci
   }
 
   ana:       [ showervalidation ]

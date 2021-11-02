@@ -133,9 +133,9 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
   };
 
   private:
-  std::string fLArGeantLabel;
   std::vector<std::string> fPFPLabels; 
   std::vector<std::string> fHitLabels;
+  std::string fSimChannelLabel;
   art::ServiceHandle<art::TFileService> tfs;
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
 
@@ -150,6 +150,7 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
   int truePdg, motherPdg, numTrueHits;
   float trueEnergy, trueMomentum, trueDepositedEnergy, trueDepositedEnergyInHits;
   std::string trueProcess;
+  bool isPrimary;
   std::map<std::string, int> recoPdg, recoPFPShowers, recoHits, recoPFPs, recoPFPTracks;
   std::map<std::string, float> hitPurity, energyPurity, hitComp, energyComp, hitSPRatio, recoTrackScore;
 
@@ -163,9 +164,9 @@ class sbnci::PFPValidationCI : public art::EDAnalyzer {
 
 sbnci::PFPValidationCI::PFPValidationCI(fhicl::ParameterSet const& pset)
     : EDAnalyzer { pset }
-    , fLArGeantLabel(pset.get<std::string>("LArGeantLabel"))
     , fPFPLabels(pset.get<std::vector<std::string>>("PFPLabels"))
     , fHitLabels(pset.get<std::vector<std::string>>("HitLabels"))
+    , fSimChannelLabel(pset.get<std::string>("SimChannelLabel"))
     , maxLabelLength(0)
 {
   for (std::string const& fPFPLabel : fPFPLabels) {
@@ -190,6 +191,7 @@ void sbnci::PFPValidationCI::beginJob()
   trueTree->Branch("trueDepositedEnergy", &trueDepositedEnergy);
   trueTree->Branch("trueDepositedEnergyInHits", &trueDepositedEnergyInHits);
   trueTree->Branch("trueProcess", &trueProcess);
+  trueTree->Branch("isPrimary", &isPrimary);
 
   initTree(trueTree, "recoPdg", recoPdg, fPFPLabels);
   initTree(trueTree, "recoTrackScore", recoTrackScore, fPFPLabels);
@@ -250,8 +252,8 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
   }
 
   // Initialse some stuff???
- // auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
-  auto const simChannelHandle(evt.getValidHandle<std::vector<sim::SimChannel>>(fLArGeantLabel));
+  //auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
+  auto const simChannelHandle(evt.getValidHandle<std::vector<sim::SimChannel>>(fSimChannelLabel));
 
   // Get all the hits
   //std::vector<art::Ptr<recob::Hit>> allHits;
@@ -417,6 +419,7 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
     trueDepositedEnergy = truePrimaryEnergies.at(trueId) / 3;
     trueDepositedEnergyInHits = truePrimaryHitEnergies.at(trueId) / 3;
     trueProcess = trueParticle->Process();
+    isPrimary = trueProcess == "primary";
 
     auto const trueMother(trueParticles.find(trueParticle->Mother()));
     if (trueMother != trueParticles.end()) {
@@ -596,6 +599,7 @@ void sbnci::PFPValidationCI::clearTrueTree()
   trueDepositedEnergy = -999;
   trueDepositedEnergyInHits = -999;
   trueProcess = "";
+  isPrimary = false;
   for (auto const& fPFPLabel : fPFPLabels) {
     recoPFPs[fPFPLabel] = -999;
     recoPFPTracks[fPFPLabel] = -999;

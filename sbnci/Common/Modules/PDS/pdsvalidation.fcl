@@ -2,11 +2,27 @@ BEGIN_PROLOG
 
 common_pdsvalidation_ci: 
 {
+   ###Input labels
    module_type:			"PDSValidation"
-   GenieGenModuleLabel:		"generator"
-   LArGeantModuleLabel:		"largeant"
-   OpFlashTPC1Label:            "opflashtpc1"
+   NuGeneratorLabel:		"generator"
+   #LArGeantModuleLabel:		["pdfastsim", "pdfastsimout"]
+   OpHitArapucaLabel: "ophitarapuca"
+   OpHitPMTLabel: "ophitpmt"
+   OpFlashLabel: ["opflashtpc0", "opflashtpc1"]
 
+   ###PDS mapping
+   PDSMapTool: {tool_type: sbndPDMapAlg}
+   PMTMapLabel: ["pmt_coated", "pmt_uncoated"]
+   #For ICARUS: PMTMapLabel: ["pmt"]
+   ArapucaMapLabel: ["xarapuca_vuv", "xarapuca_vis"]
+
+   ###Analyzer configuration
+   Verbose: false
+   UseReflectedLight: true
+   SaveByPDType: true
+   UseArapucas: false
+   PECut: 25
+   PDSResponseDelay: 0.2 #in us
 }
 
 END_PROLOG
