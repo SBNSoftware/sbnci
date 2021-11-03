@@ -437,30 +437,34 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   //Getting  MC truth information
   art::Handle< std::vector<simb::MCTruth> > mctruthListHandle;
   std::vector<art::Ptr<simb::MCTruth> > mclist;
-  if(evt.getByLabel(fGenieGenModuleLabel,mctruthListHandle))
-  {art::fill_ptr_vector(mclist, mctruthListHandle);}
+  if(evt.getByLabel(fGenieGenModuleLabel,mctruthListHandle)){
+    art::fill_ptr_vector(mclist, mctruthListHandle);
+  }
 
   //Getting the SimWire Information
   //Get the SimChannels so that we can find the IDEs deposited on them.
   art::Handle<std::vector<sim::SimChannel> > simChannelHandle;
   std::vector<art::Ptr<sim::SimChannel> > simchannels;
-  if(evt.getByLabel(fSimChannelModuleLabel,simChannelHandle))
-  {art::fill_ptr_vector(simchannels, simChannelHandle);}
+  if(evt.getByLabel(fSimChannelModuleLabel,simChannelHandle)){
+    art::fill_ptr_vector(simchannels, simChannelHandle);
+  }
 
   //Getting the Hit Information
   art::Handle<std::vector<recob::Hit> > hitListHandle;
   std::vector<art::Ptr<recob::Hit> > hits;
   for(auto const& fHitModuleLabel: fHitModuleLabels){
   
-  if(evt.getByLabel(fHitModuleLabel,hitListHandle))
-  {art::fill_ptr_vector(hits, hitListHandle);}
+    if(evt.getByLabel(fHitModuleLabel,hitListHandle)){
+      art::fill_ptr_vector(hits, hitListHandle);
+    }
   }
 
   //Get the track Information (hopfully you have pandora track)
   art::Handle<std::vector<recob::Track> > trackListHandle;
   std::vector<art::Ptr<recob::Track> > tracks;
-  if(evt.getByLabel(fTrackModuleLabel,trackListHandle))
-  {art::fill_ptr_vector(tracks, trackListHandle);}
+  if(evt.getByLabel(fTrackModuleLabel,trackListHandle)){
+    art::fill_ptr_vector(tracks, trackListHandle);
+  }
 
   //I think that doing getManyByType kind of initalises the handles giving every particle product id. Doing this allows us to find handles for the individal hits later.
 
