@@ -4,10 +4,7 @@
 // File         PDSValidation_module.cc                                                                   //
 // Author:      Chris Hilgenberg chilgenb@fnal.gov                                                        //
 // Usage:       Simple workflow to validate PDS reconstruction                                            //
-// ------------------------------------------------------------------------------------------------------ //
-// 09/10/2021 Adopted for ICARUS (Sergey Martynenko smartynen@bnl.gov)                                    // 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 // Framework includes
 #include "art/Framework/Core/ModuleMacros.h"
