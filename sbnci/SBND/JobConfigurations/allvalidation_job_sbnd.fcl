@@ -46,5 +46,3 @@ physics:
   ana:       [ pfpvalidation, pfpslicevalidation, showervalidation, recoeff, pdsvalidation, crtvalidation, tpcsimvalidation ]
   end_paths: [ ana ]
 }
-
-physics.analyzers.crtvalidation.CRTHitLabel: "CRTHit1"
