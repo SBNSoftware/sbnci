@@ -256,10 +256,10 @@ void sbnci::PFPSliceValidationCI::analyze(art::Event const& evt)
   eventTrueNeutrinos = truthVec.size();
 
   // Get reco stuff initialised
-  //auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
+  auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
 
-  //std::vector<art::Ptr<recob::Hit>> allHits;
-  //art::fill_ptr_vector(allHits, hitHandle);
+  std::vector<art::Ptr<recob::Hit>> allHits;
+  art::fill_ptr_vector(allHits, hitHandle);
   art::Handle<std::vector<recob::Hit> > hitListHandle;
   std::vector<art::Ptr<recob::Hit> > allHits;
   for(auto const& fHitModuleLabel: fHitLabels){
