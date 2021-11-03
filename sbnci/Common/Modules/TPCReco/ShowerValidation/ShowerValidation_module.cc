@@ -635,8 +635,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
     art::Handle<std::vector<recob::Shower> > showerListHandle;
     std::vector<art::Ptr<recob::Shower> > recoShowers;
 
-    if(evt.getByLabel(fShowerModuleLabel,showerListHandle))
-    {
+    if(evt.getByLabel(fShowerModuleLabel,showerListHandle)){
       art::fill_ptr_vector(recoShowers,showerListHandle);
     }
 
@@ -654,8 +653,9 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
 
     art::Handle<std::vector<recob::Track> > showertrackHandle;
     std::vector<art::Ptr<recob::Track> > showertrack;
-    if(evt.getByLabel(fShowerModuleLabel,showertrackHandle))
-    {art::fill_ptr_vector(showertrack,showertrackHandle);}
+    if(evt.getByLabel(fShowerModuleLabel,showertrackHandle)){
+      art::fill_ptr_vector(showertrack,showertrackHandle);
+    }
 
     //Getting the Shower Information
     //Association between Showers and 2d Hits
