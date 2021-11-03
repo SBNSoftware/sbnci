@@ -17,7 +17,7 @@
 
 void PlotHists(TFile *inFile, TFile *outFile, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString dirName);
 
-void sbnciplot_showervalidation_sbnd(TString inputFile="showervalidationGraphs.root")
+void sbnciplot_showervalidation(TString inputFile)
 {
   
   TFile *inFile = TFile::Open(inputFile.Data());
@@ -35,13 +35,13 @@ void sbnciplot_showervalidation_sbnd(TString inputFile="showervalidationGraphs.r
   gSystem->Exec(Form("mkdir -v %s", dirName.Data()));
 
 
-  PlotHists(inFile, outFile, "sTrueEnergy", "True Shower Energy", "True Shower Energy", histYaxis, nBins, 0, 2000, "sTrueEnergy_SBNShowerGausCryoE", dirName);
-  PlotHists(inFile, outFile, "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_SBNShowerGausCryoE", dirName);
-  PlotHists(inFile, outFile, "pfpShowerHitsComp", "Shower Hit Completeness", "Completeness", histYaxis, nBins, 0, 1, "pfpShowerHitsComp_SBNShowerGausCryoE", dirName);
-  PlotHists(inFile, outFile, "sDirDiff", "Shower Start Direction Difference", "X", histYaxis, nBins, -1, 1, "sDirDiff_SBNShowerGausCryoE", dirName);
-  PlotHists(inFile, outFile, "sStartDist", "Shower Start Position Difference", "Y", histYaxis, nBins, 0, 60, "sStartDist_SBNShowerGausCryoE", dirName);
-  PlotHists(inFile, outFile, "sdEdx", "Shower Start dE/dx", "dE/dx", histYaxis, nBins, 0, 20, "sdEdx_SBNShowerGausCryoE", dirName);
-  PlotHists(inFile, outFile, "sEnergy", "Shower Start Energy", "Energy", histYaxis, nBins, 0, 1500, "sEnergy_SBNShowerGausCryoE", dirName);
+  PlotHists(inFile, outFile, "sTrueEnergy", "True Shower Energy", "True Shower Energy", histYaxis, nBins, 0, 2000, "sTrueEnergy_pandoraShower", dirName);
+  PlotHists(inFile, outFile, "pfpShowerHitsPurity", "Shower Hit Purity", "Purity", histYaxis, nBins, 0, 1, "pfpShowerHitsPurity_pandoraShower", dirName);
+  PlotHists(inFile, outFile, "pfpShowerHitsComp", "Shower Hit Completeness", "Completeness", histYaxis, nBins, 0, 1, "pfpShowerHitsComp_pandoraShower", dirName);
+  PlotHists(inFile, outFile, "sDirDiff", "Shower Start Direction Difference", "X", histYaxis, nBins, -1, 1, "sDirDiff_pandoraShower", dirName);
+  PlotHists(inFile, outFile, "sStartDist", "Shower Start Position Difference", "Y", histYaxis, nBins, 0, 60, "sStartDist_pandoraShower", dirName);
+  PlotHists(inFile, outFile, "sdEdx", "Shower Start dE/dx", "dE/dx", histYaxis, nBins, 0, 20, "sdEdx_pandoraShower", dirName);
+  PlotHists(inFile, outFile, "sEnergy", "Shower Start Energy", "Energy", histYaxis, nBins, 0, 1500, "sEnergy_pandoraShower", dirName);
   
 }
 
@@ -71,3 +71,4 @@ void PlotHists(TFile *inFile, TFile *outFile, TString histName, TString histTitl
   delete metricTree;
   return;
 }
+
