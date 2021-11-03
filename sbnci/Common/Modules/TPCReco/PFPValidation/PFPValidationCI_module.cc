@@ -246,24 +246,23 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
       if (showerMotherIter != showerMothers.end()) {
         truePrimaries[trackId] = showerMotherIter->second;
       }
-    } else {
+    } 
+    else {
       truePrimaries[trackId] = { trackId };
     }
   }
 
-  // Initialse some stuff???
-  //auto const hitHandle(evt.getValidHandle<std::vector<recob::Hit>>(fHitLabel));
+  // Initialse some stuff
   auto const simChannelHandle(evt.getValidHandle<std::vector<sim::SimChannel>>(fSimChannelLabel));
 
   // Get all the hits
-  //std::vector<art::Ptr<recob::Hit>> allHits;
-  //art::fill_ptr_vector(allHits, hitHandle);
   art::Handle<std::vector<recob::Hit> > hitListHandle;
   std::vector<art::Ptr<recob::Hit> > allHits;
   for(auto const& fHitModuleLabel: fHitLabels){
 
-  if(evt.getByLabel(fHitModuleLabel,hitListHandle))
-  {art::fill_ptr_vector(allHits, hitListHandle);}
+    if(evt.getByLabel(fHitModuleLabel,hitListHandle)) {
+      art::fill_ptr_vector(allHits, hitListHandle);
+    }
   }
 
   std::vector<art::Ptr<sim::SimChannel>> simChannels;
