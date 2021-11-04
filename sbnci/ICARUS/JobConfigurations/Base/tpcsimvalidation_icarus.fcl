@@ -2,7 +2,7 @@ BEGIN_PROLOG
 
 icarus_tpcsimvalidation_ci: 
 {
-   module_type:			"TPCSimValidationICARUS"
+   module_type:			"TPCSimValidation"
    GenieGenModuleLabel:		"generator"
    LArGeantModuleLabel:		"largeant"
    RawDigitLabel:               ["daq0:PHYSCRATEDATATPCEE","daq1:PHYSCRATEDATATPCEW","daq2:PHYSCRATEDATATPCWE","daq3:PHYSCRATEDATATPCWW"]
