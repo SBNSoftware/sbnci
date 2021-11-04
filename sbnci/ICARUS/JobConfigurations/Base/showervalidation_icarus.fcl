@@ -2,7 +2,7 @@ BEGIN_PROLOG
 
 icarus_showervalidation_ci: 
 {
-   module_type:			"ShowerValidationICARUS"
+   module_type:			"ShowerValidation"
    GenieGenModuleLabel:		"generator"
    LArGeantModuleLabel:		"largeant"
    HitsModuleLabel:		"gaushitTPCEE"

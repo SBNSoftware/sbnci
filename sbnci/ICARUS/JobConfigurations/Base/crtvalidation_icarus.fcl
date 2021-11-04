@@ -2,10 +2,10 @@ BEGIN_PROLOG
 
 icarus_crtvalidation_ci: 
 {
-   module_type:			"CRTValidationICARUS"
+   module_type:			"CRTValidation"
    GenieGenModuleLabel:		"generator"
    LArGeantModuleLabel:		"largeant"
-   CRTHit1Label:            "CRTHit1"
+   CRTHit1Label:                "CRTHit1"
 
 }
 

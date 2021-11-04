@@ -2,7 +2,7 @@ BEGIN_PROLOG
 
 icarus_pfpslicevalidation_ci:
 {
-    module_type:              PFPSliceValidationCIICARUS
+    module_type:              PFPSliceValidationCI
     GenieGenModuleLabel:      "generator"
     PFParticleLabels:         ["pandoraGausCryoE","pandoraGausCryoW"]
     HitLabel:                 "gaushit"
@@ -12,7 +12,7 @@ icarus_pfpslicevalidation_ci:
 
 icarus_pfpvalidation_ci:
 {
-    module_type:    PFPValidationCIICARUS
+    module_type:    PFPValidationCI
     LArGeantLabel:  "largeant"
     PFPLabels:      ["pandoraGausCryoE","pandoraGausCryoW"]
     HitLabel:       "gaushit"
