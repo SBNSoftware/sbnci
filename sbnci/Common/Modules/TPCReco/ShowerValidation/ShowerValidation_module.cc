@@ -422,7 +422,6 @@ void ana::ShowerValidation::beginJob() {
     Tree->Branch(processChar,"<std::string,std::vector<std::string>", &sStartEndProcess_TreeVal[fShowerModuleLabel], 32000, 0);
   }
 
- // Tree->Print();
 }
 
 
@@ -1810,7 +1809,6 @@ void ana::ShowerValidation::PFPValidation(std::vector<art::Ptr<recob::Cluster> >
 }
 
 void ana::ShowerValidation::endJob() {
-  Tree->Print();
   std::cout << "Number of events ran over: " <<  numevents  << std::endl;
   std::cout << "Number of initial MC Showers: " <<  numshowers  << std::endl;
   std::cout << "Number of reco showers: " << numrecoshowers  << std::endl;
