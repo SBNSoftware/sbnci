@@ -31,3 +31,5 @@ physics:
   ana:       [ pfpvalidation, pfpslicevalidation ]
   end_paths: [ ana ]
 }
+
+physics.analyzers.pfpslicevalidation.UseBeamSpillXCorrection: false
