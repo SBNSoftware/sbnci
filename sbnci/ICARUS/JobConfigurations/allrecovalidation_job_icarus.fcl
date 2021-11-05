@@ -26,9 +26,9 @@ physics:
 {
   analyzers:
   {
-    pfpvalidation:	@local::common_pfpvalidation_ci
-    pfpslicevalidation: @local::common_pfpslicevalidation_ci
-    showervalidation:   @local::common_showervalidation_ci
+    pfpvalidation:	@local::icarus_pfpvalidation_ci
+    pfpslicevalidation: @local::icarus_pfpslicevalidation_ci
+    showervalidation:   @local::icarus_showervalidation_ci
     ##recoeff:		@local::common_recoeff_ci
   }
 
