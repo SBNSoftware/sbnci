@@ -5,7 +5,6 @@ icarus_pfpslicevalidation_ci:
     module_type:              PFPSliceValidationCI
     GenieGenModuleLabel:      "generator"
     PFParticleLabels:         ["pandoraGausCryoE","pandoraGausCryoW"]
-    HitLabel:                 "gaushit"
     HitLabels:                ["gaushitTPCEE","gaushitTPCEW","gaushitTPCWE","gaushitTPCWW"]
     UseBeamSpillXCorrection:  true
 }
@@ -13,9 +12,8 @@ icarus_pfpslicevalidation_ci:
 icarus_pfpvalidation_ci:
 {
     module_type:    PFPValidationCI
-    LArGeantLabel:  "largeant"
+    SimChannelLabel:  "simdrift"
     PFPLabels:      ["pandoraGausCryoE","pandoraGausCryoW"]
-    HitLabel:       "gaushit"
     HitLabels:      ["gaushitTPCEE","gaushitTPCEW","gaushitTPCWE","gaushitTPCWW"]
 }
 
