@@ -1,0 +1,32 @@
+#include "simulationservices_sbnd.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+#include "pfpvalidation.fcl"
+
+process_name: AnaCI
+
+services:
+{
+  @table::sbnd_services
+  TFileService:		    { fileName: "pfpValidationHists.root" }
+  ParticleInventoryService: @local::sbnd_particleinventoryservice
+  BackTrackerService:  	    @local::sbnd_backtrackerservice
+}
+
+source:
+{
+  module_type: RootInput
+}
+
+physics:
+{
+  analyzers:
+  {
+    pfpvalidation:	@local::common_pfpvalidation_ci
+    pfpslicevalidation: @local::common_pfpslicevalidation_ci
+  }
+
+  ana:       [ pfpvalidation, pfpslicevalidation ]
+  end_paths: [ ana ]
+}

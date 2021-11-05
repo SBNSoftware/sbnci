@@ -17,7 +17,7 @@
 
 void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString condition, TString dirName);
 
-void sbnciplot_crtvalidation_icarus(TString inputFile)
+void sbnciplot_crtvalidation_sbnd(TString inputFile)
 {
   
   TFile *inFile = TFile::Open(inputFile.Data());

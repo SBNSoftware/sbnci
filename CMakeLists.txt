@@ -58,6 +58,17 @@ file(WRITE RepositoryTag "${GIT_REPOSITORY_TAG}")
 message(STATUS "${PROJECT_NAME} repository tag: ${GIT_REPOSITORY_TAG}")
 install_source(LIST RepositoryTag)
 
+# build options
+option(SBND "build sbnci with sbndcode support" OFF)
+option(ICARUS "build sbnci with icaruscode support" OFF)
+
+# do not support building with both side-by-side to avoid dependency clashes
+if(NOT ICARUS AND NOT SBND)
+  message(WARNING "attempting to build sbnci without experiment! pass -DSBND=true or -DICARUS=true as build option.")
+elseif(ICARUS AND SBND)
+  message(FATAL_ERROR "attempting to build sbnci with multiple experiement code repos enabled - this is not supported.")
+endif()
+
 # these are minimum required versions, not the actual product versions
 find_ups_product( larpandora )
 find_ups_product( larsim )
@@ -80,51 +91,19 @@ find_ups_product( hep_concurrency )
 find_ups_product( pandora )
 find_ups_product( eigen )
 find_ups_product( larreco )
-find_ups_product( sbncode )
-
 find_ups_product( sbnobj )
-
-########################################################
-# this doesn't work when exp code has not been built yet
-########################################################
-# mrbsetenv reads from ups/product_deps and sets up 
-# sbndcode and/or icaruscode if available.
-# check for active instances of each and enforce the 
-# requirement that at least one instance is found.
-# in order to avoid dependency clashes, require
-# that only one instance of sbndcode or icaruscode
-# is active (any cases where both needed?).
-#execute_process(
-#  COMMAND bash -c "ups active | grep sbndcode | wc -l"
-#  OUTPUT_VARIABLE nsbnd
-#)
-#
-#execute_process(
-#  COMMAND bash -c "ups active | grep icaruscode | wc -l"
-#  OUTPUT_VARIABLE nicarus
-#)
-#message(STATUS "found ${nsbnd} and ${nicarus} active instances of sbndcode and icaruscode respectively.")
-#
-#if(${nsbnd} EQUAL 0 AND ${nicarus} EQUAL 0)
-#  message(FATAL_ERROR "you must setup a UPS bundle with either icarucode or sbndcode! abort build.")
-#endif()
-#if(${nsbnd} GREATER 0 AND ${nicarus} GREATER 0)
-#  message(FATAL_ERROR "icaruscode and sbndcode are both active - this is not supported. please ensure only one is active.")
-#endif()
-#
-#if(${nsbnd} EQUAL 1)
-#  message(STATUS "setting up sbndcode")
-#  find_ups_product( sbndcode )
-#endif()
-#
-#if(${nicarus} EQUAL 1)
-#  message(STATUS "setting up icaruscode")
-#  find_ups_product( icaruscode )
-#endif()
-# done. now on to the normal CMake stuff...
+find_ups_product( sbncode )
 
 find_ups_boost()
 find_ups_root()
+
+if(SBND)
+  message(STATUS "building sbnci with sbndcode support")
+  find_ups_product(sbndcode)
+elseif(ICARUS)
+  message(STATUS "building sbnci with icaruscode support")
+  find_ups_product(icaruscode)
+endif()
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
@@ -145,4 +124,3 @@ add_subdirectory(ups)
 
 # packaging utility
 include(UseCPack)
-

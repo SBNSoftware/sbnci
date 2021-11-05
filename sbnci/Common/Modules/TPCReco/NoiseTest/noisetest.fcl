@@ -1,0 +1,9 @@
+BEGIN_PROLOG
+
+common_noisetest_ci:
+{
+  module_type:	    "NoiseTest" 
+  NoiseModuleLabel: "daq"
+}
+
+END_PROLOG

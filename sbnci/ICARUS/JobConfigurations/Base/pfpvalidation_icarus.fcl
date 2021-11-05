@@ -1,0 +1,20 @@
+BEGIN_PROLOG
+
+icarus_pfpslicevalidation_ci:
+{
+    module_type:              PFPSliceValidationCI
+    GenieGenModuleLabel:      "generator"
+    PFParticleLabels:         ["pandoraGausCryoE","pandoraGausCryoW"]
+    HitLabels:                ["gaushitTPCEE","gaushitTPCEW","gaushitTPCWE","gaushitTPCWW"]
+    UseBeamSpillXCorrection:  true
+}
+
+icarus_pfpvalidation_ci:
+{
+    module_type:    PFPValidationCI
+    SimChannelLabel:  "simdrift"
+    PFPLabels:      ["pandoraGausCryoE","pandoraGausCryoW"]
+    HitLabels:      ["gaushitTPCEE","gaushitTPCEW","gaushitTPCWE","gaushitTPCWW"]
+}
+
+END_PROLOG
