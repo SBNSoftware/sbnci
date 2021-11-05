@@ -13,8 +13,8 @@ services:
 {
   @table::icarus_services
   TFileService:		    { fileName: "allRecoValidationHists.root" }
-  ParticleInventoryService: @local::icarus_particleinventoryservice
-  BackTrackerService:  	    @local::icarus_backtrackerservice
+  ParticleInventoryService: @local::standard_particleinventoryservice
+  BackTrackerService:  	    @local::standard_backtrackerservice
 }
 
 source:
