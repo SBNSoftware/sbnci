@@ -14,4 +14,4 @@ This package is designed to work alongside the `lar_ci` continuous integration p
 - `sbnci/<SBND/ICARUS>/JobConfigurations`: Experiment specific FHiCL files that configure modules in `sbnci/Common/Modules`
 - `sbnci/<SBND/ICARUS>/thresholds`: This contains experiement specific text files with the threshold values for the chi2 comparisons made for each plot. The threshold values are used to determine the red-yellow-white colouring of the plots.
 
-For more information see the Wiki page [here](https://sbnsoftware.github.io/sbn/sbnci_wiki/CI_Validation.html).
+For more information see the Wiki page [here](https://sbnsoftware.github.io/sbn/sbnci_wiki/sbnci_main.html).
