@@ -82,7 +82,7 @@ private:
   art::ServiceHandle<art::TFileService> tfs;
   
   //  std::vector<float> rms;
-  float rms[11276];
+  //float rms[11276];
   float rmsT0P0[1986] = { 0 };
   float rmsT0P1[1986] = { 0 };
   float rmsT0P2[1666] = { 0 };
