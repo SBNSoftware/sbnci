@@ -41,8 +41,8 @@ end_product_list
 qualifier     sbndcode    icaruscode   notes
 e20:debug     e20:debug   e20:debug    -nq-
 e20:prof      e20:prof    e20:prof     -nq-
-c7:debug      c7:debug    c7:debug     -nq-
-c7:prof       c7:prof     c7:prof      -nq-
+c7:debug      c7:debug    e20:debug    -nq-
+c7:prof       c7:prof     e20:prof     -nq-
 end_qualifier_list
 
 table_fragment_begin
