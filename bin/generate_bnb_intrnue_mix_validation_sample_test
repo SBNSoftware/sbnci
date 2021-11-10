@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ $1 == "" ]]; then
+  echo "usage: ./generate_bnb_intrnue_mix_validation_sample_test vXX_YY_ZZ"
+  exit 1
+fi 
+
+source sbnci_setcodename.sh
+
+if [[ $(ups list -aK+ $codeName $1 | wc -l) != 0 ]]; then
+  echo "ERROR: could not find $codeName $1 in CVMFS!"
+  exit 1
+fi
+
+echo "producing bnb_intrnue_mix validation sample for $codeName with tag $1"
+
+#trigger --build-delay 0 --jobname sbnd_ci --workflow CI_VALIDATION_SBND --gridwf-cfg cfg/sbnd/grid_workflow_sbnd_generate_bnb_intrnue_mix_validation_sample_test.cfg --revisions "SBNSoftware/$codeName@$1" --testmode
