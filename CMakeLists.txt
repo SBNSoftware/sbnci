@@ -93,7 +93,7 @@ find_ups_product( eigen )
 find_ups_product( larreco )
 find_ups_product( sbnobj )
 find_ups_product( sbncode )
-
+find_ups_product( lar_ci )
 find_ups_boost()
 find_ups_root()
 
