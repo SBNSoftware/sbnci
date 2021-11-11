@@ -15,7 +15,7 @@
 
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(sbnci VERSION 09.34.00 LANGUAGES CXX)
+project(sbnci VERSION 09.35.01 LANGUAGES CXX)
 
 message(STATUS "\n")
 message(STATUS "=================================   ${PROJECT_NAME}   =================================")
@@ -93,7 +93,7 @@ find_ups_product( eigen )
 find_ups_product( larreco )
 find_ups_product( sbnobj )
 find_ups_product( sbncode )
-
+find_ups_product( lar_ci )
 find_ups_boost()
 find_ups_root()
 
@@ -120,7 +120,7 @@ add_subdirectory(ups)
 # fcl - contains job level fcl files (useful for the MCC)
 ##add_subdirectory(fcl)
 # subdirectory for scripts
-#add_subdirectory(bin)
+add_subdirectory(bin)
 
 # packaging utility
 include(UseCPack)
