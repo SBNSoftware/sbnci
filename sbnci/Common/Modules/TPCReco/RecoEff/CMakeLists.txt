@@ -9,9 +9,8 @@ art_make(MODULE_LIBRARIES
         ${ART_ROOT_IO_TFILESERVICE_SERVICE}
 
         ${ROOT_BASIC_LIB_LIST}
-
-	sbndcode_GeoWrappers
-	)
+        sbncode_GeoWrappers
+)
 
 install_headers()
 install_fhicl()

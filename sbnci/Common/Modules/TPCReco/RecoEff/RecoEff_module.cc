@@ -45,8 +45,8 @@
 #include "art_root_io/TFileService.h"
 #include "TTree.h"
 
-//SBNDCODE
-#include "sbndcode/Geometry/GeometryWrappers/TPCGeoAlg.h"
+//SBNCODE
+#include "sbncode/GeometryTools/TPCGeoAlg.h"
 
 //SBNCI
 #include "sbnci/Common/Modules/MCRecoUtils/ShowerUtils.h"
@@ -86,7 +86,7 @@ private:
   detinfo::DetectorClocksData clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
   art::ServiceHandle<cheat::ParticleInventoryService> particleInventory;
 
-  sbnd::TPCGeoAlg fTPCGeo;
+  sbn::TPCGeoAlg fTPCGeo;
   
   std::string fNuGenModuleLabel, fLArGeantModuleLabel, fPFParticleModuleLabel,
     fTrackModuleLabel, fShowerModuleLabel, fHitsModuleLabel;

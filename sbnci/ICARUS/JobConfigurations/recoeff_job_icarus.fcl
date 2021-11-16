@@ -1,0 +1,32 @@
+#include "services_icarus_simulation.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+#include "services_common_icarus.fcl"
+
+#include "recoeff.fcl"
+
+process_name: AnaCI
+
+services:
+{
+  @table::icarus_common_services
+  TFileService:		    { fileName: "recoEffHistsICARUS.root" }
+  ParticleInventoryService: @local::standard_particleinventoryservice
+  BackTrackerService:  	    @local::standard_backtrackerservice
+}
+
+source:
+{
+  module_type: RootInput
+}
+
+physics:
+{
+  analyzers:
+  {
+    recoeff: @local::common_recoeff_ci
+  }
+
+  ana:       [ recoeff ]
+  end_paths: [ ana ]
+}
