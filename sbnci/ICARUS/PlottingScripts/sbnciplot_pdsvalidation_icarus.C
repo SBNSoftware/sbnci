@@ -52,13 +52,6 @@ void sbnciplot_pdsvalidation_icarus(TString inputFile)
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "PMTPE","", "PMTPE", histYaxis, nBins, 0, 500, "PMTPE", "", dirName);
   PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "PMTFastToTotal","", "PMTFastToTotal", histYaxis, nBins, 0, 50, "PMTFastToTotal", "", dirName);
 
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPeakTimeAbs","", "ArapucaPeakTimeAbs", histYaxis, nBins, 0, 500, "ArapucaPeakTimeAbs", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPeakTime","", "ArapucaPeakTime", histYaxis, nBins, 0, 500, "ArapucaPeakTime", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaWidth","", "ArapucaWidth", histYaxis, nBins, 0, 50, "ArapucaWidth", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaArea","", "ArapucaArea", histYaxis, nBins, 0, 2000, "ArapucaArea", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaAmplitude","", "ArapucaAmplitude", histYaxis, nBins, 0, 500, "ArapucaAmplitude", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaPE","", "ArapucaPE", histYaxis, nBins, 0, 500, "ArapucaPE", "", dirName);
-  PlotHists(inFile, outFile, "pdsvalidation/pdsTree", "ArapucaFastToTotal","", "ArapucaFastToTotal", histYaxis, nBins, 0, 50, "ArapucaFastToTotal", "", dirName);
 }
 
 void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString condition, TString dirName)
