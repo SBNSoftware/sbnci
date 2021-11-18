@@ -57,7 +57,7 @@ namespace ShowerUtils{
 
   void RemoveNoneContainedParticles(std::map<int,std::vector<int> >&  ShowersMothers, std::map<int,const simb::MCParticle*>& trueParticles, std::map<int,float>& MCTrack_Energy_map);
 
-
+  std::map<int,int> TruePrimariesMap(std::map<int, simb::MCParticle*>& trueParticles);
 }
 
 #endif

@@ -215,45 +215,15 @@ void RecoEff::ResetData()
 
 void RecoEff::SetupMaps(art::Event const &e)
 {
-  std::map<int, const simb::MCParticle*> trueParticles;
-  std::map<int, bool> is_delta;
+  std::map<int, simb::MCParticle*> trueParticles;
 
   const sim::ParticleList& particles = particleInventory->ParticleList();
   for (auto const& particleIt : particles) {
-    const simb::MCParticle* particle = particleIt.second;
+    simb::MCParticle* particle = particleIt.second;
     trueParticles[particle->TrackId()] = particle;
-    is_delta[particle->TrackId()] = (particle->Process() == "muIoni");
   }
 
-  std::map<int, std::vector<int>> showerMothers = ShowerUtils::GetShowerMothersCandidates(trueParticles);
-  std::map<int, std::vector<int>> truePrimaries;
-
-  for (auto const& [trackId, particle] : trueParticles) {
-    if (abs(particle->PdgCode()) == 11 || abs(particle->PdgCode()) == 22) {
-      auto const& showerMotherIter(showerMothers.find(trackId));
-
-      if (showerMotherIter != showerMothers.end()) {
-	auto daughters = showerMotherIter->second;                       //TEMPORARY: This section is a hacky temporary solution to the fact delta rays are not being
-	if (is_delta[trackId]) {                                         //           rolled up into muons and this is causing apparent poor purity & completeness for muon tracks
-	  daughters.push_back(trackId);                                  //           This should be removed when roll up is fixed in larg4 (Redmine issue #26294)
-	  auto const &already = truePrimaries.find(particle->Mother());
-	  if(already != truePrimaries.end()) daughters.insert(daughters.end(), already->second.begin(), already->second.end());
-	  truePrimaries[particle->Mother()] = daughters;
-	}
-	else {
-	  truePrimaries[trackId] = daughters;
-	}
-      }
-    }
-    else {
-      truePrimaries[trackId] = { trackId };
-    }
-  }
-  for(auto const [mother, daughters] : truePrimaries){
-    for(auto const daughter : daughters){
-      fTruePrimariesMap[daughter] = mother;
-    }
-  }
+  fTruePrimariesMap = ShowerUtils::TruePrimariesMap(trueParticles);
 
   art::Handle<std::vector<recob::Hit> > handleHits;
   e.getByLabel(fHitsModuleLabel,handleHits);

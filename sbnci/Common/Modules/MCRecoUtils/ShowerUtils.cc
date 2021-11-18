@@ -214,3 +214,20 @@ void ShowerUtils::RemoveNoneContainedParticles(std::map<int,std::vector<int> >& 
   }
   return;
 }
+
+std::map<int,int> ShowerUtils::TruePrimariesMap(std::map<int, simb::MCParticle*>& trueParticles)
+{
+  std::map<int,int> primaries_map;
+
+  for(auto const& [trackID, particle] : trueParticles)
+    {
+      simb::MCParticle* temp_particle = particle;
+      primaries_map[trackID] = trackID;
+
+      while(abs(temp_particle->PdgCode()) == 11 || abs(temp_particle->PdgCode()) == 22) {
+	primaries_map[trackID] = temp_particle->TrackId();
+	temp_particle = trueParticles[temp_particle->Mother()];
+      }
+    }
+  return primaries_map;
+}
