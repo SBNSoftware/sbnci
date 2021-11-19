@@ -2,11 +2,13 @@
 
 function get_proxy() {
 
-  echo "getting proxy"
-  setup cigetcert
+  [ ${expName} ] || source sbnci_setcodename.sh
+
+  echo "getting ${expName} analysis proxy"
   cigetcert -s 'fifebatch.fnal.gov'
-  voms-proxy-init -noregen -rfc -voms 'fermilab:/fermilab/sbnd/Role=Analysis'
-  voms-proxy-init -noregen -rfc -voms 'fermilab:/fermilab/icarus/Role=Analysis'
+
+  voms-proxy-info -exists -vo -valid 24:00 > /dev/null || 
+      voms-proxy-init -noregen -rfc -voms "fermilab:/fermilab/${expName}/Role=Analysis" --valid 200:00
 
 }
 
