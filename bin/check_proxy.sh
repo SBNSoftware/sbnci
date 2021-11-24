@@ -19,5 +19,5 @@ function warn_proxy() {
 
 function check_proxy() {
   echo "checking proxy"
-  voms-proxy-info || warn_proxy
+  voms-proxy-info -exists -vo -valid 24:00 || warn_proxy
 }
