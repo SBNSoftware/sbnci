@@ -95,14 +95,11 @@ class ana::TPCSimValidation : public art::EDAnalyzer {
     int fEvent;  ///< art event number
 	
     int fNRawDigits; ///<Number of RawDigits in event
-//    vector<short> fADCs; ///<Reference to the compressed ADC count vector. not working right now.
     vector<size_t> fNADC; ///<Number of elements in the compressed ADC sample vector
-    vector<short> fADC; ///<ADC vector element number i; no decompression is applied.
-    vector<raw::ChannelID_t> fChannel; ///<DAQ channel this raw data was read from.
+    vector<size_t> fADC; ///<ADC vector element number i; no decompression is applied.
     vector<ULong64_t> fSamples; ///<Number of samples in the uncompressed ADC data.
     vector<float> fPedestal; 
     vector<float> fSigma;
-//    vector<raw::Compress_t> fCompression; ///<Compression algorithm used to store the ADC counts.
 
 }; //end def class TPCSimValidation
 
@@ -130,14 +127,11 @@ void ana::TPCSimValidation::beginJob() {
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
   fTree->Branch("Event",        &fEvent,        "Event/I");
   fTree->Branch("NRawDigits",       &fNRawDigits,       "NRawDigits/I");
-//  fTree->Branch("ADCs",&fADCs);
   fTree->Branch("NADC",&fNADC);
   fTree->Branch("ADC", &fADC);
-  fTree->Branch("Channel", &fChannel);
   fTree->Branch("Samples", &fSamples);
   fTree->Branch("Pedestal", &fPedestal);
   fTree->Branch("Sigma", &fSigma);
-//  fTree->Branch("Compression", &fCompression);
 }// end beginJob
 
 ////////////////////////////////////////////////////////////////////
@@ -203,29 +197,29 @@ void ana::TPCSimValidation::analyze(const art::Event& evt) {
 
      for(auto const& digit : RawDigitList) {
          MF_LOG_DEBUG("TPCSimValidation") << "NADC ="<< digit->NADC();
+
+         //integrate ADC counts for each channel
+         fADC.push_back(0);
          for(size_t iadc=0; iadc<digit->NADC(); iadc++) {
-           fADC.push_back(digit->ADC(iadc));
+           if( digit->ADC(iadc) < digit->GetPedestal() + 200 ) continue; //zero suppress
+           fADC[fADC.size()-1] += digit->ADC(iadc);
          }
          
-//         fADCs.push_back(digit->ADCs());
          fNADC.push_back(digit->NADC()); 
-         fChannel.push_back(digit->Channel());
+         //fChannel.push_back(digit->Channel());
          fSamples.push_back(digit->Samples());
          fPedestal.push_back(digit->GetPedestal());
          fSigma.push_back(digit->GetSigma());
-//         fCompression.push_back(digit->Compression());
      }  
   }
 
   //Fill the tree
   fTree->Fill();
-//  fADCs.clear();
   fNADC.clear();
   fADC.clear();
   fSamples.clear();
   fPedestal.clear();
   fSigma.clear();
-//  fCompression.clear();
 
   return;
 }// end analyze
