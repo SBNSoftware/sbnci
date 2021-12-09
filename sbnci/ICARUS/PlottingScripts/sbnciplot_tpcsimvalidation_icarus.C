@@ -36,7 +36,7 @@ void sbnciplot_tpcsimvalidation_icarus(TString inputFile)
 
 
   PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "NADC",    "", "NADC", histYaxis, nBins, 0, 5000, "NADC", "", dirName);
-  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "SumADC",  "", "Integrated ADC Cts/Channel", histYaxis, nBins, 1, 5000, "ADC", "", dirName);
+  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "SumADC",  "", "Integrated ADC Cts/Channel", histYaxis, nBins, 1, 40000, "ADC", "", dirName);
   PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Samples", "", "Samples", histYaxis, nBins, 0, 5000, "Samples", "", dirName);
   PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Pedestal","", "Pedestal", histYaxis, nBins, 0, 5000, "Pedestal", "", dirName);
   PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Sigma",   "", "Sigma", histYaxis, 10, 0, 10, "Sigma", "", dirName);
