@@ -1,0 +1,25 @@
+# this threshold file uses # as field separator
+# the format is
+# parameter#warning_threshold#failure_threshold
+# the first # separator needs to be appended to the parameter without any space
+
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_pfpslicevalidation.C
+# ================================
+
+pfpslicevalidation/comp#0.25#0.5
+pfpslicevalidation/cosmicScores#0.25#0.5
+pfpslicevalidation/numNeutrinos#0.25#0.5
+pfpslicevalidation/numSlices#0.25#0.5
+pfpslicevalidation/nuScores#0.25#0.5
+pfpslicevalidation/pfpVertexDistX#0.25#0.5
+pfpslicevalidation/pfpVertexDistY#0.25#0.5
+pfpslicevalidation/pfpVertexDistZ#0.25#0.5
+pfpslicevalidation/pfpVertexX#0.25#0.5
+pfpslicevalidation/pfpVertexY#0.25#0.5
+pfpslicevalidation/pfpVertexZ#0.25#0.5
+pfpslicevalidation/purity#0.25#0.5
+pfpslicevalidation/recoPdg#0.25#0.5
+pfpslicevalidation/score#0.25#0.5

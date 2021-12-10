@@ -1,0 +1,8 @@
+if(SBND)
+add_subdirectory(NoiseTest)
+add_subdirectory(dEdx)
+add_subdirectory(RecoEff)
+add_subdirectory(TrackValidation)
+endif()
+add_subdirectory(ShowerValidation)
+add_subdirectory(PFPValidation)

@@ -1,0 +1,56 @@
+BEGIN_PROLOG
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+icarus_litephotons_adapter: {
+  
+  module_type: LightenSimPhotons
+  
+  InputLabel: "largeant"
+  
+} # icarus_litephotons_adapter
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+icarus_pdsvalidation_ci: {
+  
+  module_type: "PDSValidation"
+  
+  #
+  # input configuration
+  #
+  NuGeneratorLabel: "generator"
+  OpHitPMTLabel:    "ophit"
+  OpFlashLabel:   [ "opflashCryoW", "opflashCryoE" ]
+
+  UseReflectedLight: false
+  UseArapucas:  false
+  
+  #
+  # mapping channel -> PMT: all are "pmt" for ICARUS
+  #
+  PDSMapTool: {
+    tool_type: PDMapAlgSimple
+    Type: "pmt"
+  }
+  PMTMapLabel: [ "pmt" ]
+  
+  
+  #
+  # analyzer configuration
+  #
+  
+  Verbose: false
+  SaveByPDType: false
+  
+  # to be tuned:
+  PECut:            0
+  PDSResponseDelay: 0.0 # in us
+  
+} # icarus_pdsvalidation_ci
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+END_PROLOG

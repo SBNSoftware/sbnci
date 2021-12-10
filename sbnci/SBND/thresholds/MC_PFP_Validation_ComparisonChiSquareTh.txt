@@ -1,0 +1,54 @@
+# this threshold file uses # as field separator
+# the format is
+# parameter#warning_threshold#failure_threshold
+# the first # separator needs to be appended to the parameter without any space
+
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_pfpvalidation.C
+# ================================
+
+pfpvalidation/electronEnergyComp#0.25#0.5
+pfpvalidation/electronEnergyPurity#0.25#0.5
+pfpvalidation/electronHitComp#0.25#0.5
+pfpvalidation/electronHitPurity#0.25#0.5
+pfpvalidation/electronHitSPRatio#0.25#0.5
+pfpvalidation/electronRecoPFPShowers#0.25#0.5
+pfpvalidation/electronRecoPFPs#0.25#0.5
+pfpvalidation/electronRecoPFPTracks#0.25#0.5
+pfpvalidation/energyComp#0.25#0.5
+pfpvalidation/energyPurity#0.25#0.5
+pfpvalidation/hitComp#0.25#0.5
+pfpvalidation/hitPurity#0.25#0.5
+pfpvalidation/hitSPRatio#0.25#0.5
+pfpvalidation/muonEnergyComp#0.25#0.5
+pfpvalidation/muonEnergyPurity#0.25#0.5
+pfpvalidation/muonHitComp#0.25#0.5
+pfpvalidation/muonHitPurity#0.25#0.5
+pfpvalidation/muonHitSPRatio#0.25#0.5
+pfpvalidation/muonRecoPFPShowers#0.25#0.5
+pfpvalidation/muonRecoPFPs#0.25#0.5
+pfpvalidation/muonRecoPFPTracks#0.25#0.5
+pfpvalidation/numPFPNu#0.25#0.5
+pfpvalidation/numPFP#0.25#0.5
+pfpvalidation/numPFPShower#0.25#0.5
+pfpvalidation/numPFPTrack#0.25#0.5
+pfpvalidation/pfpEnergyComp#0.25#0.5
+pfpvalidation/pfpEnergyPurity#0.25#0.5
+pfpvalidation/pfpHitComp#0.25#0.5
+pfpvalidation/pfpHitPurity#0.25#0.5
+pfpvalidation/pfpHitSPRatio#0.25#0.5
+pfpvalidation/pfpNumHits#0.25#0.5
+pfpvalidation/pfpTrackScore#0.25#0.5
+pfpvalidation/protonEnergyComp#0.25#0.5
+pfpvalidation/protonEnergyPurity#0.25#0.5
+pfpvalidation/protonHitComp#0.25#0.5
+pfpvalidation/protonHitPurity#0.25#0.5
+pfpvalidation/protonHitSPRatio#0.25#0.5
+pfpvalidation/protonRecoPFPShowers#0.25#0.5
+pfpvalidation/protonRecoPFPs#0.25#0.5
+pfpvalidation/protonRecoPFPTracks#0.25#0.5
+pfpvalidation/recoPFPShowers#0.25#0.5
+pfpvalidation/recoPFPs#0.25#0.5
+pfpvalidation/recoPFPTracks#0.25#0.5

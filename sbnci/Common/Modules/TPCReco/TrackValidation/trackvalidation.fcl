@@ -1,0 +1,36 @@
+BEGIN_PROLOG
+
+sbnd_trackvalidation_ci: 
+{
+   module_type:                 "TrackValidation"
+   GenieGenModuleLabel:         "generator"
+   LArGeantModuleLabel:         "largeant"
+   HitsModuleLabel:             "gaushit"
+   CalorimetryLabel:            "pandoraCalo"
+   PFParticleLabel:             "pandora"
+   pandoraTrackMCS:             "pandoraTrackMCS"
+   pandoraTrackRange:           "pandoraTrackRange"
+   TrackModuleLabels:           [ "pandoraTrack" ]
+   HitModuleLabels:             [ "gaushit" ]
+   RemoveNonContainedParticles: false
+   UseNeutrinoTracks:           true
+   HitValidation:               true
+   MatchTracksInTruth:          true
+   Verbose:                     0
+   MinHitSize:                  0
+   SimEnergyCut:                0.0
+   LengthCut:                   0
+   MaxSimEnergy:                4000
+   MinRecoEnergy:               0
+   MatchedCut:                  0.0
+   UseMedian:                   true #Use median or mean to estimate overall track dEdx
+   UseBestPlane:                3 # 0, 1, 2, for U, V, Y respectively. 3 and 4 best plane chosen 
+                                  # from number of hits and energy deposited, respectively 
+   
+   TrackPdgCodeVect:            [ 13, 211, 2212, 321 ] # tracks pdgcode that you would like to validate
+   PIDnames:                    ["muon", "pion", "proton"] # check event dump before changing anything
+   rangePIDnames:               ["muon", "pion", "kaon", "proton"] # check event dump before changing anything
+
+}
+
+END_PROLOG

@@ -1,0 +1,48 @@
+#include "simulationservices_sbnd.fcl"
+#include "backtrackerservice.fcl"
+#include "particleinventoryservice.fcl"
+
+#include "pfpvalidation.fcl"
+#include "showervalidation.fcl"
+#include "recoeff.fcl"
+
+#include "pdsvalidation.fcl"
+
+#include "crtvalidation.fcl"
+
+#include "tpcsimvalidation.fcl"
+
+process_name: AnaCI
+
+services:
+{
+  @table::sbnd_services
+  TFileService:		    { fileName: "allValidationHists.root" }
+  ParticleInventoryService: @local::standard_particleinventoryservice
+  BackTrackerService:  	    @local::standard_backtrackerservice
+}
+
+source:
+{
+  module_type: RootInput
+}
+
+physics:
+{
+  analyzers:
+  {
+    pfpvalidation:	@local::common_pfpvalidation_ci
+    pfpslicevalidation: @local::common_pfpslicevalidation_ci
+    showervalidation:   @local::common_showervalidation_ci
+    recoeff:		@local::common_recoeff_ci
+
+    pdsvalidation:      @local::common_pdsvalidation_ci
+
+    crtvalidation:      @local::common_crtvalidation_ci
+
+    tpcsimvalidation:   @local::common_tpcsimvalidation_ci
+  }
+
+  ana:       [ pfpvalidation, pfpslicevalidation, showervalidation, recoeff, pdsvalidation, crtvalidation, tpcsimvalidation ]
+  end_paths: [ ana ]
+}
