@@ -15,7 +15,6 @@ crtvalidation/y_pos#0.25#0.5
 crtvalidation/y_err#0.25#0.5
 crtvalidation/z_pos#0.25#0.5
 crtvalidation/z_err#0.25#0.5
-
 crtvalidation/TrackPESHit#0.25#0.5
 crtvalidation/x1_pos#0.25#0.5
 crtvalidation/x1_err#0.25#0.5
