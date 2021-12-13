@@ -27,9 +27,14 @@ defaultqual e20
 # With "product  version" table below, we now define dependencies
 # Add the dependent product and version
 product          version
+<<<<<<< HEAD
 #lar_ci           null
 sbndcode         v09_35_01 - optional # these are optional in the sense that at least one is required
 icaruscode       v09_35_01 - optional # but not both, though both is supported
+=======
+sbndcode         v09_37_01_01 - optional # these are optional in the sense that at least one is required
+icaruscode       v09_37_01 - optional # but not both, though both is supported
+>>>>>>> origin
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
@@ -39,11 +44,19 @@ end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the dependencies.
 # Make the table by adding columns before "notes". 
+<<<<<<< HEAD
 qualifier lar_ci  sbndcode    icaruscode   notes
 e20:debug -nq-    e20:debug   e20:debug    -nq-
 e20:prof  -nq-    e20:prof    e20:prof     -nq-
 c7:debug  -nq-    c7:debug    e20:debug    -nq-
 c7:prof   -nq-    c7:prof     e20:prof     -nq-
+=======
+qualifier sbndcode    icaruscode   notes
+e20:debug e20:debug   e20:debug    -nq-
+e20:prof  e20:prof    e20:prof     -nq-
+c7:debug  c7:debug    e20:debug    -nq-
+c7:prof   c7:prof     e20:prof     -nq-
+>>>>>>> origin
 end_qualifier_list
 
 table_fragment_begin

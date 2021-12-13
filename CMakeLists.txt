@@ -93,7 +93,13 @@ find_ups_product( eigen )
 find_ups_product( larreco )
 find_ups_product( sbnobj )
 find_ups_product( sbncode )
+<<<<<<< HEAD
 find_ups_product( lar_ci )
+=======
+# commenting this out suppresses CMake warning, "find_ups_product(): 
+# REQUIRED UPS product lar_ci has not been set up with WANT_UPS == TRUE!
+# find_ups_product( lar_ci ) #commenting this out suppresses CMake warning
+>>>>>>> origin
 find_ups_boost()
 find_ups_root()
 

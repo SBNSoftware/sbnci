@@ -35,14 +35,11 @@ void sbnciplot_tpcsimvalidation_icarus(TString inputFile)
   gSystem->Exec(Form("mkdir -v %s", dirName.Data()));
 
 
-//  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "ADCs","", "ADCs", histYaxis, nBins, 0, 1000, "ADCs", "", dirName);
-  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "NADC","", "NADC", histYaxis, nBins, 0, 5000, "NADC", "", dirName);
-  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "ADC","", "ADC", histYaxis, nBins, 0, 5000, "ADC", "", dirName);
-//  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Channel","", "Channel", histYaxis, nBins, 0, 1000, "Channel", "", dirName);
-  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Samples","", "Samples", histYaxis, nBins, 0, 5000, "Samples", "", dirName);
+  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "NADC",    "", "NADC", histYaxis, nBins, 0, 5000, "NADC", "", dirName);
+  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "SumADC",  "", "Integrated ADC Cts/Channel", histYaxis, nBins, 1, 40000, "ADC", "", dirName);
+  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Samples", "", "Samples", histYaxis, nBins, 0, 5000, "Samples", "", dirName);
   PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Pedestal","", "Pedestal", histYaxis, nBins, 0, 5000, "Pedestal", "", dirName);
-  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Sigma","", "Sigma", histYaxis, 10, 0, 10, "Sigma", "", dirName);
-//  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Compression","", "Compression", histYaxis, nBins, 0, 1000, "Compression", "", dirName);
+  PlotHists(inFile, outFile, "tpcsimvalidation/tpcsimTree", "Sigma",   "", "Sigma", histYaxis, 10, 0, 10, "Sigma", "", dirName);
 }
 
 void PlotHists(TFile *inFile, TFile *outFile, TString treeName, TString histName, TString histTitle, TString histXaxis, TString histYaxis, int nBins, int xMin, int xMax, TString metricToPlot, TString condition, TString dirName)
