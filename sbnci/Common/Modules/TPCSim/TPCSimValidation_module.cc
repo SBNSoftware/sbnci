@@ -132,10 +132,6 @@ void ana::TPCSimValidation::beginJob() {
   fTree->Branch("Samples", &fSamples);
   fTree->Branch("Pedestal", &fPedestal);
   fTree->Branch("Sigma", &fSigma);
-<<<<<<< HEAD:sbnci/Common/Modules/TPCSim/TPCSimValidation_module.cc
-//  fTree->Branch("Compression", &fCompression);
-=======
->>>>>>> origin:sbnci/Modules/TPCSim/TPCSimValidation_module.cc
 }// end beginJob
 
 ////////////////////////////////////////////////////////////////////
@@ -201,19 +197,6 @@ void ana::TPCSimValidation::analyze(const art::Event& evt) {
 
      for(auto const& digit : RawDigitList) {
          MF_LOG_DEBUG("TPCSimValidation") << "NADC ="<< digit->NADC();
-<<<<<<< HEAD:sbnci/Common/Modules/TPCSim/TPCSimValidation_module.cc
-         for(size_t iadc=0; iadc<digit->NADC(); iadc++) {
-           fADC.push_back(digit->ADC(iadc));
-         }
-         
-//         fADCs.push_back(digit->ADCs());
-         fNADC.push_back(digit->NADC()); 
-         fChannel.push_back(digit->Channel());
-         fSamples.push_back(digit->Samples());
-         fPedestal.push_back(digit->GetPedestal());
-         fSigma.push_back(digit->GetSigma());
-//         fCompression.push_back(digit->Compression());
-=======
 
          //integrate ADC counts for each channel
          fADC.push_back(0);
@@ -227,7 +210,6 @@ void ana::TPCSimValidation::analyze(const art::Event& evt) {
          fSamples.push_back(digit->Samples());
          fPedestal.push_back(digit->GetPedestal());
          fSigma.push_back(digit->GetSigma());
->>>>>>> origin:sbnci/Modules/TPCSim/TPCSimValidation_module.cc
      }  
   }
 

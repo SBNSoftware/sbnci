@@ -31,5 +31,3 @@ physics:
   end_paths: [ ana ]
 
 }
-
-physics.analyzers.crtvalidation.CRTHitLabel: "CRTHit1"
