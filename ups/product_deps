@@ -27,8 +27,8 @@ defaultqual e20
 # With "product  version" table below, we now define dependencies
 # Add the dependent product and version
 product          version
-sbndcode         v09_37_01_01 - optional # these are optional in the sense that at least one is required
-icaruscode       v09_37_01 - optional # but not both, though both is supported
+sbndcode         v09_37_01_03 - optional # these are optional in the sense that at least one is required
+icaruscode       v09_37_01_03 - optional # but not both, though both is supported
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
