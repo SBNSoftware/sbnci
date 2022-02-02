@@ -17,7 +17,8 @@ echo "looking for ${expName}_ci/$1"
 # input dir structure is $indir/<validation WF>/<tag>/(CI_build_lar_ci_<build number> or just <build number>)/validation/
 #  if subdir starts with CI_build_lar_ci it is a test submission
 indir=/pnfs/${expName}/scratch/ci_validation/
-nfound=`ifdh ls  $indir*/*/*$1 recursion_depth==0 | wc -l`
+#nfound=`ifdh ls  $indir*/*/*$1 recursion_depth==0 | wc -l` #temp workaround for unintentional added layer
+nfound=`ifdh ls  $indir*/*/*$1/$1 recursion_depth==0 | wc -l`
 if [ $nfound == 0 ]; then
   echo "ERROR: no build with number $1 was found"
   exit 1
@@ -29,7 +30,8 @@ fi
 valwfs=( "crt" "pds" "tpcsim" "tpcreco" )
 tpcrecowfs=( "pfpvalidation" "pfpslicevalidation" "recoeff" "showervalidation" )
 
-indir=`ifdh ls  $indir*/*/*$1 recursion_depth==0`
+#indir=`ifdh ls  $indir*/*/*$1 recursion_depth==0` #temp workaround for unintentional added layer
+indir=`ifdh ls  $indir*/*/*$1/$1 recursion_depth==0`
 echo "looking for reference files in $indir"
 
 valwf=""
@@ -84,7 +86,7 @@ fi
 # be careful not to overwrite files
 outdir=$outdir/$valwf
 if [ `ifdh ls $outdir/ci_validation_histos.root | wc -l` -gt 0 ]; then
-  echo "WARNING: your are about to retire the current ref histos. do you wish to continue? (y/n)"
+  echo "WARNING: your are about to retire the current ref histos in ${outdir}. do you wish to continue? (y/n)"
   read userin
   if [[ $userin != "y" ]]; then
     echo "  aborting..."
@@ -93,11 +95,18 @@ if [ `ifdh ls $outdir/ci_validation_histos.root | wc -l` -gt 0 ]; then
 
   unlink $outdir/ci_validation_histos.root
 
-else
+fi #added
+
+#else
   echo "moving new refs to $outdir"
-  ifdh mv $refpath ${outdir}/ci_validation_histos_${tag}.root
-  ln -s ${outdir}/ci_validation_histos_${tag}.root ${outdir}/ci_validation_histos.root
-fi
+  echo -e "\tifdh cp $refpath ${outdir}/ci_validation_histos_${tag}.root"
+  ifdh cp $refpath ${outdir}/ci_validation_histos_${tag}.root
+  here=`pwd`
+  cd $outdir
+  #ln -s ${outdir}/ci_validation_histos_${tag}.root ${outdir}/ci_validation_histos.root #abs symlinks don't work
+  ln -s ci_validation_histos_${tag}.root ci_validation_histos.root #rel symlinks do
+  cd $here
+#fi
 
 echo "references updated successfully"
 
