@@ -4,7 +4,7 @@
 source sbnci_setcodename.sh
 
 ## Introduce environment variables specific to this validation
-export ref_ana_hist=${ref_crtvalidation_hist}
+export ref_ana_hist=${ref_crt_hist}
 export normalise_plots=${normalise_plots_crtvalidation}
 
 ## Name of plotting script. This should be the only line that needs changing for other CI chains.
