@@ -3,6 +3,8 @@
 source sbnci_setcodename.sh # figure out if we're doing SBND or ICARUS stuff
 refdir=/pnfs/${expName}/persistent/ContinuousIntegration/reference/validation
 
+echo "looking for files in $refdir"
+
 valwfs=( "crt" "pds" "tpcsim" "tpcreco" )
 nmiss=0
 
