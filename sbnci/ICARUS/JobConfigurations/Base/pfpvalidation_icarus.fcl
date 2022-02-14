@@ -12,7 +12,7 @@ icarus_pfpslicevalidation_ci:
 icarus_pfpvalidation_ci:
 {
     module_type:    PFPValidationCI
-    SimChannelLabel:  "simdrift"
+    SimChannelLabel:  "largeant"
     PFPLabels:      ["pandoraGausCryoE","pandoraGausCryoW"]
     HitLabels:      ["gaushitTPCEE","gaushitTPCEW","gaushitTPCWE","gaushitTPCWW"]
 }
