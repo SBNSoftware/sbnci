@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# file: audit_refs.sh
+# author: chilgenb@fnal.gov
+# usage: audit_refs.sh
+# brief: executable that checks that reference files are present for all validation WFs
+# args: none 
+
+
 # global vars
 valwfs=( "crt" "pds" "tpcsim" "tpcreco" )
 tpcrecodirs=( "pfpslicevalidation" "pfpvalidation" "recoeff" "showervalidation" )
