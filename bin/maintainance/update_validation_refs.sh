@@ -99,7 +99,7 @@ echo -e "\nlooking for ${expName}_ci/${1}..."
 #      $indir/<validation WF>/<tag>/(CI_build_lar_ci_<build number> or just <build number>)/validation/
 #   if subdir starts with CI_build_lar_ci it is a test submission
 indir=/pnfs/${expName}/scratch/ci_validation/
-nfound=`ifdh ls  $indir*/*/*$1/$1 recursion_depth==0 | wc -l`
+nfound=`ifdh ls  $indir*/*/*$1/ recursion_depth==0 | wc -l`
 if [ $nfound == 0 ]; then
   echo "ERROR: no build with number $1 was found"
   exit 1
@@ -155,7 +155,7 @@ outdir=${outdir}/${valwf}
 # done extracting info, move on to transfer/link update
 # get absolute file path(s) to reference histogram(s) and move it(them) to 
 # target directory in dCache persistent
-refpathbase=${indir}validation/$valwf
+refpathbase=${indir}validation
 if [[ $valwf == "tpcreco" ]]; then
   # loop over subdirectories
   for sub in ${tpcrecodirs[@]}; do
@@ -167,7 +167,7 @@ if [[ $valwf == "tpcreco" ]]; then
 
 # only tpcreco has subdirectories (for now)
 else
-  refpath=$refpathbase/ci_validation_histos.root
+  refpath=$refpathbase/$valwf/ci_validation_histos.root
   file_exist $refpath
   check_outdir $outdir
   move $refpath $outdir
