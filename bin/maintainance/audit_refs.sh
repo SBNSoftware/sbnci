@@ -11,14 +11,39 @@
 valwfs=( "crt" "pds" "tpcsim" "tpcreco" )
 tpcrecodirs=( "pfpslicevalidation" "pfpvalidation" "recoeff" "showervalidation" )
 nmiss=0
+vers=0
 
 # some useful functions
+# given a path ($1) to a reference file link, extract the version
+get_version(){
+  fpath=`readlink -f $1` #dereference symlink to get actual file path
+  #echo "reference path: $fpath"
+  fname=`basename $fpath`
+  
+  curtag=`cut -d 'v' -f3 <<< $fname`
+  curtag=`cut -d '.' -f1 <<< $curtag`
+  if [ $curtag ]; then
+    #curtag="?"
+    curtag="v$curtag"
+  else
+    #curtag="v$curtag"
+    curtag="?"
+  fi
+
+  if [ $vers != 0 ] && [ $vers != $curtag ]
+  then
+    echo -e "\033[0;31m \tWARNING: inconsistent reference versions:\033[0m $vers vs. $curtag"
+  fi
+
+  vers=$curtag
+}
+
+
 # check if a file exists and print a formatted result
 # -- args --
 # $1: full path to file
 # $2: workflow name
 # $3: subdirectory (for tpcreco only)
-# return: none 
 exist() {
 
   sub=""
@@ -27,7 +52,8 @@ exist() {
   fi
 
   if [ -e $1 ]; then
-    echo -e "\033[0;32m \t$2$sub reference found \033[0m" #print this in green
+    get_version $1
+    echo -e "\033[0;32m \t$2$sub reference found with version $vers \033[0m" #print this in green
   else
     echo -e "\033[0;31m \t$2$sub reference MISSING\033[0m" #print this in red
     let nmiss=$nmiss+1
@@ -37,7 +63,6 @@ exist() {
 
 # look for ref files for all validation WFs base directory
 # $1: full directory path
-# return: none
 look() {
 
   for wf in ${valwfs[@]}; do
