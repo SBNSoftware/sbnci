@@ -36,4 +36,4 @@ physics:
   end_paths: [ ana ]
 }
 
-services.BackTrackerService.BackTracker.SimChannelModuleLabel: "simdrift"
+services.BackTrackerService.BackTracker.SimChannelModuleLabel: "largeant"
