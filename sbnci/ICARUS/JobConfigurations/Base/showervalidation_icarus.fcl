@@ -4,7 +4,7 @@ icarus_showervalidation_ci:
 {
    module_type:			"ShowerValidation"
    GenieGenModuleLabel:		"generator"
-   SimChannelModuleLabel:       "simdrift"
+   SimChannelModuleLabel:       "largeant"
    HitsModuleLabel:		"gaushitTPCEE"
    TrackModuleLabel:		"pandoraTrackGausCryoE"
    PFParticleLabel:		"pandoraGausCryoE"
