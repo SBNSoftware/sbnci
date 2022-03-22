@@ -54,6 +54,19 @@ CompleteSbnsoftName(){
   done
 }
 
+CheckReferenceVersion() {
+  nmatch=`cat /pnfs/sbnd/persistent/ContinuousIntegration/approved_reference_versions.txt | grep $1 | wc -l`
+  if [ $nmatch == 0 ]; then
+    SBNCI_REF_VERSION=""
+    echo "ERROR: reference version specified by user ($1) is not approved."
+    echo "Choose from "
+    cat /pnfs/sbnd/persistent/ContinuousIntegration/approved_reference_versions.txt
+
+  elif [ $nmatch -gt 1 ]; then
+    echo "ERROR: multiple matches ($nmatch) found for reference version (search uses wild cards) $1"
+  fi
+}
+
 # parse input args
 SetReferenceArgs(){
 
@@ -120,9 +133,9 @@ SetReferenceArgs(){
         fi
       fi
 
-      if [ $versc != "" ]; then
+      if [ "$versc" != "" ]; then
         SBNCI_REF_VERSION=$versc
-      elif [ $versr != "" ]; then
+      elif [ "$versr" != "" ]; then
         SBNCI_REF_VERSION=$versr
       fi
 
@@ -137,6 +150,9 @@ SetReferenceArgs(){
  #source sbnci_setcodename.sh # for releases (UNCOMMENT WHEN COMMITTING!)
  source $MRB_INSTALL/sbnci/$MRB_PROJECT_VERSION/slf7.x86_64.e20.prof/bin/sbnci_setcodename.sh # for local development (COMMENT OUT WHEN COMMITTING!)
  SetReferenceArgs $@
+ if [ "$SBNCI_REF_VERSION" != "current" ] && [ "$SBNCI_REF_VERSION" != "" ]; then
+   CheckReferenceVersion $SBNCI_REF_VERSION
+ fi
 
  if [ "$SBNCI_REF_VERSION" != "" ]; then
    echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg cfg/${expName}/grid_workflow_${expName}_${workflow}.cfg --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION"
