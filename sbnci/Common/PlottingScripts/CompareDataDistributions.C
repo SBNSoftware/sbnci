@@ -275,7 +275,7 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
 
   vector<string> list_folder, list_histo;
   vector<uint> folder_size;
-  LoopHistos(folder_size, list_folder, list_histo, Form("ci_validation_histos_testing_%s.root", gCurVersion.Data()));
+  LoopHistos(folder_size, list_folder, list_histo, Form("ci_validation_histos_%s.root", gCurVersion.Data()));
 
   // For debug purpose - BEGIN
   cout << folder_size.size() << endl;
@@ -298,7 +298,7 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
 
 
   TFile *RefFile = TFile::Open(Form("ci_validation_histos_ref_%s.root", gRefVersion.Data()));
-  TFile *CurFile = TFile::Open(Form("ci_validation_histos_testing_%s.root", gCurVersion.Data()));
+  TFile *CurFile = TFile::Open(Form("ci_validation_histos_%s.root", gCurVersion.Data()));
 
   UInt_t nBranches=list_folder.size();
   cout << "nBranches: " << nBranches << endl;
