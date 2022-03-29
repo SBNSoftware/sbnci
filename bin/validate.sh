@@ -17,9 +17,9 @@ GetHelp() {
   echo -e "\n\tusage: validate <workflow> --ref <vXX_YY_ZZ or current> --revisions <repo@branches> --test (optional - use lar_ci 'test mode')"
   echo -e "\n\trequired parameters:"
   echo -e "\t\tworkflow is one of 'crt' , 'tpcreco', 'tpcsim' or 'pds'"
-  echo -e "\t\t-r or --ref is vXX_YY_ZZ or use -c or --current (derives from develop), the reference version of the code used for the validation"
+  echo -e "\t\t-r or --ref is vXX_YY_ZZ or use -c or --current (derives from ${expName}code@develop), the reference version of the code used for the validation"
   echo -e "\t\t--revisions is space-seperated list of SBNSoftware branches being tested in the form repo0@branch0 repo1@branch1 ..."
-  echo -e "\t\t\tfor example --revisions sbndcode@my_sbnd_branch sbndutil@vUU_VV_YY"
+  echo -e "\t\t\tfor example --revisions ${expName}code@my_${expName}code_branch ${expName}util@vUU_VV_YY"
   echo -e "\n\toptional parameters:"
   echo -e "\t\t-t or --testmode: if specified, use lar_ci testmode (should be used before full validation)"
 } 
@@ -44,6 +44,7 @@ CheckValidationWorkflow() {
 
 # helper functions
 CompleteSbnsoftName(){
+  echo "complete names for list of branches, ${branchstr}"
   for branch in $revs
   do
     if [ "$branchstr" == "" ]; then
@@ -55,7 +56,7 @@ CompleteSbnsoftName(){
 }
 
 CheckReferenceVersion() {
-  nmatch=`cat /pnfs/sbnd/persistent/ContinuousIntegration/approved_reference_versions.txt | grep $1 | wc -l`
+  nmatch=`cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt | grep $1 | wc -l`
   if [ $nmatch == 0 ]; then
     SBNCI_REF_VERSION=""
     echo "ERROR: reference version specified by user ($1) is not approved."
@@ -73,14 +74,16 @@ SetReferenceArgs(){
   if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     GetHelp
 
-  else
+  elif [ "$1" == "" ]; then
+    echo "usage: validate.sh <workflow> --ref <vXX_YY_ZZ or current> --revisions <repo@branches> --test (optional)"
+    echo "try 'validate.sh -h' for more information"
 
+  else
+    echo "call SetReferenceArgs with input $@"
     CheckValidationWorkflow "$1"
 
     while [ "${1:-}" != "" ]; do
       case "$1" in
-        "-h" | "--help")
-          GetHelp ;;
         "-c" | "--current")
           versc="current" ;;
         "-r" | "--ref")
@@ -90,7 +93,7 @@ SetReferenceArgs(){
           testmode=" --testmode";;
         "--revisions")
           shift
-          while [ "${1:-}" != "" ]; do
+          while [ "$1" != "" ]; do
             if [ "$revs" == "" ]; then
               revs="$1"
             else
@@ -104,7 +107,7 @@ SetReferenceArgs(){
             fi
 
           done
-          #echo "revisions: '$revs'"
+          echo "revisions: '$revs'"
           CompleteSbnsoftName "$revs" ;;
       esac
       shift
