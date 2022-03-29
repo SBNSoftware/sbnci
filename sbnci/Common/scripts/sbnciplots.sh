@@ -36,7 +36,7 @@ root -l -b -q $plotScript\(\"${2}\"\)
 ## Setup and run the comparison script.
 comparisonScript="$SBNCI_DIR/Common/scripts/CompareDataDistributions.C"
 
-ln -v ci_validation_histos.root ci_validation_histos_${codeVersion}.root
+ln -v ci_validation_histos.root ci_validation_histos_testing_${codeVersion}.root
 
 ls -lh
 
