@@ -5,7 +5,8 @@ function get_proxy() {
   [ ${expName} ] || source sbnci_setcodename.sh
 
   echo "getting ${expName} analysis proxy"
-  cigetcert -s 'fifebatch.fnal.gov'
+  #cigetcert -s 'fifebatch.fnal.gov'
+  kx509 --minhours 24 #check cert has enough time left
 
   voms-proxy-info -exists -vo -valid 24:00 > /dev/null || 
       voms-proxy-init -noregen -rfc -voms "fermilab:/fermilab/${expName}/Role=Analysis" --valid 200:00
