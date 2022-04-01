@@ -44,7 +44,6 @@ CheckValidationWorkflow() {
 
 # helper functions
 CompleteSbnsoftName(){
-  echo "complete names for list of branches, ${branchstr}"
   for branch in $revs
   do
     if [ "$branchstr" == "" ]; then
@@ -53,18 +52,42 @@ CompleteSbnsoftName(){
       branchstr="SBNSoftware/$branch $branchstr"
     fi
   done
+  echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
 }
 
 CheckReferenceVersion() {
-  nmatch=`cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt | grep $1 | wc -l`
+
+  # must use grep -w to match to entier string delimited by whitespace
+  nmatch=`cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt | grep -w $1 | wc -l`
+
   if [ $nmatch == 0 ]; then
-    SBNCI_REF_VERSION=""
     echo "ERROR: reference version specified by user ($1) is not approved."
-    echo "Choose from "
+    echo "Choose from (# reference version # reference alias #)"
     cat /pnfs/sbnd/persistent/ContinuousIntegration/approved_reference_versions.txt
 
   elif [ $nmatch -gt 1 ]; then
-    echo "ERROR: multiple matches ($nmatch) found for reference version (search uses wild cards) $1"
+    echo "ERROR: multiple matches ($nmatch) found for reference version $1"
+
+  else
+    str=$(cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt | grep -w $1)
+    strarr=($str)
+    if [ "$1" == "${strarr[0]}" ]; then # $1 is a version
+      if [ "${strarr[1]}" == "current" ]; then
+        SBNCI_REF_VERSION="current"
+      else
+        SBNCI_REF_VERSION="$1"
+      fi
+
+    elif [ "$1" == "${strarr[1]}" ]; then # $1 is a version alias
+      if [ "$1" == "current" ]; then
+        SBNCI_REF_VERSION="current"
+      else
+        SBNCI_REF_VERSION="${strarr[0]}"
+      fi
+
+    else # shouldn't happen ever, but hey doesn't hurt to check
+      echo "ERROR: $1 found in file but no match to version or alias fields"
+    fi
   fi
 }
 
@@ -79,7 +102,7 @@ SetReferenceArgs(){
     echo "try 'validate.sh -h' for more information"
 
   else
-    echo "call SetReferenceArgs with input $@"
+    #echo "call SetReferenceArgs with input $@" # for debugging
     CheckValidationWorkflow "$1"
 
     while [ "${1:-}" != "" ]; do
@@ -107,7 +130,7 @@ SetReferenceArgs(){
             fi
 
           done
-          echo "revisions: '$revs'"
+          #echo "revisions: '$revs'" # for debugging
           CompleteSbnsoftName "$revs" ;;
       esac
       shift
@@ -127,13 +150,11 @@ SetReferenceArgs(){
 
       # hack to handle inconsistent workflow naming 
       if [ "$testmode" == "" ]; then #testmode disabled
-        if [ "$testmode" != "mc_reco_all" ]; then
+        if [ "$workflow" != "mc_reco_all" ]; then
           workflow="${workflow}_all"
         fi
       else #testmode enabled
-        if [ "$workflow" != "mc_reco_all" ]; then
-          workflow="${workflow}_test"
-        fi
+        workflow="${workflow}_test"
       fi
 
       if [ "$versc" != "" ]; then
@@ -142,6 +163,7 @@ SetReferenceArgs(){
         SBNCI_REF_VERSION=$versr
       fi
 
+      CheckReferenceVersion $SBNCI_REF_VERSION
       echo "using reference version $SBNCI_REF_VERSION"
 
     fi # workflow is ok
@@ -153,13 +175,23 @@ SetReferenceArgs(){
  #source sbnci_setcodename.sh # for releases (UNCOMMENT WHEN COMMITTING!)
  source $MRB_INSTALL/sbnci/$MRB_PROJECT_VERSION/slf7.x86_64.e20.prof/bin/sbnci_setcodename.sh # for local development (COMMENT OUT WHEN COMMITTING!)
  SetReferenceArgs $@
- if [ "$SBNCI_REF_VERSION" != "current" ] && [ "$SBNCI_REF_VERSION" != "" ]; then
-   CheckReferenceVersion $SBNCI_REF_VERSION
- fi
 
  if [ "$SBNCI_REF_VERSION" != "" ]; then
    echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg cfg/${expName}/grid_workflow_${expName}_${workflow}.cfg --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION"
  #trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg cfg/${expName}/grid_workflow_${expName}_crt_all.cfg --revisions "$branchstr"
 
+   if [ "$testmode" != "" ]; then 
+     echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
+     echo -e "\thttps://dbweb9.fnal.gov:8443/TestCI/app/ns:${expName}/view_builds\n"
+
+   else
+     echo -e "\nvalidation jobs submitted. go to the dashboard to view your results."
+     echo -e "\thttps://dbweb9.fnal.gov:8443/LarCI/app/ns:${expName}/view_builds\n"
+   fi
+
+ else
+   echo "ERROR: no viable reference version could be deduced"
  fi
+
+
 
