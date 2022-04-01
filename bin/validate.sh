@@ -113,7 +113,7 @@ SetReferenceArgs(){
           shift
           versr=$1 ;;
         "-t" | "--test")
-          testmode=" --testmode";;
+          testmode="--testmode";;
         "--revisions")
           shift
           while [ "$1" != "" ]; do
