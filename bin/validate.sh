@@ -184,7 +184,7 @@ SetReferenceArgs(){
    fi
    gridwf="${gridwf}/grid_workflow_${expName}_${workflow}.cfg"
 
-   echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $testmode"
+   #echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $testmode"
 
    trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions "$branchstr" -e SBNCI_REF_VERSION="$SBNCI_REF_VERSION" "$testmode"
 
