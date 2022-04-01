@@ -172,13 +172,21 @@ SetReferenceArgs(){
 
 # main body
 
- #source sbnci_setcodename.sh # for releases (UNCOMMENT WHEN COMMITTING!)
- source $MRB_INSTALL/sbnci/$MRB_PROJECT_VERSION/slf7.x86_64.e20.prof/bin/sbnci_setcodename.sh # for local development (COMMENT OUT WHEN COMMITTING!)
+ source sbnci_setcodename.sh # for releases (UNCOMMENT WHEN COMMITTING!)
+ #source $MRB_INSTALL/sbnci/$MRB_PROJECT_VERSION/slf7.x86_64.e20.prof/bin/sbnci_setcodename.sh # for local development (COMMENT OUT WHEN COMMITTING!)
  SetReferenceArgs $@
 
  if [ "$SBNCI_REF_VERSION" != "" ]; then
-   echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg cfg/${expName}/grid_workflow_${expName}_${workflow}.cfg --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION"
- #trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg cfg/${expName}/grid_workflow_${expName}_crt_all.cfg --revisions "$branchstr"
+
+   gridwf="cfg/${expName}"
+   if [ "$SBNCI_REF_VERSION" == "current" ]; then
+     gridwf="${gridwf}/current"
+   fi
+   gridwf="${gridwf}/grid_workflow_${expName}_${workflow}.cfg"
+
+   echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $testmode"
+
+   trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions "$branchstr" -e SBNCI_REF_VERSION="$SBNCI_REF_VERSION" "$testmode"
 
    if [ "$testmode" != "" ]; then 
      echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
