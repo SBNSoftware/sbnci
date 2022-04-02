@@ -47,11 +47,12 @@ CompleteSbnsoftName(){
   for branch in $revs
   do
     if [ "$branchstr" == "" ]; then
-      branchstr="SBNSoftware/$branch"
+      branchstr="\"SBNSoftware/$branch"
     else
       branchstr="SBNSoftware/$branch $branchstr"
     fi
   done
+  branchstr="${branchstr}\""
   echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
 }
 
@@ -181,16 +182,30 @@ SetReferenceArgs(){
    # hack to avoid sbndcode CI test failure with CAF checks with SBN2022A
    citests=""
    if [ "$SBNCI_REF_VERSION" == "v09_37_02_01" ] && [ "${expName}" == "sbnd" ]; then
-     citests="--ci-tests nucosmics_g4_quick_test_sbndcode single_g4_quick_test_sbndcode single_reco2_quick_test_sbndcode compilation_test_sbndcode nucosmics_detsim_quick_test_sbndcode nucosmics_g4_quick_test_sbndcode nucosmics_gen_quick_test_sbndcode nucosmics_reco1_quick_test_sbndcode nucosmics_reco2_quick_test_sbndcode single_gen_quick_test_sbndcode single_reco1_quick_test_sbndcode"
+     citests="--ci-tests \"nucosmics_g4_quick_test_sbndcode single_g4_quick_test_sbndcode single_reco2_quick_test_sbndcode compilation_test_sbndcode nucosmics_detsim_quick_test_sbndcode nucosmics_g4_quick_test_sbndcode nucosmics_gen_quick_test_sbndcode nucosmics_reco1_quick_test_sbndcode nucosmics_reco2_quick_test_sbndcode single_gen_quick_test_sbndcode single_reco1_quick_test_sbndcode\""
+   fi
+
    gridwf="cfg/${expName}"
    if [ "$SBNCI_REF_VERSION" == "current" ]; then
      gridwf="${gridwf}/current"
    fi
    gridwf="${gridwf}/grid_workflow_${expName}_${workflow}.cfg"
 
-   #echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $testmode"
+   extras=""
+   if [ "${citests}" != "" ]; then
+     extras="${citests}"
+   fi
+   if [ "${testmode}" != "" ]; then
+     if [ "$extras" != "" ]; then
+       extras="${extras} ${testmode}"
+     else
+       extras="${testmode}"
+     fi
+   fi
+   echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
 
-   `trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions "$branchstr" -e SBNCI_REF_VERSION="$SBNCI_REF_VERSION" "$testmode" "$citests"`
+   cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
+   eval $cmd
 
    if [ "$testmode" != "" ]; then 
      echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
