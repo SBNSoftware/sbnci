@@ -11,6 +11,16 @@ branchstr=""
 testmode=""
 SBNCI_REF_VERSION="" # this variable needs to be exported to lar_ci (w/matching cfg definition)
 workflow=""
+testtag=""
+reftag=""
+currenttag=""
+gridwf=""
+
+# three possible tag types (Chris' probably wrong naming)
+t1="vXX_YY_ZZ" # version core
+t2="${t1}_ii"  # hotfix
+t3="${t2}pjj" # hotfix patch
+
 
 GetHelp() {
   echo -e "\n validate.sh is a convenience script to make submitting validation jobs easier"
@@ -44,18 +54,80 @@ CheckValidationWorkflow() {
 
 # helper functions
 CompleteSbnsoftName(){
-  for branch in $revs
+  for branch in ${revs[@]}
   do
     if [ "$branchstr" == "" ]; then
-      branchstr="\"SBNSoftware/$branch"
+      branchstr="SBNSoftware/$branch\""
     else
       branchstr="SBNSoftware/$branch $branchstr"
     fi
   done
-  branchstr="${branchstr}\""
-  echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
+  branchstr="\"${branchstr}"
+  #echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
 }
 
+#  In order to determine the tag associated with the branch(es) being tested,
+#  we need to create a work area, clone the <exp>code repo, checkout the branch
+#  of that repo being tested, then use git commands to extract the tag.
+GetTestTag() {
+
+  # $revs does not have SBNSoftware in branch name
+  if [ "$revs" == "" ]; then
+    echo "ERROR: GetTestTag cannot extract tag from empty branch list"
+
+  else
+    expbranch=""
+    brancharr=( $revs )
+    for branch in ${brancharr[@]}; do
+      if [ "$(echo "$branch" | grep "${expName}code")" != "" ]; then
+        expbranch="$branch"
+        break
+      fi
+    done
+
+    if [ "$expbranch" == "" ]; then
+      echo "ERROR: GetTestTag could not identify the experiment code branch."
+      echo "WARNING: your branch(es) might not be tested with the appropriate sim/reco workflow"
+
+    else
+      #echo "parsing branch string '$expbranch'"
+      exprepo="${expName}code"
+      expbranch="${expbranch:$(expr ${#exprepo}+1):${#expbranch}}"
+
+      tmpdir=/${expName}/app/users/ContinuousIntegration/scratch/`date +"%s"`
+      if [ -e $tmpdir ]; then
+        echo "ERROR: GetTestTag failed to create test directory"
+      else
+        here=`pwd`
+        mkdir $tmpdir
+        cd $tmpdir
+
+        git clone --branch "$expbranch" "https://github.com/SBNSoftware/${exprepo}.git" 1> /dev/null 2> /dev/null
+        cd ${exprepo}
+        testtag=`git describe --tags --abbrev=0`
+
+        cd $here
+        rm -rf $tmpdir
+      fi
+    fi
+  fi
+}
+
+# pass a tag ($1) to make sure it's sane and get it's value as a number
+CheckTagFormat(){
+  if [ "${1:0:1}" != "v" ]; then
+    echo "WARNING: strange tag ($1 doesn't start with 'v') detected! test sim/reco workflow may not be correct"
+  fi
+
+  if [ ${#1} != ${#t1} ] && [ ${#1} != ${#t2} ] && [ ${#1} != ${#t3} ]; then
+    echo "WARNING: strange tag ($1 is not of the form vXX_YY_ZZ_iipjj) detected! test sim/reco workflow may not be correct"
+  fi
+
+  
+}
+
+# read from text file a list of approved reference tags and make sure
+# that reference tag passed by user is on the list
 CheckReferenceVersion() {
 
   # must use grep -w to match to entier string delimited by whitespace
@@ -73,6 +145,9 @@ CheckReferenceVersion() {
     str=$(cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt | grep -w $1)
     strarr=($str)
     if [ "$1" == "${strarr[0]}" ]; then # $1 is a version
+
+      reftag="$1"
+
       if [ "${strarr[1]}" == "current" ]; then
         SBNCI_REF_VERSION="current"
       else
@@ -80,6 +155,9 @@ CheckReferenceVersion() {
       fi
 
     elif [ "$1" == "${strarr[1]}" ]; then # $1 is a version alias
+
+      reftag="${strarr[0]}"
+
       if [ "$1" == "current" ]; then
         SBNCI_REF_VERSION="current"
       else
@@ -89,7 +167,48 @@ CheckReferenceVersion() {
     else # shouldn't happen ever, but hey doesn't hurt to check
       echo "ERROR: $1 found in file but no match to version or alias fields"
     fi
+
+    # also need to know what tag 'current' points to
+    str=$(cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt | grep -w current)
+    strarr=($str)
+    currenttag="${strarr[0]}"
+
   fi
+
+  # decide what sim/reco workflow to use by comparing the tag the test branch 
+  #  is based off of to that of the specified reference as well as that of 'current'
+  # TODO support arbitrary number of sim/reco workflows instead of 
+  #  just current vs. most recent prod branch - need to add more subdirs to
+  #  lar_ci/cfg/<exp>/ similarly to how was done for 'current'
+  #echo "current tag: $currenttag"
+  CheckTagFormat "$currenttag"
+  CheckTagFormat "$reftag"
+  GetTestTag
+  CheckTagFormat "$testtag"
+
+  # convert tags to six-digit integers assuming hot fixes and hot fix-patches
+  #  don't confuse things (should only have one instance per production branch/current)
+  testnum="${testtag:1:2}${testtag:4:2}${testtag:7:2}"
+  refnum="${reftag:1:2}${reftag:4:2}${reftag:7:2}"
+  curnum="${currenttag:1:2}${currenttag:4:2}${currenttag:7:2}"
+
+  gridwf="cfg/${expName}"
+
+  if [ "$testnum" -gt "$refnum" ]; then
+    gridwf="${gridwf}/current"
+
+  # use this for more than two options (see TODO above)
+  #elif [ "$testnum" -lt "$curnum" ] && [ "$testnum" -ge "$refnum" ]; then
+
+  elif [ "${testnum}" -lt "$refnum" ]; then
+    echo "ERROR: CI system does not support validating branches based on tags older than the reference version"
+    echo "WARNING: using sim/reco workflow for 'current' which may not be compatible with your branch"
+    gridwf="${gridwf}/current"
+
+  fi
+
+  gridwf="${gridwf}/grid_workflow_${expName}_${workflow}.cfg"
+  
 }
 
 # parse input args
@@ -108,13 +227,6 @@ SetReferenceArgs(){
 
     while [ "${1:-}" != "" ]; do
       case "$1" in
-        "-c" | "--current")
-          versc="current" ;;
-        "-r" | "--ref")
-          shift
-          versr=$1 ;;
-        "-t" | "--test")
-          testmode="--testmode";;
         "--revisions")
           shift
           while [ "$1" != "" ]; do
@@ -123,16 +235,24 @@ SetReferenceArgs(){
             else
               revs="$1 $revs"
             fi
- 
-            if [ "${1:0:1}" == "-" ] || [ "${1:0:2}" != "--" ]; then
+            if [ "${2:0:1}" == "-" ]; then
               break
-            else
-              shift
             fi
 
+            shift
           done
           #echo "revisions: '$revs'" # for debugging
           CompleteSbnsoftName "$revs" ;;
+
+        "-c" | "--current")
+          shift
+          versc="current" ;;
+        "-r" | "--ref")
+          shift
+          versr=$1 ;;
+        "-t" | "--test")
+          shift
+          testmode="--testmode";;
       esac
       shift
     done
@@ -164,18 +284,22 @@ SetReferenceArgs(){
         SBNCI_REF_VERSION=$versr
       fi
 
+      #echo "passing SBNCI_REF_VERSION=$SBNCI_REF_VERSION to CheckReferenceVersion"
       CheckReferenceVersion $SBNCI_REF_VERSION
-      echo "using reference version $SBNCI_REF_VERSION"
+      #echo "using reference version $SBNCI_REF_VERSION"
 
     fi # workflow is ok
   fi # not asking for help
 }
+
 
 # main body
 
  source sbnci_setcodename.sh # for releases (UNCOMMENT WHEN COMMITTING!)
  #source $MRB_INSTALL/sbnci/$MRB_PROJECT_VERSION/slf7.x86_64.e20.prof/bin/sbnci_setcodename.sh # for local development (COMMENT OUT WHEN COMMITTING!)
  SetReferenceArgs $@
+
+ # TODO check that input branch list does not contain two branches from the same repo
 
  if [ "$SBNCI_REF_VERSION" != "" ]; then
 
@@ -184,12 +308,6 @@ SetReferenceArgs(){
    if [ "$SBNCI_REF_VERSION" == "v09_37_02_01" ] && [ "${expName}" == "sbnd" ]; then
      citests="--ci-tests \"nucosmics_g4_quick_test_sbndcode single_g4_quick_test_sbndcode single_reco2_quick_test_sbndcode compilation_test_sbndcode nucosmics_detsim_quick_test_sbndcode nucosmics_g4_quick_test_sbndcode nucosmics_gen_quick_test_sbndcode nucosmics_reco1_quick_test_sbndcode nucosmics_reco2_quick_test_sbndcode single_gen_quick_test_sbndcode single_reco1_quick_test_sbndcode\""
    fi
-
-   gridwf="cfg/${expName}"
-   if [ "$SBNCI_REF_VERSION" == "current" ]; then
-     gridwf="${gridwf}/current"
-   fi
-   gridwf="${gridwf}/grid_workflow_${expName}_${workflow}.cfg"
 
    extras=""
    if [ "${citests}" != "" ]; then
@@ -202,10 +320,10 @@ SetReferenceArgs(){
        extras="${testmode}"
      fi
    fi
-   echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
+   #echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
 
    cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
-   eval $cmd
+   eval $cmd 1>/dev/null #2>/dev/null
 
    if [ "$testmode" != "" ]; then 
      echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
