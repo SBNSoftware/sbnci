@@ -23,9 +23,9 @@ file_exist(){
 
 # be careful not to overwrite files in output directory ($1)
 check_outdir(){
-  if [ `IFDH_FIND_MATCHING_DEPTH=1 ifdh findMatchingFiles ${1}/ ci_validation_histos.root | wc -l` == 0 ] && [ `IFDH_FIND_MATCHING_DEPTH=1 ifdh findMatchingFiles ${1}/ ci_validation_histos\*.root | wc -l` -gt 0 ]
+  if [ `IFDH_FIND_MATCHING_DEPTH=1 ifdh findMatchingFiles ${1}/ ci_validation_histos_current.root | wc -l` == 0 ] && [ `IFDH_FIND_MATCHING_DEPTH=1 ifdh findMatchingFiles ${1}/ ci_validation_histos\*.root | wc -l` -gt 0 ]
   then
-    echo "WARNING: validation files present in output directory, but no link (ci_validation_histos.root)."
+    echo "WARNING: validation files present in output directory, but no link (ci_validation_histos_current.root)."
     ifdh ls $1
     echo "CONTINUE? (y/n)"
     read usercont
@@ -45,10 +45,10 @@ check_outdir(){
 # move reference file from scratch area ($1) to target directory ($2)
 move() {
 
-  if [ `IFDH_FIND_MATCHING_DEPTH=1 ifdh findMatchingFiles $2/ ci_validation_histos.root | wc -l` -gt 0 ] # is there a symlink there?
+  if [ `IFDH_FIND_MATCHING_DEPTH=1 ifdh findMatchingFiles $2/ ci_validation_histos_current.root | wc -l` -gt 0 ] # is there a symlink there?
   then # dereference symlink and extract reference version
 
-    fpath=`readlink -f $2/ci_validation_histos.root` #dereference symlink to get actual file path
+    fpath=`readlink -f $2/ci_validation_histos_current.root` #dereference symlink to get actual file path
     echo "reference path: $fpath"
     let beg=${#2}+1
     let size=${#fpath}-$beg
@@ -64,7 +64,7 @@ move() {
       kill -INT $$
     fi
 
-    unlink $2/ci_validation_histos.root
+    unlink $2/ci_validation_histos_current.root
 
   fi
 
@@ -73,13 +73,13 @@ move() {
   ifdh mv $1 ${2}/ci_validation_histos_${tag}.root
   here=`pwd`
   cd $2
-  ln -s ci_validation_histos_${tag}.root ci_validation_histos.root # only relative symlinks work
+  ln -s ci_validation_histos_${tag}.root ci_validation_histos_current.root # only relative symlinks work
   cd $here
 }
 
 
 ####### main body #######
-# check usage and environment
+#llRecoValidationHists.root check usage and environment
 if [ ${#@} -eq 0 ]; then
   echo "usage: update_validation_refs.sh <CI build number>"
   exit 1
@@ -91,7 +91,8 @@ if [ `ups active | grep ifdhc | wc -l` == 0 ]; then
 fi
 
 # figure out if we're doing SBND or ICARUS stuff
-source sbnci_setcodename.sh 
+#source sbnci_setcodename.sh
+source $MRB_INSTALL/sbnci/$MRB_PROJECT_VERSION/slf7.x86_64.e20.prof/bin/sbnci_setcodename.sh 
 echo -e "\nlooking for ${expName}_ci/${1}..."
 
 # look in scratch for a CI build with a matching number to the input and make sure it is unique
@@ -108,24 +109,27 @@ elif [ $nfound -gt 1 ]; then
   exit 1
 fi
 
+indir=$(ifdh ls  $indir*/*/*$1/ recursion_depth==0)
+#echo "looking in $indir"
+
 ## determine validation workflow, code version, and if it's test or production
 ##   look for workflows and subdirectories (if applicable) defined below
 valwfs=( "crt" "pds" "tpcsim" "tpcreco" )
 tpcrecodirs=( "pfpvalidation" "pfpslicevalidation" "recoeff" "showervalidation" )
 valwf=""
 
-if [ `ifdh findMatchingFiles /pnfs/${expName}/scratch/ci_validation/*/*/*$1/validation *.root | wc -l` == 0 ]; then
-  if [ `ifdh findMatchingFiles /pnfs/${expName}/scratch/ci_validation/*/*/*$1/$1/validation *.root | wc -l` == 0 ]; then
-    echo "ERROR: could not locate CI build with number $1"
-    exit 1
-
-  else
-    indir=`ifdh ls  $indir*/*/*$1/$1 recursion_depth==0`
-  fi
-
-else
-  indir=`ifdh ls  $indir*/*/*$1 recursion_depth==0`
-fi
+#if [ `ifdh findMatchingFiles $indir/validation ci_validation_histos.root | wc -l` == 0 ]; then
+#  if [ `ifdh findMatchingFiles $indir/validation/*/ ci_validation_histos.root | wc -l` == 0 ]; then
+#    echo "ERROR: could not locate CI build with number $1"
+#    exit 1
+#
+#  else
+#    indir=`ifdh ls  $indir*/*/*$1/$1 recursion_depth==0`
+#  fi
+#
+#else
+#  indir=`ifdh ls  $indir*/*/*$1 recursion_depth==0`
+#fi
 
 echo -e "\nlooking for reference files in $indir"
 
@@ -167,7 +171,8 @@ if [[ $valwf == "tpcreco" ]]; then
 
 # only tpcreco has subdirectories (for now)
 else
-  refpath=$refpathbase/$valwf/ci_validation_histos.root
+  #refpath=$refpathbase/$valwf/ci_validation_histos.root
+  refpath=$refpathbase/ci_validation_histos.root
   file_exist $refpath
   check_outdir $outdir
   move $refpath $outdir
