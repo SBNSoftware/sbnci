@@ -245,13 +245,11 @@ SetReferenceArgs(){
           CompleteSbnsoftName "$revs" ;;
 
         "-c" | "--current")
-          shift
           versc="current" ;;
         "-r" | "--ref")
           shift
           versr=$1 ;;
         "-t" | "--test")
-          shift
           testmode="--testmode";;
       esac
       shift
