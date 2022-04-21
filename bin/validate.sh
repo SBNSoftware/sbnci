@@ -407,9 +407,9 @@ SetReferenceArgs(){
 
    cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
 
-   echo "$cmd"
+   #echo "$cmd"
 
-   #eval $cmd 1>/dev/null #2>/dev/null
+   eval $cmd 1>/dev/null #2>/dev/null
 
    if [ "$testmode" != "" ]; then 
      echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
