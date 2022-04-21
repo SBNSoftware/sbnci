@@ -8,6 +8,7 @@ versc=""
 versr=""
 revs=""
 branchstr=""
+extrabranchstr=""
 testmode=""
 SBNCI_REF_VERSION="" # this variable needs to be exported to lar_ci (w/matching cfg definition)
 workflow=""
@@ -54,16 +55,75 @@ CheckValidationWorkflow() {
 
 # helper functions
 CompleteSbnsoftName(){
-  for branch in ${revs[@]}
+
+  repolist="/pnfs/${expName}/persistent/ContinuousIntegration/supported_repos.txt"
+
+  for br in ${revs[@]}
   do
-    if [ "$branchstr" == "" ]; then
-      branchstr="SBNSoftware/$branch\""
-    else
-      branchstr="SBNSoftware/$branch $branchstr"
+
+    # parse org/repo@branch elements
+    repo=$(echo $br | cut -d '@' -f 1)
+    branch=$(echo $br | cut -d '@' -f 2)
+    org=$(echo $repo | cut -s -d '/' -f 1)
+    base=$repo
+    if [ "$org" != "" ]; then
+      base=$(echo $repo | cut -d '/' -f 2)
     fi
+
+    if [ "$base" == "${expName}code" ] || [ "$base" == "${expName}util" ] ; then
+      if [ "$branchstr" == "" ]; then
+        branchstr="SBNSoftware/$base@$branch"
+      else
+        branchstr="$branchstr SBNSoftware/$base@$branch"
+      fi
+    fi
+
+    repoinfile=$(cat $repolist | grep $repo) #gets line from repolist in format org/repo
+    if [ "$repoinfile" == "" ]; then
+      echo "ERROR: branch $br is not recognized. Contact the SBN validation team if you need $repo added."
+      return
+    fi
+
+    larste="LARSOFT_SUITE_v"
+    if [ "${base:0:3}" == "lar" ]; then # is it a larsoft repo
+      if [ "${branch:0:${#larste}}" == "$larste" ]; then #if larsuite in branch name
+
+        if [ "$org" == "SBNSoftware" ]; then  # this tag doesn't exist there
+          echo "ERROR: LArSoft-exclusive tag mixed with SBNSoftware"
+          return
+        fi
+
+        org="LArSoft"
+
+      elif [ "$(cat $repolist | grep "SBNSoftware/$base")" != "" ]; then
+
+        org="SBNSoftware"
+
+      else
+
+        echo "ERROR: branch $branch from LArSoft/ should be of the form LARSOFT_SUITE_vAB_CD_EF"
+        return
+
+      fi
+
+    else #if not a larsoft repo, it's an SBN repo
+      org="SBNSoftware"
+
+    fi
+
+    if [ "$extrabranchstr" == "" ]; then
+      extrabranchstr="$org/$base@$branch"
+    else
+      extrabranchstr="$branchstr $org/$base@$branch"
+    fi
+   
   done
-  branchstr="\"${branchstr}"
-  #echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
+
+  branchstr="\"$branchstr\"" #add quotes
+  extrabranchstr="\"$extrabranchstr\""
+
+  echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
+
 }
 
 #  In order to determine the tag associated with the branch(es) being tested,
@@ -298,6 +358,15 @@ SetReferenceArgs(){
  SetReferenceArgs $@
 
  # TODO check that input branch list does not contain two branches from the same repo
+ # set the correct environment var
+ envextra=""
+ if [ "$expname" == "sbnd" ]; then
+   envextra="-e SBNDmodules_extra"
+
+ elif [ "$expname" == "icarus" ]; then
+   envextra="-e ICARUSmodules_extra"
+
+ fi
 
  if [ "$SBNCI_REF_VERSION" != "" ]; then
 
@@ -318,6 +387,15 @@ SetReferenceArgs(){
        extras="${testmode}"
      fi
    fi
+   if [ "$extrabranchstr" != "" ]; then
+     if [ "$extras" != "" ]; then
+       extras="${extras} ${envextra}=${extrabranchstr}"
+     else
+       extras="${envextra}=${extrabranchstr}"
+     fi
+
+   fi
+
    #echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
 
    cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
