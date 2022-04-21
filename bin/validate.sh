@@ -85,8 +85,10 @@ CompleteSbnsoftName(){
     fi
 
     larste="LARSOFT_SUITE_v"
-    if [ "${base:0:3}" == "lar" ]; then # is it a larsoft repo
-      if [ "${branch:0:${#larste}}" == "$larste" ]; then #if larsuite in branch name
+    # if it's a larsoft repo, it's either in LArSoft or a fork in SBNSoftware
+    if [ "${base:0:3}" == "lar" ]; then 
+
+      if [ "${branch:0:$(expr ${#larste})}" == "$larste" ]; then #if larsuite in branch name
 
         if [ "$org" == "SBNSoftware" ]; then  # this tag doesn't exist there
           echo "ERROR: LArSoft-exclusive tag mixed with SBNSoftware"
@@ -111,18 +113,22 @@ CompleteSbnsoftName(){
 
     fi
 
-    if [ "$extrabranchstr" == "" ]; then
-      extrabranchstr="$org/$base@$branch"
-    else
-      extrabranchstr="$branchstr $org/$base@$branch"
-    fi
-   
+
+    if [ "$base" != "${expName}code" ] || [ "$base" != "${expName}util" ] ; then
+      if [ "$extrabranchstr" == "" ]; then
+        extrabranchstr="$org/$base@$branch"
+      else
+        extrabranchstr="$extrabranchstr $org/$base@$branch"
+      fi
+    fi   
+
   done
 
   branchstr="\"$branchstr\"" #add quotes
   extrabranchstr="\"$extrabranchstr\""
 
-  echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
+  #echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
+  #echo -e "\ncomplete branch names for list of extra revisions: ${extrabranchstr}"
 
 }
 
@@ -144,13 +150,13 @@ GetTestTag() {
         break
       fi
     done
+    expbranch=`echo $expbranch | cut -d '/' -f 2` # if org in branch name, cut it out
 
     if [ "$expbranch" == "" ]; then
       echo "ERROR: GetTestTag could not identify the experiment code branch."
       echo "WARNING: your branch(es) might not be tested with the appropriate sim/reco workflow"
 
     else
-      #echo "parsing branch string '$expbranch'"
       exprepo="${expName}code"
       expbranch="${expbranch:$(expr ${#exprepo}+1):${#expbranch}}"
 
@@ -163,7 +169,13 @@ GetTestTag() {
         cd $tmpdir
 
         git clone --branch "$expbranch" "https://github.com/SBNSoftware/${exprepo}.git" 1> /dev/null 2> /dev/null
-        cd ${exprepo}
+        if [ -d "$exprepo" ]; then
+          cd ${exprepo}
+        else
+          echo "ERROR: git clone failed! unable to deduce test version"
+          return
+        fi
+
         testtag=`git describe --tags --abbrev=0`
 
         cd $here
@@ -196,7 +208,7 @@ CheckReferenceVersion() {
   if [ $nmatch == 0 ]; then
     echo "ERROR: reference version specified by user ($1) is not approved."
     echo "Choose from (# reference version # reference alias #)"
-    cat /pnfs/sbnd/persistent/ContinuousIntegration/approved_reference_versions.txt
+    cat /pnfs/${expName}/persistent/ContinuousIntegration/approved_reference_versions.txt
 
   elif [ $nmatch -gt 1 ]; then
     echo "ERROR: multiple matches ($nmatch) found for reference version $1"
@@ -248,13 +260,13 @@ CheckReferenceVersion() {
 
   # convert tags to six-digit integers assuming hot fixes and hot fix-patches
   #  don't confuse things (should only have one instance per production branch/current)
-  testnum="${testtag:1:2}${testtag:4:2}${testtag:7:2}"
-  refnum="${reftag:1:2}${reftag:4:2}${reftag:7:2}"
-  curnum="${currenttag:1:2}${currenttag:4:2}${currenttag:7:2}"
+  expr testnum="${testtag:1:2}${testtag:4:2}${testtag:7:2}" > /dev/null
+  expr refnum="${reftag:1:2}${reftag:4:2}${reftag:7:2}" > /dev/null
+  expr curnum="${currenttag:1:2}${currenttag:4:2}${currenttag:7:2}" > /dev/null
 
   gridwf="cfg/${expName}"
 
-  if [ "$testnum" -gt "$refnum" ]; then
+  if [ $testnum -gt $refnum ]; then
     gridwf="${gridwf}/current"
 
   # use this for more than two options (see TODO above)
@@ -360,10 +372,10 @@ SetReferenceArgs(){
  # TODO check that input branch list does not contain two branches from the same repo
  # set the correct environment var
  envextra=""
- if [ "$expname" == "sbnd" ]; then
+ if [ "$expName" == "sbnd" ]; then
    envextra="-e SBNDmodules_extra"
 
- elif [ "$expname" == "icarus" ]; then
+ elif [ "$expName" == "icarus" ]; then
    envextra="-e ICARUSmodules_extra"
 
  fi
@@ -396,9 +408,10 @@ SetReferenceArgs(){
 
    fi
 
-   #echo "trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
-
    cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
+
+   #echo "$cmd"
+
    eval $cmd 1>/dev/null #2>/dev/null
 
    if [ "$testmode" != "" ]; then 
