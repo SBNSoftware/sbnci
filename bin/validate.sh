@@ -8,7 +8,7 @@ versc=""
 versr=""
 revs=""
 branchstr=""
-extrabranchstr=""
+extrarepostr=""
 testmode=""
 SBNCI_REF_VERSION="" # this variable needs to be exported to lar_ci (w/matching cfg definition)
 workflow=""
@@ -70,14 +70,6 @@ CompleteSbnsoftName(){
       base=$(echo $repo | cut -d '/' -f 2)
     fi
 
-    if [ "$base" == "${expName}code" ] || [ "$base" == "${expName}util" ] ; then
-      if [ "$branchstr" == "" ]; then
-        branchstr="SBNSoftware/$base@$branch"
-      else
-        branchstr="$branchstr SBNSoftware/$base@$branch"
-      fi
-    fi
-
     repoinfile=$(cat $repolist | grep $repo) #gets line from repolist in format org/repo
     if [ "$repoinfile" == "" ]; then
       echo "ERROR: branch $br is not recognized. Contact the SBN validation team if you need $repo added."
@@ -113,22 +105,27 @@ CompleteSbnsoftName(){
 
     fi
 
+    if [ "$branchstr" == "" ]; then
+      branchstr="SBNSoftware/$base@$branch"
+    else
+      branchstr="$branchstr SBNSoftware/$base@$branch"
+    fi
 
     if [ "$base" != "${expName}code" ] || [ "$base" != "${expName}util" ] ; then
-      if [ "$extrabranchstr" == "" ]; then
-        extrabranchstr="$org/$base@$branch"
+      if [ "$extrarepostr" == "" ]; then
+        extrarepostr="$org/$base"
       else
-        extrabranchstr="$extrabranchstr $org/$base@$branch"
+        extrarepostr="$extrarepostr $org/$base"
       fi
     fi   
 
   done
 
   branchstr="\"$branchstr\"" #add quotes
-  extrabranchstr="\"$extrabranchstr\""
+  extrarepostr="\"$extrarepostr\""
 
   #echo -e "\ncomplete branch names for list of revisions: ${branchstr}"
-  #echo -e "\ncomplete branch names for list of extra revisions: ${extrabranchstr}"
+  #echo -e "\ncomplete branch names for list of extra revisions: ${extrarepostr}"
 
 }
 
@@ -399,20 +396,20 @@ SetReferenceArgs(){
        extras="${testmode}"
      fi
    fi
-   if [ "$extrabranchstr" != "" ]; then
+   if [ "$extrarepostr" != "" ]; then
      if [ "$extras" != "" ]; then
-       extras="${extras} ${envextra}=${extrabranchstr}"
+       extras="${extras} ${envextra}=${extrarepostr}"
      else
-       extras="${envextra}=${extrabranchstr}"
+       extras="${envextra}=${extrarepostr}"
      fi
 
    fi
 
    cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras"
 
-   #echo "$cmd"
+   echo "$cmd"
 
-   eval $cmd 1>/dev/null #2>/dev/null
+   #eval $cmd 1>/dev/null #2>/dev/null
 
    if [ "$testmode" != "" ]; then 
      echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
