@@ -111,7 +111,7 @@ CompleteSbnsoftName(){
       branchstr="$branchstr SBNSoftware/$base@$branch"
     fi
 
-    if [ "$base" != "${expName}code" ] || [ "$base" != "${expName}util" ] ; then
+    if [ "$base" != "${expName}code" ] && [ "$base" != "${expName}util" ] ; then
       if [ "$extrarepostr" == "" ]; then
         extrarepostr="$org/$base"
       else
