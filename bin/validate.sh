@@ -408,9 +408,9 @@ SetReferenceArgs(){
    # add larci branch for now until feature merged into develop
    cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras --version feature/vito_extra_mods"
 
-   echo "$cmd"
+   #echo "$cmd"
 
-   #eval $cmd 1>/dev/null #2>/dev/null
+   eval $cmd 1>/dev/null #2>/dev/null
 
    if [ "$testmode" != "" ]; then 
      echo -e "\ntest validation jobs submitted. go to the test dashboard to view your results."
