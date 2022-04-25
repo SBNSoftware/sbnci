@@ -147,15 +147,15 @@ GetTestTag() {
         break
       fi
     done
-    expbranch=`echo $expbranch | cut -d '/' -f 2` # if org in branch name, cut it out
+    exprepo=`echo $expbranch | cut -d '@' -f 1`
+    expbranch=`echo $expbranch | cut -d '@' -f 2`
+    exprepo=`echo $exprepo | cut -d '/' -f 2` # if org in branch name, cut it out
 
     if [ "$expbranch" == "" ]; then
       echo "ERROR: GetTestTag could not identify the experiment code branch."
       echo "WARNING: your branch(es) might not be tested with the appropriate sim/reco workflow"
 
     else
-      exprepo="${expName}code"
-      expbranch="${expbranch:$(expr ${#exprepo}+1):${#expbranch}}"
 
       tmpdir=/${expName}/app/users/ContinuousIntegration/scratch/`date +"%s"`
       if [ -e $tmpdir ]; then
