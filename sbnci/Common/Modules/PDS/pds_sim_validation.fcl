@@ -3,12 +3,9 @@ BEGIN_PROLOG
 common_pdsvalidation_ci: 
 {
    ###Input labels
-   module_type:			"PDSValidation"
+   module_type:			"PDSSimValidation"
    NuGeneratorLabel:		"generator"
    #LArGeantModuleLabel:		["pdfastsim", "pdfastsimout"]
-   OpHitArapucaLabel: "ophitarapuca"
-   OpHitPMTLabel: "ophitpmt"
-   OpFlashLabel: ["opflashtpc0", "opflashtpc1"]
 
    ###PDS mapping
    PDSMapTool: {tool_type: sbndPDMapAlg}
@@ -20,7 +17,7 @@ common_pdsvalidation_ci:
    Verbose: false
    UseReflectedLight: true
    SaveByPDType: true
-   UseArapucas: false
+   #UseArapucas: false
    PECut: 25
    PDSResponseDelay: 0.2 #in us
 }

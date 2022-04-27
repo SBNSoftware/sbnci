@@ -2,14 +2,14 @@
 #include "backtrackerservice.fcl"
 #include "particleinventoryservice.fcl"
 
-#include "pdsvalidation.fcl"
+#include "pds_sim_validation.fcl"
 
 process_name: AnaCI
 
 services:
 {
   @table::sbnd_services
-  TFileService:		    { fileName: "pdsValidationTree.root" }
+  TFileService:		    { fileName: "pdsSimValidationTree.root" }
   ParticleInventoryService: @local::sbnd_particleinventoryservice
   BackTrackerService:  	    @local::sbnd_backtrackerservice
 }
@@ -24,10 +24,10 @@ physics:
 {
   analyzers:
   {
-    pdsvalidation: @local::common_pdsvalidation_ci
+    pdssimvalidation: @local::common_pdssimvalidation_ci
   }
 
-  ana:       [ pdsvalidation ]
+  ana:       [ pdssimvalidation ]
   end_paths: [ ana ]
 
 }

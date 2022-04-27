@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Class:       PDSValidation                                                                             //
+// Class:       PDSRecoValidation                                                                             //
 // Modlue Type: Analyser                                                                                  //
-// File         PDSValidation_module.cc                                                                   //
+// File         PDSRecoValidation_module.cc                                                                   //
 // Author:      Chris Hilgenberg chilgenb@fnal.gov                                                        //
 // Usage:       Simple workflow to validate PDS reconstruction                                            //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,21 +54,21 @@ using namespace std;
 const double DEFAULT_T0VALUE = 1e9;
 
 namespace ana {
-  class PDSValidation;
+  class PDSRecoValidation;
 }
 
-class ana::PDSValidation : public art::EDAnalyzer {
+class ana::PDSRecoValidation : public art::EDAnalyzer {
   public:
 
-    explicit PDSValidation(const fhicl::ParameterSet& pset);
+    explicit PDSRecoValidation(const fhicl::ParameterSet& pset);
     // The compiler-generated destructor is fine for non-base
     // classes without bare pointers or other resource use.
 
     // Plugins should not be copied or assigned.
-    PDSValidation(PDSValidation const&) = delete;
-    PDSValidation(PDSValidation&&) = delete;
-    PDSValidation& operator=(PDSValidation const&) = delete;
-    PDSValidation& operator=(PDSValidation&&) = delete;
+    PDSRecoValidation(PDSRecoValidation const&) = delete;
+    PDSRecoValidation(PDSRecoValidation&&) = delete;
+    PDSRecoValidation& operator=(PDSRecoValidation const&) = delete;
+    PDSRecoValidation& operator=(PDSRecoValidation&&) = delete;
 
     // required abstract methods we need to impliment
     void analyze(const art::Event& evt) override;
@@ -92,7 +92,7 @@ class ana::PDSValidation : public art::EDAnalyzer {
 
     bool fVerbose;
     bool fUseReflectedLight;
-    bool fSaveByPDType;
+    //bool fSaveByPDType;
     bool fUseArapucas;
     double fPECut;
     double fPDSResponseDelay;
@@ -116,14 +116,6 @@ class ana::PDSValidation : public art::EDAnalyzer {
     std::vector<double> fOpHitPE_v;
     double fNuT0;
 
-    //True Variable
-    std::vector<int> fNPhotonsVec;
-    int fNPhotons;
-    int fNPhotonsPMTCoated;
-    int fNPhotonsPMTUncoated;
-    int fNPhotonsXARAPUCAVuv;
-    int fNPhotonsXARAPUCAVis;
-
     //Reco variables
     int fPMTNHit;
     vector<double> fPMTPeakTime;
@@ -145,10 +137,10 @@ class ana::PDSValidation : public art::EDAnalyzer {
     vector<double> fYCenter;
     vector<double> fZCenter;
     std::vector<double> fFlashTimeResolution;
-}; //end def class PDSValidation
+}; //end def class PDSRecoValidation
 
 //////////////////////////////////////////////////////////////////////////////////////
-ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
+ana::PDSRecoValidation::PDSRecoValidation(const fhicl::ParameterSet& pset) :
   EDAnalyzer(pset),
   fNuGeneratorLabel (pset.get<string>("NuGeneratorLabel","generator")),
   //fLArGeantModuleLabel = pset.get<std::vector<std::string>>("LArGeantModuleLabel",{"pdfastsim", "pdfastsimout"});
@@ -160,7 +152,7 @@ ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
   fArapucaMapLabel (pset.get<std::vector<std::string>>("ArapucaMapLabel",{"xarapuca_vuv", "xarapuca_vis"})),
   fVerbose (pset.get<bool>("Verbose",false)),
   fUseReflectedLight (pset.get<bool>("UseReflectedLight",true)),
-  fSaveByPDType (pset.get<bool>("SaveByPDType",true)),
+  //fSaveByPDType (pset.get<bool>("SaveByPDType",true)),
   fUseArapucas (pset.get<bool>("UseArapucas", true)),
   fPECut (pset.get<double>("PECut", 10)),
   fPDSResponseDelay (pset.get<double>("PDSResponseDelay", 0.2)),
@@ -171,9 +163,9 @@ ana::PDSValidation::PDSValidation(const fhicl::ParameterSet& pset) :
 } //end constructor
 
 ///////////////////////////////////////////////////////////////////////////////
-void ana::PDSValidation::beginJob() {
+void ana::PDSRecoValidation::beginJob() {
 
-  fTree = tfs->make<TTree>("pdsTree", "Tree with PDS validation information");
+  fTree = tfs->make<TTree>("pdsRecoTree", "Tree with PDS reco validation information");
 
   fTree->Branch("Run",          &fRun,          "Run/I");
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
@@ -182,14 +174,6 @@ void ana::PDSValidation::beginJob() {
   fTree->Branch("PMTNHit",         &fPMTNHit,         "PMTNHit/I");
   fTree->Branch("ArapucaNHit",         &fArapucaNHit,         "ArapucaNHit/I");
 
-  fTree->Branch("NPhotonsVec", &fNPhotonsVec);
-  fTree->Branch("NPhotons", &fNPhotons, "NPhotons/I");
-  if(fSaveByPDType){
-    fTree->Branch("NPhotonsPMTCoated", &fNPhotonsPMTCoated, "NPhotonsPMTCoated/I");
-    fTree->Branch("NPhotonsPMTUncoated", &fNPhotonsPMTUncoated, "NPhotonsPMTUncoated/I");
-    fTree->Branch("NPhotonsXARAPUCAVuv", &fNPhotonsXARAPUCAVuv, "NPhotonsXARAPUCAVuv/I");
-    fTree->Branch("NPhotonsXARAPUCAVis", &fNPhotonsXARAPUCAVis, "NPhotonsXARAPUCAVis/I");
-  }
 
   fTree->Branch("PMTPeakTime",&fPMTPeakTime);
   fTree->Branch("PMTWidth",&fPMTWidth);
@@ -214,7 +198,7 @@ void ana::PDSValidation::beginJob() {
 }// end beginJob
 
 ////////////////////////////////////////////////////////////////////
-void ana::PDSValidation::analyze(const art::Event& evt) {
+void ana::PDSRecoValidation::analyze(const art::Event& evt) {
   //Reset variables
   ResetTreeVariables();
 
@@ -253,28 +237,28 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
       fSimPhotonsPE_v[fLitePhotons.OpChannel]+=nphotons;
     }
   }
-  for(size_t opch=0; opch<fSimPhotonsPE_v.size(); opch++){
-    if(fSimPhotonsPE_v[opch]>0){
-      fNPhotonsVec.push_back(fSimPhotonsPE_v[opch]);
-      fNPhotons+=fSimPhotonsPE_v[opch];
-      if(fSaveByPDType){
-        std::string pd_type=fPDSMapPtr->pdType(opch);
-        if(pd_type=="pmt_coated") {
-          fNPhotonsPMTCoated+=fSimPhotonsPE_v[opch];
-        }
-        else if(pd_type=="pmt_uncoated"){
-          fNPhotonsPMTUncoated+=fSimPhotonsPE_v[opch];
-        }
-        else if(pd_type=="xarapuca_vuv"){
-          fNPhotonsXARAPUCAVuv+=fSimPhotonsPE_v[opch];
-        }
-        else if(pd_type=="xarapuca_vis"){
-          fNPhotonsXARAPUCAVis+=fSimPhotonsPE_v[opch];
-        }
-      }
-    }
-  }
-  if(fVerbose) std::cout<<"NPH: "<<fNPhotonsPMTCoated<<" "<<fNPhotonsPMTUncoated<<" "<<fNPhotonsXARAPUCAVuv<<" "<<fNPhotonsXARAPUCAVis<<"\n";
+  //for(size_t opch=0; opch<fSimPhotonsPE_v.size(); opch++){
+  //  if(fSimPhotonsPE_v[opch]>0){
+  //    fNPhotonsVec.push_back(fSimPhotonsPE_v[opch]);
+  //    fNPhotons+=fSimPhotonsPE_v[opch];
+  //    if(fSaveByPDType){
+  //      std::string pd_type=fPDSMapPtr->pdType(opch);
+  //      if(pd_type=="pmt_coated") {
+  //        fNPhotonsPMTCoated+=fSimPhotonsPE_v[opch];
+  //      }
+  //      else if(pd_type=="pmt_uncoated"){
+  //        fNPhotonsPMTUncoated+=fSimPhotonsPE_v[opch];
+  //      }
+  //      else if(pd_type=="xarapuca_vuv"){
+  //        fNPhotonsXARAPUCAVuv+=fSimPhotonsPE_v[opch];
+  //      }
+  //      else if(pd_type=="xarapuca_vis"){
+  //        fNPhotonsXARAPUCAVis+=fSimPhotonsPE_v[opch];
+  //      }
+  //    }
+  //  }
+  //}
+  //if(fVerbose) std::cout<<"NPH: "<<fNPhotonsPMTCoated<<" "<<fNPhotonsPMTUncoated<<" "<<fNPhotonsXARAPUCAVuv<<" "<<fNPhotonsXARAPUCAVis<<"\n";
 
 
   //Get truth info
@@ -365,24 +349,24 @@ void ana::PDSValidation::analyze(const art::Event& evt) {
 }// end analyze
 
 //////////////////////////////////////////////////////////////////////////
-void ana::PDSValidation::endJob(){
+void ana::PDSRecoValidation::endJob(){
   cout << "Number of events processed: " <<  numevents  << endl;
 }
 
 
-void ana::PDSValidation::ResetTreeVariables() {
+void ana::PDSRecoValidation::ResetTreeVariables() {
   std::fill(fSimPhotonsPE_v.begin(), fSimPhotonsPE_v.end(), 0);
   std::fill(fOpHitPE_v.begin(), fOpHitPE_v.end(), 0);
   fNuT0=DEFAULT_T0VALUE;
 
-  fNPhotons=0;
-  fNPhotonsVec.clear();
-  if(fSaveByPDType){
-    fNPhotonsPMTCoated=0;
-    fNPhotonsPMTUncoated=0;
-    fNPhotonsXARAPUCAVuv=0;
-    fNPhotonsXARAPUCAVis=0;
-  }
+  //fNPhotons=0;
+  //fNPhotonsVec.clear();
+  //if(fSaveByPDType){
+  //  fNPhotonsPMTCoated=0;
+  //  fNPhotonsPMTUncoated=0;
+  //  fNPhotonsXARAPUCAVuv=0;
+  //  fNPhotonsXARAPUCAVis=0;
+  //}
 
   fPMTPeakTime.clear();
   fPMTWidth.clear();
@@ -406,7 +390,7 @@ void ana::PDSValidation::ResetTreeVariables() {
   fFlashTimeResolution.clear();
 }
 
-void ana::PDSValidation::FillPERecoveringResolution(){
+void ana::PDSRecoValidation::FillPERecoveringResolution(){
   //double NPhotonsPMT=fNPhotonsPMTCoated+fNPhotonsPMTUncoated;
   //fPMTPEResolution=(std::accumulate( std::begin(fPMTPE), std::end(fPMTPE), 0 )-NPhotonsPMT)/NPhotonsPMT;
   //double NPhotonsArapuca=fNPhotonsXARAPUCAVuv+fNPhotonsXARAPUCAVuv;
@@ -426,4 +410,4 @@ void ana::PDSValidation::FillPERecoveringResolution(){
 
 
 
-DEFINE_ART_MODULE(ana::PDSValidation)
+DEFINE_ART_MODULE(ana::PDSRecoValidation)
