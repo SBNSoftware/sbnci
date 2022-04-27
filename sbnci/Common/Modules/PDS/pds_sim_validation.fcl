@@ -1,6 +1,6 @@
 BEGIN_PROLOG
 
-common_pdsvalidation_ci: 
+common_pdssimvalidation_ci: 
 {
    ###Input labels
    module_type:			"PDSSimValidation"
