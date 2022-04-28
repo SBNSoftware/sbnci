@@ -36,12 +36,12 @@ void sbnciplot_pdssimvalidation_sbnd(TString inputFile)
 
   int nBinsPE=25;
   int nBinsPEOpCh=60;
-  PlotHists(inFile, outFile, "pdssimvalidation/pdsTree", "NPhotonsVec","", "#SimPhotons (per OpCh)", histYaxis, nBinsPEOpCh, 0, 10000, "NPhotonsVec", "", dirName);
-  PlotHists(inFile, outFile, "pdssimvalidation/pdsTree", "NPhotons","", "#SimPhotons", histYaxis, nBinsPE, 0, 60000, "NPhotons", "", dirName);
-  PlotHists(inFile, outFile, "pdssimvalidation/pdsTree", "NPhotonsPMTCoated","", "#SimPhotons_{CoatedPMTs}", histYaxis, nBinsPE, 0, 40000, "NPhotonsPMTCoated", "", dirName);
-  PlotHists(inFile, outFile, "pdssimvalidation/pdsTree", "NPhotonsPMTUncoated","", "#SimPhotons_{UncoatedPMTs}", histYaxis, nBinsPE, 0, 5000, "NPhotonsPMTUncoated", "", dirName);
-  PlotHists(inFile, outFile, "pdssimvalidation/pdsTree", "NPhotonsXARAPUCAVuv","", "#SimPhotons_{XARAPUCAVuv}", histYaxis, nBinsPE, 0, 5000, "NPhotonsXARAPUCAVuv", "", dirName);
-  PlotHists(inFile, outFile, "pdssimvalidation/pdsTree", "NPhotonsXARAPUCAVis","", "#SimPhotons_{XARAPUCAVis}", histYaxis, nBinsPE, 0, 5000, "NPhotonsXARAPUCAVis", "", dirName);
+  PlotHists(inFile, outFile, "pdssimvalidation/pdsSimTree", "NPhotonsVec","", "#SimPhotons (per OpCh)", histYaxis, nBinsPEOpCh, 0, 10000, "NPhotonsVec", "", dirName);
+  PlotHists(inFile, outFile, "pdssimvalidation/pdsSimTree", "NPhotons","", "#SimPhotons", histYaxis, nBinsPE, 0, 60000, "NPhotons", "", dirName);
+  PlotHists(inFile, outFile, "pdssimvalidation/pdsSimTree", "NPhotonsPMTCoated","", "#SimPhotons_{CoatedPMTs}", histYaxis, nBinsPE, 0, 40000, "NPhotonsPMTCoated", "", dirName);
+  PlotHists(inFile, outFile, "pdssimvalidation/pdsSimTree", "NPhotonsPMTUncoated","", "#SimPhotons_{UncoatedPMTs}", histYaxis, nBinsPE, 0, 5000, "NPhotonsPMTUncoated", "", dirName);
+  PlotHists(inFile, outFile, "pdssimvalidation/pdsSimTree", "NPhotonsXARAPUCAVuv","", "#SimPhotons_{XARAPUCAVuv}", histYaxis, nBinsPE, 0, 5000, "NPhotonsXARAPUCAVuv", "", dirName);
+  PlotHists(inFile, outFile, "pdssimvalidation/pdsSimTree", "NPhotonsXARAPUCAVis","", "#SimPhotons_{XARAPUCAVis}", histYaxis, nBinsPE, 0, 5000, "NPhotonsXARAPUCAVis", "", dirName);
 
 }
 
