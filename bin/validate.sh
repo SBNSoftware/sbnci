@@ -406,7 +406,7 @@ SetReferenceArgs(){
    fi
 
    # add larci branch for now until feature merged into develop
-   cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras --version feature/vito_extra_mods"
+   cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras --version feature/chilgenb_sbnciSaveGen"
 
    #echo "$cmd"
 
