@@ -15,7 +15,7 @@
 
 cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
 
-project(sbnci VERSION 09.46.02 LANGUAGES CXX)
+project(sbnci VERSION 09.48.01 LANGUAGES CXX)
 
 message(STATUS "\n")
 message(STATUS "=================================   ${PROJECT_NAME}   =================================")
