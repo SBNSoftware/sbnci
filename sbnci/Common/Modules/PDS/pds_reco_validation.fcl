@@ -3,7 +3,7 @@ BEGIN_PROLOG
 common_pdsrecovalidation_ci: 
 {
    ###Input labels
-   module_type:			"PDSValidation"
+   module_type:			"PDSRecoValidation"
    NuGeneratorLabel:		"generator"
    #LArGeantModuleLabel:		["pdfastsim", "pdfastsimout"]
    OpHitArapucaLabel: "ophitarapuca"
