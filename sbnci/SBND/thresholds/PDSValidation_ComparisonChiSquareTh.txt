@@ -1,0 +1,30 @@
+# this threshold file uses # as field separator
+# the format is
+# parameter#warning_threshold#failure_threshold
+# the first # separator needs to be appended to the parameter without any space
+
+
+# ================================
+# Thresholds for plots produced by
+# sbnci_pdsvalidation.C
+# ================================
+pdssimvalidation/NPhotonsVec#0.25#0.5
+pdssimvalidation/NPhotons#0.25#0.5
+pdssimvalidation/NPhotonsPMTCoated#0.25#0.5
+pdssimvalidation/NPhotonsPMTUncoated#0.25#0.5
+pdssimvalidation/NPhotonsXARAPUCAVuv#0.25#0.5
+pdssimvalidation/NPhotonsXARAPUCAVis#0.25#0.5
+pdsrecovalidation/ZWidth#0.25#0.5
+pdsrecovalidation/NFlash#0.25#0.5
+pdsrecovalidation/PMTNHit#0.25#0.5
+pdsrecovalidation/ArapucaNHit#0.25#0.5
+pdsrecovalidation/PMTPeakTime#0.25#0.5
+pdsrecovalidation/PMTWidth#0.25#0.5
+pdsrecovalidation/PMTAmplitude#0.25#0.5
+pdsrecovalidation/PMTPE#0.25#0.5
+pdsrecovalidation/PMTPEResolutionVec#0.25#0.5
+pdsrecovalidation/TotalFlashPE#0.25#0.5
+pdsrecovalidation/FlashTime#0.25#0.5
+pdsrecovalidation/YCenter#0.25#0.5
+pdsrecovalidation/ZCenter#0.25#0.5
+pdsrecovalidation/FlashTimeResolution#0.25#0.5
