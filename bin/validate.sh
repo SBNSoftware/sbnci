@@ -45,11 +45,15 @@ CheckValidationWorkflow() {
       workflow="tpcsim" ;;
     "pds")
       workflow="pds" ;;
+    "pdssim")
+      workflow="pds_sim" ;;
+    "pdsreco")
+      workflow="pds_reco" ;;
   esac
 
   if [ "$workflow" == "" ]; then
     echo "ERROR: validation workflow '$1' is not recognized. Choose from the following options."
-    echo "  'crt' , 'tpcreco', 'tpcsim' or 'pds'"
+    echo "  'crt' , 'tpcreco', 'tpcsim', 'pdssim' or 'pdsreco'"
   fi
 }
 
@@ -73,7 +77,8 @@ CompleteSbnsoftName(){
     repoinfile=$(cat $repolist | grep $repo) #gets line from repolist in format org/repo
     if [ "$repoinfile" == "" ]; then
       echo "ERROR: branch $br is not recognized. Contact the SBN validation team if you need $repo added."
-      return
+      #return
+      exit
     fi
 
     larste="LARSOFT_SUITE_v"
@@ -406,7 +411,7 @@ SetReferenceArgs(){
    fi
 
    # add larci branch for now until feature merged into develop
-   cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras --version feature/chilgenb_sbnciSaveGen"
+   cmd="trigger --build-delay 0 --jobname ${expName}_ci --workflow $expWF --gridwf-cfg $gridwf --revisions $branchstr -e SBNCI_REF_VERSION=$SBNCI_REF_VERSION $extras --version feature/chilgenb_sbnciSaveGen --ci-tests single_gen_quick_test_sbndcode"
 
    #echo "$cmd"
 
