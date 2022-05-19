@@ -9,6 +9,8 @@ art_make(MODULE_LIBRARIES
     ${MF_MESSAGELOGGER}
     ${ART_ROOT_IO_TFILE_SUPPORT}
     sbnobj_Common_CRT
+    nusimdata::SimulationBase
+    sbnci_Common_Modules_MCRecoUtils
 )
 
 install_headers()

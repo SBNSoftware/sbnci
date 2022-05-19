@@ -6,6 +6,7 @@ simple_plugin(PlotdEdx "module"
                            lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
                            sbndcode_Utilities_SignalShapingServiceSBND_service
                            nurandom_RandomUtils_NuRandomService_service
+                           nusimdata::SimulationBase
                            ${ART_FRAMEWORK_CORE}
                            ${ART_FRAMEWORK_PRINCIPAL}
                            ${ART_ROOT_IO_TFILESERVICE_SERVICE}

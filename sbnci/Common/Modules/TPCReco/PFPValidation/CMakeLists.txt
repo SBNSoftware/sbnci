@@ -3,6 +3,7 @@ art_make(MODULE_LIBRARIES
           lardataobj_RecoBase
           larsim_Utils
 	  lardataalg_DetectorInfo
+          nusimdata::SimulationBase
           ${ART_FRAMEWORK_SERVICES_REGISTRY}
           ROOT::Core
           ROOT::Physics

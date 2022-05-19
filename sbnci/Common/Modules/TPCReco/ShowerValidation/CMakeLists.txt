@@ -3,6 +3,7 @@ art_make(MODULE_LIBRARIES
     larreco_RecoAlg
     sbnci_Common_Modules_MCRecoUtils
           lardataobj_RecoBase
+    nusimdata::SimulationBase
           ${ART_FRAMEWORK_SERVICES_REGISTRY}
     ROOT::Core
           ROOT::Physics

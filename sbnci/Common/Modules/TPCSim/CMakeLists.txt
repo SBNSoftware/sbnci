@@ -8,6 +8,8 @@ art_make(MODULE_LIBRARIES
           ${ART_ROOT_IO_TFILESERVICE_SERVICE}
           ${MF_MESSAGELOGGER}
           ${ART_ROOT_IO_TFILE_SUPPORT}
+          nusimdata::SimulationBase
+          sbnci_Common_Modules_MCRecoUtils
         )
 
 install_headers()

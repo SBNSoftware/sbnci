@@ -16,7 +16,7 @@ art_make(MODULE_LIBRARIES
           ${ART_ROOT_IO_TFILESERVICE_SERVICE}
           ${MF_MESSAGELOGGER}
           ${ART_ROOT_IO_TFILE_SUPPORT}
-
+          nusimdata::SimulationBase
         )
 
 install_headers()
