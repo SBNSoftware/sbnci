@@ -5,7 +5,6 @@ function get_proxy() {
   [ ${expName} ] || source sbnci_setcodename.sh
 
   echo "getting ${expName} analysis proxy"
-  #cigetcert -s 'fifebatch.fnal.gov'
   kx509 --minhours 24 #check cert has enough time left
 
   voms-proxy-info -exists -vo -valid 24:00 > /dev/null || 
@@ -20,5 +19,6 @@ function warn_proxy() {
 
 function check_proxy() {
   echo "checking proxy"
-  voms-proxy-info -exists -vo -valid 24:00 || warn_proxy
+  voms-proxy-info -exists -vo -valid 24:00 || warn_proxy # check if we already have a proxy and it will last long enough
+  cigetcert -s fifebatch.fnal.gov # check we have a valid proxy on myproxy server
 }
