@@ -28,8 +28,8 @@ defaultqual e20
 # Add the dependent product and version
 # NOTE: sbnci RM's job to keep these current with latest integration release
 product          version
-sbndcode         v09_58_01 - optional # these are optional in the sense that at least one is required
-icaruscode       v09_58_00 - optional # but not both, though both is supported
+sbndcode         v09_59_00 - optional # these are optional in the sense that at least one is required
+icaruscode       v09_59_00 - optional # but not both, though both is supported
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
