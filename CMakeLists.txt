@@ -31,7 +31,7 @@ message(STATUS "")
 
 set(CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules
 		      $ENV{CETBUILDTOOLS_DIR}/Modules
-		      ${CMAKE_MODULE_PATH})
+		      ${CMAKE_MODULE_PATH}) ### MIGRATE-ACTION-RECOMMENDED (migrate-3.20.00) - prefer find_package() to find external CMake modules
 
 include(CetCMakeEnv)
 cet_cmake_env()
