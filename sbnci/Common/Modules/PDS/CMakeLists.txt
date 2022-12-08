@@ -1,31 +1,22 @@
 
-art_make(
-  EXCLUDE
-    "LightenSimPhotons_module.cc"
+set(
+  #EXCLUDE
+  #  "LightenSimPhotons_module.cc"
   MODULE_LIBRARIES
-    larreco_RecoAlg
+    larreco::RecoAlg
+    larsim::Simulation
+    lardataobj::Simulation
     sbnci_Common_Modules_MCRecoUtils
-    lardataobj_RecoBase
-    ${ART_FRAMEWORK_SERVICES_REGISTRY}
+    lardataobj::RecoBase
     ROOT::Core
     ROOT::Physics
-    ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-    ${MF_MESSAGELOGGER}
-    ${ART_ROOT_IO_TFILE_SUPPORT}
+    art::Framework_Services_Registry
+    art_root_io::TFileService_service
+    art_root_io::tfile_support ROOT::Core
+    messagefacility::MF_MessageLogger
 )
 
-simple_plugin(LightenSimPhotons module
-        larreco_RecoAlg
-        sbnci_Common_Modules_MCRecoUtils
-        lardataobj_RecoBase
-        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-        ROOT::Core
-        ROOT::Physics
-        ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-        ${MF_MESSAGELOGGER}
-        ${ART_ROOT_IO_TFILE_SUPPORT}
-)
+cet_build_plugin(LightenSimPhotons art::Module SOURCE LightenSimPhotons_module.cc LIBRARIES ${MODULE_LIBRARIES})
 
-install_headers()
 install_fhicl()
 install_source()

@@ -1,17 +1,18 @@
 
-art_make(MODULE_LIBRARIES
-    larreco_RecoAlg
+set(MODULE_LIBRARIES
+    larreco::RecoAlg
     sbnci_Common_Modules_MCRecoUtils
-          lardataobj_RecoBase
+    lardataobj::RecoBase
     nusimdata::SimulationBase
-          ${ART_FRAMEWORK_SERVICES_REGISTRY}
     ROOT::Core
-          ROOT::Physics
-          ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-          ${MF_MESSAGELOGGER}
-    ${ART_ROOT_IO_TFILE_SUPPORT}
-        )
+    ROOT::Physics
+    messagefacility::MF_MessageLogger
+    art::Framework_Services_Registry
+    art_root_io::tfile_support
+    art_root_io::TFileService_service
+)
 
-install_headers()
+cet_build_plugin(ShowerValidation art::Module SOURCE ShowerValidation_module.cc LIBRARIES ${MODULE_LIBRARIES})
+
 install_fhicl()
 install_source()

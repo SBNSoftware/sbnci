@@ -28,13 +28,14 @@ defaultqual e20
 # Add the dependent product and version
 # NOTE: sbnci RM's job to keep these current with latest integration release
 product          version
-sbndcode         v09_59_00 - optional # these are optional in the sense that at least one is required
-icaruscode       v09_59_00 - optional # but not both, though both is supported
+sbndcode         v09_63_00 - optional # these are optional in the sense that at least one is required
+icaruscode       v09_63_00 - optional # but not both, though both is supported
 
 # list products required ONLY for the build
 # any products here must NOT have qualifiers
 
-cetbuildtools v8_18_01 - only_for_build
+#cetbuildtools v8_18_01 - only_for_build
+cetmodules v3_20_00 - only_for_build
 end_product_list
 
 # We now define allowed qualifiers and the corresponding qualifiers for the dependencies.

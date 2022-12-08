@@ -1,17 +1,18 @@
 
-art_make(MODULE_LIBRARIES
-          larreco_RecoAlg
-          lardataobj_RecoBase
-          ${ART_FRAMEWORK_SERVICES_REGISTRY}
+set(MODULE_LIBRARIES
+          larreco::RecoAlg
+          lardataobj::RecoBase
+          art::Framework_Services_Registry
           ROOT::Core
           ROOT::Physics
-          ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-          ${MF_MESSAGELOGGER}
-          ${ART_ROOT_IO_TFILE_SUPPORT}
+          art_root_io::TFileService_service
+          messagefacility::MF_MessageLogger
+          art_root_io::tfile_support
           nusimdata::SimulationBase
           sbnci_Common_Modules_MCRecoUtils
         )
 
-install_headers()
+cet_build_plugin(TPCSimValidation art::Module SOURCE TPCSimValidation_module.cc LIBRARIES ${MODULE_LIBRARIES} )
+
 install_fhicl()
 install_source()

@@ -13,19 +13,21 @@
 # ======================================================================
 
 
-cmake_minimum_required (VERSION 3.19 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
 
-project(sbnci VERSION 09.58.01 LANGUAGES CXX)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 09.63.00)
+find_package(cetmodules REQUIRED)
+project(sbnci LANGUAGES CXX)
 
 message(STATUS "\n")
 message(STATUS "=================================   ${PROJECT_NAME}   =================================")
 message(STATUS "")
 
 # cetbuildtools contains our cmake modules
-SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
-IF (NOT CETBUILDTOOLS_VERSION)
-    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
-ENDIF()
+#SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
+#IF (NOT CETBUILDTOOLS_VERSION)
+#    MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
+#ENDIF()
 
 set(CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules
 		      $ENV{CETBUILDTOOLS_DIR}/Modules
@@ -46,7 +48,7 @@ cet_set_compiler_flags(DIAGS CAUTIOUS
 )
 ##add_definitions(-DGENIE_PRE_R3)
 
-cet_report_compiler_flags()
+#cet_report_compiler_flags()
 
 # save the repository tag
 unset(GIT_REPOSITORY_TAG)
@@ -70,41 +72,39 @@ elseif(ICARUS AND SBND)
 endif()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( larpandora )
-find_ups_product( larsim )
-find_ups_product( lardata )
-find_ups_product( lardataobj )
-find_ups_product( lardataalg )
-find_ups_product( larevt )
-find_ups_product( larcore  )
-find_ups_product( larcoreobj )
-find_ups_product( nutools  )
-find_ups_product( nug4 )
-find_ups_product( nugen )
-find_ups_product( nuevdb )
-find_ups_product( nurandom )
-find_ups_product( art )
-find_ups_product( art_root_io )
-find_ups_product( cetbuildtools )
-find_ups_product( postgresql )
-find_ups_product( hep_concurrency )
-find_ups_product( pandora )
-find_ups_product( eigen )
-find_ups_product( larreco )
-find_ups_product( sbnobj )
-find_ups_product( sbncode )
-# commenting this out suppresses CMake warning, "find_ups_product(): 
-# REQUIRED UPS product lar_ci has not been set up with WANT_UPS == TRUE!
-# find_ups_product( lar_ci ) #commenting this out suppresses CMake warning
-find_ups_boost()
-find_ups_root()
+find_package( art REQUIRED )
+find_package( art_root_io REQUIRED )
+find_package( larpandora REQUIRED )
+find_package( larsim REQUIRED )
+find_package( lardata REQUIRED )
+find_package( lardataobj REQUIRED )
+find_package( lardataalg REQUIRED )
+find_package( larevt REQUIRED )
+find_package( larcore REQUIRED  )
+find_package( larcoreobj REQUIRED )
+find_package( nutools REQUIRED )
+find_package( nug4 REQUIRED )
+find_package( nugen REQUIRED )
+find_package( nuevdb REQUIRED )
+find_package( nurandom REQUIRED )
+find_package( sbnanaobj REQUIRED )
+find_package( sbnobj REQUIRED )
+find_package( sbncode REQUIRED )
+#find_package( cetbuildtools )
+find_package( PostgreSQL REQUIRED )
+find_package( hep_concurrency REQUIRED )
+#find_package( Pandora REQUIRED )
+find_package( Eigen3 REQUIRED )
+find_package( larreco REQUIRED )
+find_package( Boost REQUIRED )
+find_package( ROOT REQUIRED )
 
 if(SBND)
   message(STATUS "building sbnci with sbndcode support")
-  find_ups_product(sbndcode)
+  find_package( sbndcode REQUIRED )
 elseif(ICARUS)
   message(STATUS "building sbnci with icaruscode support")
-  find_ups_product(icaruscode)
+  find_package( icaruscode REQUIRED )
 endif()
 
 # macros for dictionary and simple_plugin
@@ -118,11 +118,11 @@ add_subdirectory(sbnci)
 # subdirectory for test code
 ##add_subdirectory(test)
 # ups - table and config files
-add_subdirectory(ups)
+#add_subdirectory(ups)
 # fcl - contains job level fcl files (useful for the MCC)
 ##add_subdirectory(fcl)
 # subdirectory for scripts
 add_subdirectory(bin)
 
 # packaging utility
-include(UseCPack)
+cet_cmake_config()

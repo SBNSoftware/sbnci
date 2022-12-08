@@ -1,30 +1,33 @@
-simple_plugin(NoiseTest "module"
-                           larcore_Geometry_Geometry_service
-                           lardataobj_Simulation
-                           lardata_Utilities
-                           lardataobj_RawData
-                           lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
-                           sbndcode_Utilities_SignalShapingServiceSBND_service
-                           nusimdata::SimulationBase
-                           nurandom_RandomUtils_NuRandomService_service
-                           ${ART_FRAMEWORK_CORE}
-                           ${ART_FRAMEWORK_PRINCIPAL}
-                           ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                           ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                           canvas
-                           ${MF_MESSAGELOGGER}
-                           
-                           ${FHICLCPP}
-                           cetlib cetlib_except
-                           ${CLHEP}
-                           ${ROOT_BASIC_LIB_LIST}
-			   
-			   ${ART_ROOT_IO_TFILE_SUPPORT}	
-			   ${ART_FRAMEWORK_SERVICES_REGISTRY}
-			   larcorealg_Geometry			   
+#simple_plugin(NoiseTest "module"
+set(  MODULE_LIBRARIES
+         larcore::Geometry_Geometry_service
+         lardataobj::Simulation
+         lardata::Utilities
+         lardataobj::RawData
+         lardata::DetectorInfoServices_DetectorClocksServiceStandard_service
+         sbndcode_Utilities_SignalShapingServiceSBND_service
+         nusimdata::SimulationBase
+         nurandom::RandomUtils_NuRandomService_service
+         art_root_io::TFileService_service
+         art::Framework_Services_Optional_RandomNumberGenerator_service
+         art::Framework_Core
+         art::Framework_Principal
+         art::Framework_Services_Registry
+         canvas::canvas
+         messagefacility::MF_MessageLogger
+         fhiclcpp::fhiclcpp
+         cetlib::cetlib
+         cetlib_except::cetlib_except
+         CLHEP::CLHEP
+         ROOT::Core
+         art_root_io::tfile_support
+         art::Framework_Services_Registry
+         larcorealg::Geometry			  
+         larsim::MCCheater_BackTrackerService_service 
 )
 
-install_headers()
+cet_build_plugin(NoiseTest art::Module SOURCE NoiseTest_module.cc LIBRARIES ${MODULE_LIBRARIES})
+
 install_fhicl()
 install_source()
 

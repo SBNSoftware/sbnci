@@ -1,18 +1,18 @@
-art_make(MODULE_LIBRARIES
-	larsim_Utils
-        nusimdata_SimulationBase
-	lardataobj_RecoBase
+set(MODULE_LIBRARIES
+	larsim::Utils
+        nusimdata::SimulationBase
+	lardataobj::RecoBase
 	sbnci_Common_Modules_MCRecoUtils
         nusimdata::SimulationBase
-        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-        ${ART_ROOT_IO_TFILE_SUPPORT} 
-        ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-
-        ${ROOT_BASIC_LIB_LIST}
-
+        art::Framework_Services_Registry
+        art_root_io::tfile_support
+        art_root_io::TFileService_service
+        ROOT::Core
+        ROOT::Tree
 	sbndcode_GeoWrappers
 	)
 
-install_headers()
+cet_build_plugin(RecoEff art::Module SOURCE RecoEff_module.cc LIBRARIES ${MODULE_LIBRARIES})
+
 install_fhicl()
 install_source()
