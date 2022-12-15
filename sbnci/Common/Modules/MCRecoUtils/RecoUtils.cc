@@ -99,10 +99,9 @@ int RecoUtils::TrueParticleIDFromTotalRecoHits(const detinfo::DetectorClocksData
 
 
 bool RecoUtils::IsInsideTPC(TVector3 position, double distance_buffer){
-  double vtx[3] = {position.X(), position.Y(), position.Z()};
   bool inside = false;
   art::ServiceHandle<geo::Geometry> geom;
-  geo::TPCID idtpc = geom->FindTPCAtPosition(vtx);
+  geo::TPCID idtpc = geom->FindTPCAtPosition(geo::vect::toPoint(position));
 
   if (geom->HasTPC(idtpc))
   {
@@ -111,19 +110,14 @@ bool RecoUtils::IsInsideTPC(TVector3 position, double distance_buffer){
     double miny = tpcgeo.MinY(); double maxy = tpcgeo.MaxY();
     double minz = tpcgeo.MinZ(); double maxz = tpcgeo.MaxZ();
 
-    for (size_t c = 0; c < geom->Ncryostats(); c++)
+    for (auto const& tpcg : geom->Iterate<geo::TPCGeo>())
     {
-      const geo::CryostatGeo& cryostat = geom->Cryostat(c);
-      for (size_t t = 0; t < cryostat.NTPC(); t++)
-      {
-        const geo::TPCGeo& tpcg = cryostat.TPC(t);
-        if (tpcg.MinX() < minx) minx = tpcg.MinX();
-        if (tpcg.MaxX() > maxx) maxx = tpcg.MaxX();
-        if (tpcg.MinY() < miny) miny = tpcg.MinY();
-        if (tpcg.MaxY() > maxy) maxy = tpcg.MaxY();
-        if (tpcg.MinZ() < minz) minz = tpcg.MinZ();
-        if (tpcg.MaxZ() > maxz) maxz = tpcg.MaxZ();
-      }
+      if (tpcg.MinX() < minx) minx = tpcg.MinX();
+      if (tpcg.MaxX() > maxx) maxx = tpcg.MaxX();
+      if (tpcg.MinY() < miny) miny = tpcg.MinY();
+      if (tpcg.MaxY() > maxy) maxy = tpcg.MaxY();
+      if (tpcg.MinZ() < minz) minz = tpcg.MinZ();
+      if (tpcg.MaxZ() > maxz) maxz = tpcg.MaxZ();
     }
 
     //x
@@ -339,7 +333,7 @@ std::map<geo::PlaneID,int> RecoUtils::NumberofHitsThatContainEnergyDepositedByTr
 
   //Loop over the planes and create the initial PlaneMap
   std::map<geo::PlaneID,int> HitPlaneMap;
-  for(geo::PlaneID plane_id: geom->IteratePlaneIDs()){HitPlaneMap[plane_id] = 0;}
+  for(geo::PlaneID plane_id: geom->Iterate<geo::PlaneID>()){HitPlaneMap[plane_id] = 0;}
 
   //Loop over the hits and find the IDE
   for (std::vector<art::Ptr<recob::Hit> >::const_iterator hitIt = hits.begin(); hitIt != hits.end(); ++hitIt) {
@@ -364,7 +358,7 @@ std::map<geo::PlaneID,int> RecoUtils::NumberofHitsThatContainEnergyDepositedByTr
   //Loop over the planes and create the initial PlaneMap
   art::ServiceHandle<geo::Geometry> geom;
   std::map<geo::PlaneID,int> HitPlaneMap;
-  for(geo::PlaneID plane_id: geom->IteratePlaneIDs()){HitPlaneMap[plane_id] = 0;}
+  for(geo::PlaneID plane_id: geom->Iterate<geo::PlaneID>()){HitPlaneMap[plane_id] = 0;}
 
   //Loop over the hits and find the IDE
   for (std::vector<art::Ptr<recob::Hit> >::const_iterator hitIt = hits.begin(); hitIt != hits.end(); ++hitIt) {
@@ -394,7 +388,7 @@ std::map<geo::PlaneID,int> RecoUtils::NumberofMCWiresHit(int TrackID, const std:
 
   int breaking_int = 0;
 
-  for(geo::PlaneID plane_id: geom->IteratePlaneIDs()){WirePlaneMap[plane_id] = 0;}
+  for(geo::PlaneID plane_id: geom->Iterate<geo::PlaneID>()){WirePlaneMap[plane_id] = 0;}
 
   // Loop over SimChannel
   for(size_t simch_index=0; simch_index<simchannels.size(); ++simch_index) {
@@ -618,5 +612,3 @@ float RecoUtils::TotalEnergyDepinHitsFromTrack(const detinfo::DetectorClocksData
 
   return DepEnergy;
 }
-
-
