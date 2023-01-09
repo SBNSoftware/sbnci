@@ -5,7 +5,7 @@ set(  MODULE_LIBRARIES
          lardata::Utilities
          lardataobj::RawData
          lardata::DetectorInfoServices_DetectorClocksServiceStandard_service
-         sbndcode_Utilities_SignalShapingServiceSBND_service
+         sbndcode::Utilities_SignalShapingServiceSBND_service
          nusimdata::SimulationBase
          nurandom::RandomUtils_NuRandomService_service
          art_root_io::TFileService_service
@@ -22,8 +22,8 @@ set(  MODULE_LIBRARIES
          ROOT::Core
          art_root_io::tfile_support
          art::Framework_Services_Registry
-         larcorealg::Geometry			  
-         larsim::MCCheater_BackTrackerService_service 
+         larcorealg::Geometry
+         larsim::MCCheater_BackTrackerService_service
 )
 
 cet_build_plugin(NoiseTest art::Module SOURCE NoiseTest_module.cc LIBRARIES ${MODULE_LIBRARIES})

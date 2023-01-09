@@ -1,7 +1,7 @@
 
 set(MODULE_LIBRARIES
     larreco::RecoAlg
-    sbnci_Common_Modules_MCRecoUtils
+    sbnci::Common_Modules_MCRecoUtils
     lardataobj::RecoBase
     nusimdata::SimulationBase
     ROOT::Core

@@ -4,7 +4,7 @@ set(MODULE_LIBRARIES
     lardata::Utilities
     lardataobj::RawData
     lardata::DetectorInfoServices_DetectorClocksServiceStandard_service
-    sbndcode_Utilities_SignalShapingServiceSBND_service
+    sbndcode::Utilities_SignalShapingServiceSBND_service
     nurandom::RandomUtils_NuRandomService_service
     nusimdata::SimulationBase
     art::Framework_Core
@@ -12,7 +12,7 @@ set(MODULE_LIBRARIES
     art_root_io::TFileService_service
     art::Framework_Services_Optional_RandomNumberGenerator_service
     canvas::canvas
-    messagefacility::MF_MessageLogger  
+    messagefacility::MF_MessageLogger
     fhiclcpp::fhiclcpp
     cetlib::cetlib
     cetlib_except::cetlib_except

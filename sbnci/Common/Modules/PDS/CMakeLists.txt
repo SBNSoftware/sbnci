@@ -6,7 +6,8 @@ set(
     larreco::RecoAlg
     larsim::Simulation
     lardataobj::Simulation
-    sbnci_Common_Modules_MCRecoUtils
+    sbnci::Common_Modules_MCRecoUtils
+    sbncode::OpDet_PDMapAlgSimple_tool
     lardataobj::RecoBase
     ROOT::Core
     ROOT::Physics
@@ -17,6 +18,10 @@ set(
 )
 
 cet_build_plugin(LightenSimPhotons art::Module SOURCE LightenSimPhotons_module.cc LIBRARIES ${MODULE_LIBRARIES})
+cet_build_plugin(PDSRecoValidation art::Module SOURCE PDSRecoValidation_module.cc LIBRARIES ${MODULE_LIBRARIES})
+cet_build_plugin(PDSSimValidation  art::Module SOURCE PDSSimValidation_module.cc LIBRARIES ${MODULE_LIBRARIES})
+
+
 
 install_fhicl()
 install_source()

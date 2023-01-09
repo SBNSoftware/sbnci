@@ -9,7 +9,7 @@ set(MODULE_LIBRARIES
           larreco::Calorimetry
           lardataalg::DetectorInfo
           nug4::ParticleNavigation
-          sbndcode_RecoUtils
+          sbndcode::RecoUtils
           ROOT::Core
           ROOT::Physics
           nusimdata::SimulationBase

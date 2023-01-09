@@ -1,10 +1,10 @@
 art_make_library(
              SOURCE
-                 RecoUtils.cc 
+                 RecoUtils.cc
                  ShowerUtils.cc
                  TrackUtils.cc
              LIBRARY_NAME
-                 sbnci_Common_Modules_MCRecoUtils
+                 sbnci::Common_Modules_MCRecoUtils
              LIBRARIES
                  larcorealg::Geometry
                  larcore::Geometry_Geometry_service
@@ -14,7 +14,7 @@ art_make_library(
                  lardata::Utilities
                  lardataobj::RawData
                  lardataobj::RecoBase
-		 lardata::RecoObjects  
+                 lardata::RecoObjects
                  nusimdata::SimulationBase
                  cetlib::cetlib
                  cetlib_except::cetlib_except
@@ -42,5 +42,3 @@ art_make_library(
 install_headers()
 install_fhicl()
 install_source()
-
-
