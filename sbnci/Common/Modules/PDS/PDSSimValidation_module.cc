@@ -25,12 +25,13 @@
 #include "art/Utilities/make_tool.h"
 
 //Larsoft includes
+#include "larcore/CoreUtils/ServiceUtil.h"
 #include "larcore/Geometry/Geometry.h"
+#include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
+#include "lardata/DetectorInfoServices/DetectorClocksService.h"
+#include "lardataobj/Simulation/SimPhotons.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/MCParticle.h"
-#include "lardata/DetectorInfoServices/DetectorClocksService.h"
-#include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "lardataobj/Simulation/SimPhotons.h"
 
 //Root Includes
 #include "TMath.h"
@@ -92,9 +93,8 @@ class ana::PDSSimValidation : public art::EDAnalyzer {
     const std::vector<std::string> fPMTMapLabel, fArapucaMapLabel;
 
     // Service handles backtracker
-    art::ServiceHandle<geo::Geometry> geom;
-    art::ServiceHandle<art::TFileService> tfs;
-    detinfo::DetectorClocksData clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
+    art::ServiceHandle<art::TFileService> fTFS;
+    detinfo::DetectorClocksData fClockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
 
     int fNumEvents;
 
@@ -123,7 +123,7 @@ ana::PDSSimValidation::PDSSimValidation(const fhicl::ParameterSet& pset) :
   fUseReflectedLight (pset.get<bool>("UseReflectedLight",true)),
   fSaveByPDType (pset.get<bool>("SaveByPDType",true)),
   fPECut (pset.get<double>("PECut", 10)),
-  fNOpChannels (geom->NOpChannels()),
+  fNOpChannels ((lar::providerFrom<geo::Geometry>())->NOpChannels()),
   fPDSMapPtr (art::make_tool<opdet::PDMapAlg>(pset.get<fhicl::ParameterSet>("PDSMapTool"))),
   fPMTMapLabel (pset.get<std::vector<std::string>>("PMTMapLabel",{"pmt_coated", "pmt_uncoated"})),
   fArapucaMapLabel (pset.get<std::vector<std::string>>("ArapucaMapLabel",{"xarapuca_vuv", "xarapuca_vis"})),
@@ -134,7 +134,7 @@ ana::PDSSimValidation::PDSSimValidation(const fhicl::ParameterSet& pset) :
 ///////////////////////////////////////////////////////////////////////////////
 void ana::PDSSimValidation::beginJob() {
 
-  fTree = tfs->make<TTree>("pdsSimTree", "Tree with PDS simulation validation information");
+  fTree = fTFS->make<TTree>("pdsSimTree", "Tree with PDS simulation validation information");
 
   fTree->Branch("Run",          &fRun,          "Run/I");
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
