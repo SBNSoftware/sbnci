@@ -9,7 +9,7 @@ set(MODULE_LIBRARIES
           messagefacility::MF_MessageLogger
           art_root_io::tfile_support
           nusimdata::SimulationBase
-          sbnci_Common_Modules_MCRecoUtils
+          sbnci::Common_Modules_MCRecoUtils
         )
 
 cet_build_plugin(TPCSimValidation art::Module SOURCE TPCSimValidation_module.cc LIBRARIES ${MODULE_LIBRARIES} )
