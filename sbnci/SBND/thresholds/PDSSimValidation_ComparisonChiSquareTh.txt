@@ -14,3 +14,4 @@ pdssimvalidation/NPhotonsPMTCoated#0.25#0.5
 pdssimvalidation/NPhotonsPMTUncoated#0.25#0.5
 pdssimvalidation/NPhotonsXARAPUCAVuv#0.25#0.5
 pdssimvalidation/NPhotonsXARAPUCAVis#0.25#0.5
+pdssimvalidation/NTimePhotonsHist#0.25#0.5

@@ -55,7 +55,7 @@ void sbnciplot_pdsrecovalidation_sbnd(TString inputFile)
 
   PlotHists(inFile, outFile, "pdsrecovalidation/pdsRecoTree", "NFlash","", "NFlash", histYaxis, 10, 0, 10, "NFlash", "", dirName);
   PlotHists(inFile, outFile, "pdsrecovalidation/pdsRecoTree", "TotalFlashPE","", "TotalFlashPE", histYaxis, nBinsPE, 0,50000, "TotalFlashPE", "", dirName);
-  PlotHists(inFile, outFile, "pdsrecovalidation/pdsRecoTree", "FlashTime","", "FlashTime [#mus]", histYaxis, 20, 0, 2, "FlashTime", "", dirName);
+  PlotHists(inFil e, outFile, "pdsrecovalidation/pdsRecoTree", "FlashTime","", "FlashTime [#mus]", histYaxis, 20, 0, 2, "FlashTime", "", dirName);
   PlotHists(inFile, outFile, "pdsrecovalidation/pdsRecoTree", "FlashTimeResolution","", "FlashTime-NuG4Time [ns]", histYaxis, nBins, -0.05, 0.1, "FlashTimeResolution", "", dirName);
   PlotHists(inFile, outFile, "pdsrecovalidation/pdsRecoTree", "YCenter","", "YCenter [cm]", histYaxis, 20, -200, 200, "YCenter", "", dirName);
   PlotHists(inFile, outFile, "pdsrecovalidation/pdsRecoTree", "ZCenter","", "ZCenter [cm]", histYaxis, 25, 0, 500, "ZCenter", "", dirName);

@@ -1,6 +1,4 @@
 #include "simulationservices_sbnd.fcl"
-#include "backtrackerservice.fcl"
-#include "particleinventoryservice.fcl"
 
 #include "pds_sim_validation.fcl"
 
