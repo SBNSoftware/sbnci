@@ -19,7 +19,6 @@ common_pdssimvalidation_ci:
    SaveByPDType: true
    #UseArapucas: false
    PECut: 25
-   PDSResponseDelay: 0.2 #in us
 }
 
 END_PROLOG
