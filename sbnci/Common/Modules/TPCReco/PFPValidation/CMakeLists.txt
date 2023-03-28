@@ -1,8 +1,8 @@
 set(MODULE_LIBRARIES
-          sbnci_Common_Modules_MCRecoUtils
+          sbnci::Common_Modules_MCRecoUtils
           lardataobj::RecoBase
           larsim::Utils
-	  lardataalg::DetectorInfo
+          lardataalg::DetectorInfo
           nusimdata::SimulationBase
           ROOT::Core
           ROOT::Physics

@@ -12,10 +12,13 @@ set(MODULE_LIBRARIES
     messagefacility::MF_MessageLogger
     #${ART_ROOT_IO_TFILE_SUPPORT}
     art_root_io::tfile_support
-    sbnobj_Common_CRT
+    sbnobj::Common_CRT
     nusimdata::SimulationBase
-    sbnci_Common_Modules_MCRecoUtils
+    sbnci::Common_Modules_MCRecoUtils
 )
+
+cet_build_plugin(CRTValidation art::Module SOURCE CRTValidation_module.cc LIBRARIES ${MODULE_LIBRARIES})
+
 
 #install_headers()
 install_fhicl()

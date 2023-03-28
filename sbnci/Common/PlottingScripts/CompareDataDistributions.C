@@ -334,19 +334,19 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
           TH1D* hRef = new TH1D();
           TH1D* hCur = new TH1D();
 
-          if ( ! ((TString)(RefFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data())))->ClassName()).Contains("TEfficiency") ){
+          if ( !((TString)(RefFile->Get(
+                             Form("%s/%s", s_branch_names.Data(), s_histo_names.Data())))->ClassName()).Contains("TEfficiency") ){
 
               hRef = (TH1D*)RefFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
               hCur = (TH1D*)CurFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
 
               if (useNormalised && hRef->Integral() > 0 && hCur->Integral() > 0)
                   hCur->Scale((hRef->Integral()+hRef->GetBinContent(0)+hRef->GetBinContent(hRef->GetNbinsX()+1))/(hCur->Integral()+hCur->GetBinContent(0)+hCur->GetBinContent(hCur->GetNbinsX()+1)));
-	      
-	      double maxext = getMax(hRef, hCur);
-	      hRef->SetMaximum(maxext);
+
+              double maxext = getMax(hRef, hCur);
+              hRef->SetMaximum(maxext);
           }
           else{
-
               TEfficiency* hRefEff = (TEfficiency*)RefFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
               TEfficiency* hCurEff = (TEfficiency*)CurFile->Get(Form("%s/%s", s_branch_names.Data(), s_histo_names.Data()));
 
@@ -358,16 +358,29 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
               TH1D*hp1=(TH1D*)hCurEff_clone->GetPassedHistogram();
               TH1D*ht1=(TH1D*)hCurEff_clone->GetTotalHistogram();
               hCur=(TH1D*)hCurEff_clone->GetTotalHistogram();
-	      hCur->Sumw2();
+              hCur->Sumw2();
               hCur->Divide(hp1, ht1, 1., 1., "");
 
               TH1D*hp2=(TH1D*)hRefEff_clone->GetPassedHistogram();
               TH1D*ht2=(TH1D*)hRefEff_clone->GetTotalHistogram();
               hRef=(TH1D*)hRefEff_clone->GetTotalHistogram();
-	      hRef->Sumw2();
+              hRef->Sumw2();
               hRef->Divide(hp2, ht2, 1., 1., "");
 
+          }
 
+          // check if one of the histograms should be on log scale
+          TList* hRefList = hRef->GetListOfFunctions();
+          TList* hCurList = hCur->GetListOfFunctions();
+          if(hRefList->FindObject("SetLogx") ||
+             hCurList->FindObject("SetLogx")) {
+            topPad->SetLogx();
+            bottomPad->SetLogx();
+          }
+          if(hRefList->FindObject("SetLogy") ||
+             hCurList->FindObject("SetLogy")) {
+            topPad->SetLogy();
+            bottomPad->SetLogy();
           }
 
           setStyle(hRef, 3);
@@ -381,7 +394,7 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
           hRefc->SetFillColor(0);
           hRefc->Draw("hist same");
           // and data
-          hCur->Draw("e2same");
+          hCur->Draw("e2 same");
           // clone, and draw as histogram
           TH1F* hCurc = (TH1F*)hCur->Clone("hCurc");
           hCurc->SetDirectory(0);
@@ -418,7 +431,6 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
           pt->SetTextAlign(31);
           pt->Draw("same");
 
-
           bottomPad->cd();
           TH1D *ratioPlotFile2 = (TH1D*)hRef->Clone("ratioPlotFile2");
           ratioPlotFile2->Add(hRef, -1);
@@ -428,9 +440,9 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
           TH1D *ratioPlotFile1 = (TH1D*)hCur->Clone("ratioPlotFile1");
           ratioPlotFile1->Add(hRef, -1);
           ratioPlotFile1->Divide(hRef);
-	  double maxvalue, minvalue;
-	  getHistMaxMinWithError(ratioPlotFile1, maxvalue, minvalue);
-	  double range = 1.2 * std::max(std::abs(maxvalue), std::abs(minvalue));
+          double maxvalue, minvalue;
+          getHistMaxMinWithError(ratioPlotFile1, maxvalue, minvalue);
+          double range = 1.2 * std::max(std::abs(maxvalue), std::abs(minvalue));
           ratioPlotFile2->GetYaxis()->SetRangeUser(-range, range);
           setStyleRatio(ratioPlotFile2, gRefVersion.Data(), gCurVersion.Data());
           ratioPlotFile2->Draw("hist");
@@ -449,10 +461,8 @@ void CompareDataDistributions(TString gCurVersion="v07_06_00", TString gRefVersi
       }
 
       idx_offset+=folder_size.at(idb);
-
   }
 
   ComparisonChiSquare_file.close();
-
 
 }

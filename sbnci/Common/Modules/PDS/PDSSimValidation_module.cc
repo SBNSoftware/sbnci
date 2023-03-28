@@ -25,14 +25,13 @@
 #include "art/Utilities/make_tool.h"
 
 //Larsoft includes
+#include "larcore/CoreUtils/ServiceUtil.h"
 #include "larcore/Geometry/Geometry.h"
+#include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
+#include "lardata/DetectorInfoServices/DetectorClocksService.h"
+#include "lardataobj/Simulation/SimPhotons.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/MCParticle.h"
-#include "lardata/DetectorInfoServices/DetectorClocksService.h"
-#include "larcoreobj/SimpleTypesAndConstants/geo_types.h"
-#include "lardataobj/Simulation/SimPhotons.h"
-#include "lardataobj/RecoBase/OpFlash.h"
-#include "lardataobj/RecoBase/OpHit.h"
 
 //Root Includes
 #include "TMath.h"
@@ -41,17 +40,18 @@
 #include "TH1F.h"
 
 //C++ Includes
-#include <vector>
-#include <numeric>
 #include <iostream>
 #include <fstream>
+#include <limits>
+#include <map>
+#include <numeric>
+#include <vector>
 
 //sbncode includes
 #include "sbncode/OpDet/PDMapAlg.h"
 
 using namespace std;
 
-const double DEFAULT_T0VALUE = 1e9;
 
 namespace ana {
   class PDSSimValidation;
@@ -79,41 +79,34 @@ class ana::PDSSimValidation : public art::EDAnalyzer {
     void ResetTreeVariables();
     void FillPERecoveringResolution();
 
-    //fcl parameters
-    string fNuGeneratorLabel;
+    // fcl parameters
+    const string fNuGeneratorLabel;
     //std::vector<std::string> fLArGeantModuleLabel;
+    const bool fVerbose;
+    const bool fUseReflectedLight;
+    const bool fSaveByPDType;
+    const double fPECut;
 
-    //PDS map
-    std::unique_ptr<opdet::PDMapAlg> fPDSMapPtr;
-    std::vector<std::string> fPMTMapLabel, fArapucaMapLabel;
+    // PDS map
+    const size_t fNOpChannels;
+    const std::unique_ptr<opdet::PDMapAlg> fPDSMapPtr;
+    const std::vector<std::string> fPMTMapLabel, fArapucaMapLabel;
 
-    bool fVerbose;
-    bool fUseReflectedLight;
-    bool fSaveByPDType;
-    double fPECut;
-    double fPDSResponseDelay;
+    // Service handles backtracker
+    art::ServiceHandle<art::TFileService> fTFS;
+    detinfo::DetectorClocksData fClockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
 
-    //TTree
-    TTree* fTree;
-
-    //Service handlesacktracker
-    art::ServiceHandle<geo::Geometry> geom;
-    art::ServiceHandle<art::TFileService> tfs;
-    detinfo::DetectorClocksData clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
-
-    int numevents;
+    int fNumEvents;
 
     // tree variables
+    TTree* fTree;
     int fRun;    ///< art run number
     int fSubRun; ///< art subrun number
     int fEvent;  ///< art event number
-
-    std::vector<int> fSimPhotonsPE_v;
-    double fNuT0;
-
-    //True Variable
     std::vector<int> fNPhotonsVec;
+    std::map<int,int> fNTimePhotonsMap;
     int fNPhotons;
+    int fTimePhotons;
     int fNPhotonsPMTCoated;
     int fNPhotonsPMTUncoated;
     int fNPhotonsXARAPUCAVuv;
@@ -126,29 +119,29 @@ ana::PDSSimValidation::PDSSimValidation(const fhicl::ParameterSet& pset) :
   EDAnalyzer(pset),
   fNuGeneratorLabel (pset.get<string>("NuGeneratorLabel","generator")),
   //fLArGeantModuleLabel = pset.get<std::vector<std::string>>("LArGeantModuleLabel",{"pdfastsim", "pdfastsimout"});
-  fPDSMapPtr (art::make_tool<opdet::PDMapAlg>(pset.get<fhicl::ParameterSet>("PDSMapTool"))),
-  fPMTMapLabel (pset.get<std::vector<std::string>>("PMTMapLabel",{"pmt_coated", "pmt_uncoated"})),
-  fArapucaMapLabel (pset.get<std::vector<std::string>>("ArapucaMapLabel",{"xarapuca_vuv", "xarapuca_vis"})),
   fVerbose (pset.get<bool>("Verbose",false)),
   fUseReflectedLight (pset.get<bool>("UseReflectedLight",true)),
   fSaveByPDType (pset.get<bool>("SaveByPDType",true)),
   fPECut (pset.get<double>("PECut", 10)),
-  fPDSResponseDelay (pset.get<double>("PDSResponseDelay", 0.2)),
-  numevents(0),
-  fSimPhotonsPE_v (geom->NOpChannels(), 0)
+  fNOpChannels ((lar::providerFrom<geo::Geometry>())->NOpChannels()),
+  fPDSMapPtr (art::make_tool<opdet::PDMapAlg>(pset.get<fhicl::ParameterSet>("PDSMapTool"))),
+  fPMTMapLabel (pset.get<std::vector<std::string>>("PMTMapLabel",{"pmt_coated", "pmt_uncoated"})),
+  fArapucaMapLabel (pset.get<std::vector<std::string>>("ArapucaMapLabel",{"xarapuca_vuv", "xarapuca_vis"})),
+  fNumEvents(0)
 {
 } //end constructor
 
 ///////////////////////////////////////////////////////////////////////////////
 void ana::PDSSimValidation::beginJob() {
 
-  fTree = tfs->make<TTree>("pdsSimTree", "Tree with PDS simulation validation information");
+  fTree = fTFS->make<TTree>("pdsSimTree", "Tree with PDS simulation validation information");
 
   fTree->Branch("Run",          &fRun,          "Run/I");
   fTree->Branch("SubRun",       &fSubRun,       "SubRun/I");
   fTree->Branch("Event",        &fEvent,        "Event/I");
 
   fTree->Branch("NPhotonsVec", &fNPhotonsVec);
+  fTree->Branch("NTimePhotonsMap", &fNTimePhotonsMap);
   fTree->Branch("NPhotons", &fNPhotons, "NPhotons/I");
   if(fSaveByPDType){
     fTree->Branch("NPhotonsPMTCoated", &fNPhotonsPMTCoated, "NPhotonsPMTCoated/I");
@@ -171,79 +164,106 @@ void ana::PDSSimValidation::analyze(const art::Event& evt) {
   if(fVerbose) {
     cout << "Analysing run " << fRun << ", subrun " << fSubRun << ", event: " << fEvent << endl;
   }
-  numevents++;
+  fNumEvents++;
 
-
-  //###############################################
-  //### Get PDS sim info for the event         ###
-  //###############################################
-  std::vector<art::Handle<std::vector<sim::SimPhotonsLite> >> fLitePhotonHandle_list;
-  fLitePhotonHandle_list = evt.getMany<std::vector<sim::SimPhotonsLite>>();
-  for ( const art::Handle<std::vector<sim::SimPhotonsLite>>& fLitePhotonHandle: (fLitePhotonHandle_list) ){
-    vector<art::Ptr<sim::SimPhotonsLite> > fLitePhotonList;
-    art::fill_ptr_vector(fLitePhotonList, fLitePhotonHandle);
-    bool reflected = (fLitePhotonHandle.provenance()->productInstanceName()== "Reflected");
-    if(fVerbose){
-      std::cout<<"*********SimPhotonLite List: "<<fLitePhotonHandle.provenance()->moduleLabel()<<" Provenance:"<<fLitePhotonHandle.provenance()->productInstanceName()<<std::endl;
-    }
-    for ( auto const& fLitePhotons : (*fLitePhotonHandle) ){
-      std::string pd_type=fPDSMapPtr->pdType(fLitePhotons.OpChannel);
-      if(reflected && pd_type=="xarapuca_vuv") continue;
-      if(!reflected && (pd_type=="xarapuca_vis" || pd_type=="pmt_uncoated")) continue;
-
-      std::map<int, int> fLitePhotons_map = fLitePhotons.DetectedPhotons;
-
-      int nphotons=std::accumulate( std::begin(fLitePhotons_map), std::end(fLitePhotons_map), 0
-            , [] (int sum, const std::map<int, int>::value_type& phmap){ return sum+phmap.second; } );
-
-      fSimPhotonsPE_v[fLitePhotons.OpChannel]+=nphotons;
-    }
-  }
-  for(size_t opch=0; opch<fSimPhotonsPE_v.size(); opch++){
-    if(fSimPhotonsPE_v[opch]>0){
-      fNPhotonsVec.push_back(fSimPhotonsPE_v[opch]);
-      fNPhotons+=fSimPhotonsPE_v[opch];
-      if(fSaveByPDType){
-        std::string pd_type=fPDSMapPtr->pdType(opch);
-        if(pd_type=="pmt_coated") {
-          fNPhotonsPMTCoated+=fSimPhotonsPE_v[opch];
-        }
-        else if(pd_type=="pmt_uncoated"){
-          fNPhotonsPMTUncoated+=fSimPhotonsPE_v[opch];
-        }
-        else if(pd_type=="xarapuca_vuv"){
-          fNPhotonsXARAPUCAVuv+=fSimPhotonsPE_v[opch];
-        }
-        else if(pd_type=="xarapuca_vis"){
-          fNPhotonsXARAPUCAVis+=fSimPhotonsPE_v[opch];
-        }
-      }
-    }
-  }
-  if(fVerbose) std::cout<<"NPH: "<<fNPhotonsPMTCoated<<" "<<fNPhotonsPMTUncoated<<" "<<fNPhotonsXARAPUCAVuv<<" "<<fNPhotonsXARAPUCAVis<<"\n";
-
-
-  //Get truth info
+  // Get truth info
   art::Handle< std::vector<simb::MCTruth> > MCTruthHandle;
   evt.getByLabel(fNuGeneratorLabel, MCTruthHandle);
   std::vector<art::Ptr<simb::MCTruth> > mctruth_v;
   art::fill_ptr_vector(mctruth_v, MCTruthHandle);
-
+  int nuT0 = std::numeric_limits<int>::max();
   for (size_t n = 0; n < mctruth_v.size(); n++) {
     art::Ptr<simb::MCTruth> evtTruth = mctruth_v[n];
     for (int  p= 0; p < evtTruth->NParticles(); p++){
       simb::MCParticle const& mcpar = evtTruth->GetParticle(p);
-      if( (std::abs(mcpar.PdgCode()) == 14 || std::abs(mcpar.PdgCode()) == 12) && mcpar.Mother()==-1) {
-        if(mcpar.T()<fNuT0){
-          fNuT0 = mcpar.T()/1000;
-          //fNuT0 = clockData.G4ToElecTime(mcpar.T());
-          //std::cout<<clockData.G4ToElecTime(mcpar.T())<<" "<<mcpar.T()<<std::endl;
-          if(fVerbose) std::cout<<"T0: "<<fNuT0<<" NMCTruth="<<n<<std::endl;
+      if( (std::abs(mcpar.PdgCode()) == 14 || std::abs(mcpar.PdgCode()) == 12)
+          && mcpar.Mother() == -1) {
+        if(mcpar.T() < nuT0){
+          nuT0 = mcpar.T(); // ns
+          // nuT0 = clockData.G4ToElecTime(mcpar.T());
+          // std::cout<<clockData.G4ToElecTime(mcpar.T())<<" "<<mcpar.T()<<std::endl;
+          if(fVerbose) std::cout << "T0: "<< nuT0 << " NMCTruth= " << n << std::endl;
         }
       }
     }
   }
-  if(fNuT0==DEFAULT_T0VALUE) fNuT0=0;
+  if(nuT0 >= std::numeric_limits<int>::max()) nuT0 = 0;
+
+  //###############################################
+  //### Get PDS sim info for the event         ###
+  //###############################################
+  std::vector<art::Handle<std::vector<sim::SimPhotonsLite> >> litePhotonHandle_list;
+  litePhotonHandle_list = evt.getMany<std::vector<sim::SimPhotonsLite>>();
+  std::vector<int> simPhotonsPE_v(fNOpChannels, 0);
+  std::vector<std::map<int,int>> simTimePhotonsPE_v(fNOpChannels);
+
+  for ( const auto& litePhotonHandle: (litePhotonHandle_list) ){
+    vector<art::Ptr<sim::SimPhotonsLite> > litePhotonList;
+    art::fill_ptr_vector(litePhotonList, litePhotonHandle);
+    bool reflected = (litePhotonHandle.provenance()->productInstanceName()== "Reflected");
+    if(fVerbose){
+      std::cout << "*********SimPhotonLite List: "
+                << litePhotonHandle.provenance()->moduleLabel()
+                << " Provenance:" << litePhotonHandle.provenance()->productInstanceName()
+                << std::endl;
+    }
+    for ( auto const& litePhotons : (*litePhotonHandle) ){
+      std::string pd_type = fPDSMapPtr->pdType(litePhotons.OpChannel);
+      if(reflected && pd_type=="xarapuca_vuv") continue;
+      if(!reflected && (pd_type=="xarapuca_vis" || pd_type=="pmt_uncoated")) continue;
+
+      std::map<int, int> litePhotons_map = litePhotons.DetectedPhotons;
+      int nphotons = std::accumulate(
+        litePhotons_map.begin(), litePhotons_map.end(), 0,
+        [] (int sum, const auto& phmap){ return sum+phmap.second; } );
+      simPhotonsPE_v[litePhotons.OpChannel] += nphotons;
+
+      for(const auto& lp : litePhotons_map) {
+        int time_diff = lp.first-nuT0;
+        if (auto it{simTimePhotonsPE_v[litePhotons.OpChannel].find(time_diff)};
+             it!=simTimePhotonsPE_v[litePhotons.OpChannel].end() )
+          it->second += lp.second;
+        else
+          simTimePhotonsPE_v[litePhotons.OpChannel][time_diff] = lp.second;
+      }
+    }
+  }
+  for(size_t opch=0; opch<simPhotonsPE_v.size(); opch++){
+    if(simPhotonsPE_v[opch]>0){
+      fNPhotonsVec.push_back(simPhotonsPE_v[opch]);
+      fNPhotons += simPhotonsPE_v[opch];
+      if(fSaveByPDType){
+        std::string pd_type=fPDSMapPtr->pdType(opch);
+        if(pd_type=="pmt_coated") {
+          fNPhotonsPMTCoated += simPhotonsPE_v[opch];
+        }
+        else if(pd_type=="pmt_uncoated"){
+          fNPhotonsPMTUncoated += simPhotonsPE_v[opch];
+        }
+        else if(pd_type=="xarapuca_vuv"){
+          fNPhotonsXARAPUCAVuv += simPhotonsPE_v[opch];
+        }
+        else if(pd_type=="xarapuca_vis"){
+          fNPhotonsXARAPUCAVis += simPhotonsPE_v[opch];
+        }
+      }
+    }
+  }
+  for(size_t opch=0; opch<simTimePhotonsPE_v.size(); opch++){
+    const auto& lpm = simTimePhotonsPE_v.at(opch);
+    for(const auto& lp : lpm) {
+      if(lp.second > 0){
+        if ( auto it{fNTimePhotonsMap.find(lp.first)}; it!=fNTimePhotonsMap.end() )
+          it->second += lp.second;
+        else fNTimePhotonsMap[lp.first] = lp.second;
+      }
+    }
+  }
+  if(fVerbose) {
+    std::cout << "NPhPMTCoat: " << fNPhotonsPMTCoated   << ", NPhPMTUnco: " << fNPhotonsPMTUncoated << ", "
+              << "NPhXAraVUV: " << fNPhotonsXARAPUCAVuv << ", NPhXAraVIS: " << fNPhotonsXARAPUCAVis << std::endl;
+  }
+
 
   //Fill the tree
   fTree->Fill();
@@ -253,21 +273,19 @@ void ana::PDSSimValidation::analyze(const art::Event& evt) {
 
 //////////////////////////////////////////////////////////////////////////
 void ana::PDSSimValidation::endJob(){
-  cout << "Number of events processed: " <<  numevents  << endl;
+  cout << "Number of events processed: " <<  fNumEvents  << endl;
 }
 
 
 void ana::PDSSimValidation::ResetTreeVariables() {
-  std::fill(fSimPhotonsPE_v.begin(), fSimPhotonsPE_v.end(), 0);
-  fNuT0=DEFAULT_T0VALUE;
-
-  fNPhotons=0;
+  fNPhotons = 0;
   fNPhotonsVec.clear();
+  fNTimePhotonsMap.clear();
   if(fSaveByPDType){
-    fNPhotonsPMTCoated=0;
-    fNPhotonsPMTUncoated=0;
-    fNPhotonsXARAPUCAVuv=0;
-    fNPhotonsXARAPUCAVis=0;
+    fNPhotonsPMTCoated = 0;
+    fNPhotonsPMTUncoated = 0;
+    fNPhotonsXARAPUCAVuv = 0;
+    fNPhotonsXARAPUCAVis = 0;
   }
 
 }
