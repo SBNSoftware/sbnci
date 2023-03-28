@@ -247,8 +247,8 @@ defaultqual	e20
 ####################################
 product		version		qual	flags		<table_format=2>
 cetmodules	v3_20_00	-	only_for_build
-icaruscode	v09_64_01	-	optional
-sbndcode	v09_64_01	-	optional
+icaruscode	v09_69_01	-	optional
+sbndcode	v09_69_01	-	optional
 end_product_list
 ####################################
 
