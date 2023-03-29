@@ -452,7 +452,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
   art::Handle<std::vector<recob::Hit> > hitListHandle;
   std::vector<art::Ptr<recob::Hit> > hits;
   for(auto const& fHitModuleLabel: fHitModuleLabels){
-  
+
     if(evt.getByLabel(fHitModuleLabel,hitListHandle)){
       art::fill_ptr_vector(hits, hitListHandle);
     }
@@ -613,7 +613,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
       }
 
       //Calculate how much energy was deposited in the hits
-      for(geo::PlaneID plane_id: geom->IteratePlaneIDs()){
+      for(geo::PlaneID plane_id: geom->Iterate<geo::PlaneID>()){
 
         float TotalEnergyDepinHits = RecoUtils::TotalEnergyDepinHits(clockData, hits,plane_id.Plane);
         float hitCompleteness = TotalEnergyDepinHits!=0 ? TotalEnergyDepinHits/TotalEnergyDeposited : -99999;
@@ -649,7 +649,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
 
     art::Handle<std::vector<recob::PFParticle> > pfpListHandle;
     std::vector<art::Ptr<recob::PFParticle> > pfps;
-    
+
     if(evt.getByLabel(fPFParticleLabel,pfpListHandle)){
       art::fill_ptr_vector(pfps,pfpListHandle);
     }
@@ -905,7 +905,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
         //Calculate the true Energy deposited By Shower
         for (auto const& daughter: showerMothers[ShowerTrackID]){
           TrueEnergyDep_FromShower += MCTrack_Energy_map[daughter];
-          for(geo::PlaneID plane_id: geom->IteratePlaneIDs()){
+          for(geo::PlaneID plane_id: geom->Iterate<geo::PlaneID>()){
             TrueHitDep_FromTrueShower +=  MCTrack_hit_map[showerhit_productid][daughter][plane_id];
           }
         }
@@ -1374,7 +1374,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
     for (auto const& showermother: showerMothers){
       int TrueHitDep_FromTrueShowers = 0;
       for (auto const& track_id: showermother.second){
-        for(geo::PlaneID plane_id: geom->IteratePlaneIDs()){
+        for(geo::PlaneID plane_id: geom->Iterate<geo::PlaneID>()){
           TrueHitDep_FromTrueShowers +=  MCTrack_hit_map[showerhit_productid][track_id][plane_id];
         }
       }
