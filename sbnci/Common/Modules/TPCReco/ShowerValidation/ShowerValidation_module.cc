@@ -83,10 +83,10 @@ class ana::ShowerValidation : public art::EDAnalyzer {
     void initTree(TTree* Tree, std::string branchName, std::map<std::string,std::vector<float> >& Metric, std::vector<std::string> fShowerModuleLabels);
     void initClusterTree(TTree* Tree,  std::string branchName,  std::map<std::string,std::vector<std::vector<std::vector<float> > > >& Metric, std::vector<std::string> fShowerModuleLabels);
 
-    void ClusterValidation(std::vector<art::Ptr<recob::Cluster> >& clusters,
+    void ClusterValidation(std::vector<art::Ptr<recob::Cluster> > const& clusters,
         const art::Event& evt,
         const detinfo::DetectorClocksData& clockData,
-        art::Handle<std::vector<recob::Cluster> >& clusterHandle,
+        art::ValidHandle<std::vector<recob::Cluster> > const& clusterHandle,
         std::map<int,std::vector<int> >& ShowerMotherTrackIDs,
         std::map<int,float>& MCTrack_Energy_map,
         std::map<art::ProductID,std::map<int,std::map<geo::PlaneID, int> > > & MCTrack_hit_map,
@@ -98,7 +98,7 @@ class ana::ShowerValidation : public art::EDAnalyzer {
         art::Ptr<recob::PFParticle>  pfp,
         const art::Event& evt,
         const detinfo::DetectorClocksData& clockData,
-        art::Handle<std::vector<recob::Cluster> >& clusterHandle,
+        art::ValidHandle<std::vector<recob::Cluster>> const& clusterHandle,
         std::map<int,std::vector<int> >& ShowerMotherTrackIDs,
         std::map<int,float>& MCTrack_Energy_map,
         std::map<art::ProductID,std::map<int,std::map<geo::PlaneID, int> > > & MCTrack_hit_map,
@@ -717,9 +717,8 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
           const art::Ptr<recob::PFParticle>& daughter = pfpsMap[daughterIter];
           if (fPFPValidation){
             if(fmpfc.isValid() && fmpfc.size()!=0){
-              art::Handle<std::vector<recob::Cluster > > clusterHandle;
-              evt.get(fmpfc.at(0).front().id(),clusterHandle);
-              if(clusterHandle.isValid()){
+              if (auto provenance = evt.getProductProvenance(fmpfc.at(0).front().id())) {
+                auto const clusterHandle = evt.getValidHandle<std::vector<recob::Cluster>>(provenance->inputTag());
                 std::vector<art::Ptr<recob::Cluster> > pfpClusters = fmpfc.at(daughter.key());
                 ana::ShowerValidation::PFPValidation(pfpClusters,daughter,evt,clockData, clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,fShowerModuleLabel);
               }
@@ -738,10 +737,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
         } // end loop over neutrino daughters
         // Get the PFP neutrino vertex
         if(fmpfv.isValid() && fmpfv.size()!=0 && fmpfv.at(0).size()!=0){
-          art::Handle<std::vector<recob::Vertex > > vertexHandle;
-          evt.get(fmpfv.at(0).front().id(),vertexHandle);
-
-          if(vertexHandle.isValid()) {
+          if (evt.getProductProvenance(fmpfv.at(0).front().id())) {
             std::vector< art::Ptr<recob::Vertex> > pfpVertexVector = fmpfv.at(pfp.key());
             art::Ptr<recob::Vertex> pfpVertex = pfpVertexVector.at(0);
             neutrinoVertices.push_back(pfpVertex);
@@ -1154,11 +1150,9 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
         std::vector<art::Ptr<recob::SpacePoint> > sps = fmsp.at(shower.key());
 
         if(sps.size() > 0){
-          art::Handle<std::vector<recob::SpacePoint> > spHandle;
-          evt.get(sps.front().id(),spHandle);
-
-          if(spHandle.isValid()){
-            art::FindManyP<recob::Hit> fmsph(spHandle, evt, spHandle.provenance()->moduleLabel());
+          if(auto provenance = evt.getProductProvenance(sps.front().id())){
+            auto const spHandle = evt.getValidHandle<std::vector<recob::SpacePoint>>(provenance->inputTag());
+            art::FindManyP<recob::Hit> fmsph(spHandle, evt, provenance->moduleLabel());
 
             float geomatched = 0;
             for(auto const& sp: sps){
@@ -1318,27 +1312,27 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
 
         //Get the clusters associated to the shower.Needs Work.
         if(fmch.isValid()){
-          art::Handle<std::vector<recob::Cluster > > clusterHandle;
-          evt.get(fmch.at(shower.key()).front().id(),clusterHandle);
-          if(clusterHandle.isValid()){
+          if(auto provenance = evt.getProductProvenance(fmch.at(shower.key()).front().id())) {
+            auto const clusterHandle = evt.getValidHandle<std::vector<recob::Cluster>>(provenance->inputTag());
             std::vector<art::Ptr<recob::Cluster> > showerclusters = fmch.at(shower.key());
             ana::ShowerValidation::ClusterValidation(showerclusters,evt,clockData,clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,ShowerTrackID,trueShowerEnergy,fShowerModuleLabel);
           }
           else{
-            mf::LogError("ShowerValidation") << "Cluster handle is stale. No clustering validation done" << std::endl;
+            mf::LogError("ShowerValidation") << "No clusters available. No clustering validation done" << std::endl;
           }
         }
         else if(fmpf.isValid()){
           //Find the Clusters associated to PF particle.
-          art::Handle<std::vector<recob::PFParticle> > pfpHandle;
-          evt.get(fmpf.at(shower.key()).front().id(),pfpHandle);
-          if(pfpHandle.isValid()){
-            art::FindManyP<recob::Cluster> fmcpf(pfpHandle, evt, pfpHandle.provenance()->moduleLabel());
+          if(auto pfpProvenance = evt.getProductProvenance(fmpf.at(shower.key()).front().id())) {
+            auto const& pfpTag = pfpProvenance->inputTag();
+            art::FindManyP<recob::Cluster> fmcpf(evt.getValidHandle<std::vector<recob::PFParticle>>(pfpTag),
+                                                 evt,
+                                                 pfpTag.label());
             if(fmcpf.isValid()){
-              art::Handle<std::vector<recob::Cluster > > clusterHandle;
-              evt.get(fmcpf.at(0).front().id(),clusterHandle);
-              if(clusterHandle.isValid()){
-                std::vector< art::Ptr<recob::Cluster> > showerclusters = fmcpf.at(shower.key());
+              auto const provenance = evt.getProductProvenance(fmcpf.at(0).front().id());
+              if (provenance) {
+                auto const clusterHandle = evt.getValidHandle<std::vector<recob::Cluster>>(provenance->inputTag());
+                std::vector< art::Ptr<recob::Cluster> > const& showerclusters = fmcpf.at(shower.key());
                 ana::ShowerValidation::ClusterValidation(showerclusters,evt,clockData,clusterHandle,showerMothers,MCTrack_Energy_map,MCTrack_hit_map,ShowerTrackID,trueShowerEnergy,fShowerModuleLabel);
               }
               else{
@@ -1492,10 +1486,10 @@ return;
 }
 
 
-void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Cluster> >& clusters,
+void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Cluster> > const& clusters,
     const art::Event& evt,
     const detinfo::DetectorClocksData& clockData,
-    art::Handle<std::vector<recob::Cluster> >& clusterHandle,
+    art::ValidHandle<std::vector<recob::Cluster> > const& clusterHandle,
     std::map<int,std::vector<int> >& ShowerMotherTrackIDs,
     std::map<int,float>& MCTrack_Energy_map,
     std::map<art::ProductID,std::map<int,std::map<geo::PlaneID, int> > >& MCTrack_hit_map,
@@ -1515,24 +1509,22 @@ void ana::ShowerValidation::ClusterValidation(std::vector< art::Ptr<recob::Clust
   //Get the associated hits
   art::FindManyP<recob::Hit> fmhc(clusterHandle, evt, clusterHandle.provenance()->moduleLabel());
 
-  //Holder for cluster its
-  art::Handle<std::vector<recob::Hit > > hitHandle;
-
   // std::cout<<"Clusters size: "<<clusters.size()<<" and "<<fmhc.at(clusters.at(0).key()).size()<<" and "<<clusterHandle.provenance()->moduleLabel()<<std::endl;
 
-  if (fmhc.at(clusters.at(0).key()).size()==0) {
+  if (fmhc.at(clusters.at(0).key()).empty()) {
     mf::LogError("ShowerValidation") << "Cluster has no hits. Trying next cluster."
       << std::endl;
     return;
   };
 
   //Get the Hits Handle used for this cluster type WARNING
-  evt.get(fmhc.at(clusters.at(0).key()).front().id(),hitHandle);
-
-  if(!hitHandle.isValid()){
+  auto const provenance = evt.getProductProvenance(fmhc.at(clusters.at(0).key()).front().id());
+  if (!provenance) {
     mf::LogError("ShowerValidation") << "Hits handle is stale. No clustering validation done" << std::endl;
     return;
   }
+
+  auto const hitHandle = evt.getValidHandle<std::vector<recob::Hit>>(provenance->inputTag());
 
   //Get the hits vector from the shower
   for(auto const& cluster : clusters){
@@ -1642,7 +1634,7 @@ void ana::ShowerValidation::PFPValidation(std::vector<art::Ptr<recob::Cluster> >
     art::Ptr<recob::PFParticle>  pfp,
     const art::Event& evt,
     const detinfo::DetectorClocksData& clockData,
-    art::Handle<std::vector<recob::Cluster> >& clusterHandle,
+    art::ValidHandle<std::vector<recob::Cluster>> const& clusterHandle,
     std::map<int,std::vector<int> >& ShowerMotherTrackIDs,
     std::map<int,float>& MCTrack_Energy_map,
     std::map<art::ProductID,std::map<int,std::map<geo::PlaneID, int> > > & MCTrack_hit_map,
@@ -1655,13 +1647,13 @@ void ana::ShowerValidation::PFPValidation(std::vector<art::Ptr<recob::Cluster> >
   //Holder for cluster hits
 
   //Get the Hits Handle used for this cluster type
-  art::Handle<std::vector<recob::Hit > > hitHandle;
-  evt.get(fmhc.at(clusters.at(0).key()).front().id(),hitHandle);
-
-  if(!hitHandle.isValid()){
-    mf::LogError("ShowerValidation") << "Hits handle is stale. No pfp validation done" << std::endl;
+  auto const provenance = evt.getProductProvenance(fmhc.at(clusters.at(0).key()).front().id());
+  if (!provenance) {
+    mf::LogError("ShowerValidation") << "No hits available. No pfp validation done" << std::endl;
     return;
   }
+
+  auto const hitHandle = evt.getValidHandle<std::vector<recob::Hit>>(provenance->inputTag());
 
   float TotalTrueEnergy      = 0;
   float TotalEnergyDepinHits = 0;
