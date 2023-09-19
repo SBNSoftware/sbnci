@@ -279,7 +279,7 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
 
   std::map<std::string, std::vector<TruthMatch>> pfpTruthMatchMap;
 
-  for (auto const fPFPLabel : fPFPLabels) {
+  for (auto const &fPFPLabel : fPFPLabels) {
 
     // Get all the PFPs
     auto const pfpHandle(evt.getValidHandle<std::vector<recob::PFParticle>>(fPFPLabel));
@@ -428,7 +428,7 @@ void sbnci::PFPValidationCI::analyze(art::Event const& evt)
     if (trueProcess == "primary") {
       std::cout << "True Particle: " << truePdg << " with true deposited energy: " << trueDepositedEnergy << std::endl;
     }
-    for (auto const fPFPLabel : fPFPLabels) {
+    for (auto const &fPFPLabel : fPFPLabels) {
       std::vector<TruthMatch> pfpMatches;
       unsigned int pfpTracks(0), pfpShowers(0);
       for (TruthMatch const& truthMatch : pfpTruthMatchMap[fPFPLabel]) {
