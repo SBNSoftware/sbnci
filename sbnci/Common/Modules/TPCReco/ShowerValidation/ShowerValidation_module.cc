@@ -493,7 +493,7 @@ void ana::ShowerValidation::analyze(const art::Event& evt) {
 
   int numTrueShowers =0;
 
-  float trueShowerEnergy=-99999999;
+  float trueShowerEnergy=-99999999.;
 
   auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService const>()->DataFor(evt);
   if(fMatchShowersInTruth){
